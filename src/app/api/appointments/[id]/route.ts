@@ -20,7 +20,7 @@ function auth(req: Request) {
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const payload = auth(req);
   if (!payload)
@@ -29,9 +29,11 @@ export async function PATCH(
   try {
     const body = await req.json();
     const input = patchSchema.parse(body);
+    
+    const { id } = await params;
 
     const appt = await prisma.appointment.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { doctor: true, patient: true },
     });
     if (!appt)
@@ -65,7 +67,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.appointment.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...("status" in input ? { status: input.status } : {}),
         ...("scheduledAt" in input

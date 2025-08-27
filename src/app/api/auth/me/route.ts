@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     let userData;
 
     if (role === "admin" || role === "moderator") {
-      userData = await db.user.findUnique({
+      userData = await prisma.user.findUnique({
         where: { id: userId },
         select: {
           id: true,
@@ -28,22 +28,30 @@ export async function GET(req: Request) {
         },
       });
     } else if (role === "doctor") {
-      userData = await db.doctor.findUnique({
-        where: { id: userId },
+      userData = await prisma.doctor.findUnique({
+        where: { userId },
         select: {
           id: true,
-          name: true,
-          phone: true,
           specialization: true,
+          user: {
+            select: {
+              name: true,
+              phone: true
+            }
+          }
         },
       });
     } else if (role === "patient") {
-      userData = await db.patient.findUnique({
-        where: { id: userId },
+      userData = await prisma.patient.findUnique({
+        where: { userId },
         select: {
           id: true,
-          name: true,
-          phone: true,
+          user: {
+            select: {
+              name: true,
+              phone: true
+            }
+          }
         },
       });
     }

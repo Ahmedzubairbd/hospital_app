@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { Role } from "@prisma/client";
 import { z } from "zod";
 import { normalizePhoneBD } from "@/lib/sms";
 import { signJwt } from "@/lib/auth";
@@ -19,9 +20,10 @@ export async function POST(req: Request) {
     // Normalize phone number for Bangladesh format
     const normalizedPhone = normalizePhoneBD(phone);
 
-    // Find the OTP in the database
-    const otpRecord = await prisma.otpCode.findUnique({
+    // Find the most recent OTP in the database
+    const otpRecord = await prisma.otpCode.findFirst({
       where: { phone: normalizedPhone },
+      orderBy: { createdAt: 'desc' }
     });
 
     // Verify OTP exists, is not expired, and matches
@@ -39,7 +41,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (otpRecord.code !== code) {
+    if (otpRecord.codeHash !== code) {
       return NextResponse.json({ error: "Invalid OTP" }, { status: 400 });
     }
 
@@ -52,11 +54,12 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
-      // Verify role matches
-      if (existingUser.role !== role) {
+      // Verify role matches (convert string role to enum)
+      const userRole = role.toUpperCase() as keyof typeof Role;
+      if (existingUser.role !== userRole) {
         return NextResponse.json(
           {
-            error: `This phone number is registered as a ${existingUser.role}, not a ${role}`,
+            error: `This phone number is registered as a ${existingUser.role.toLowerCase()}, not a ${role}`,
           },
           { status: 400 },
         );
@@ -64,10 +67,11 @@ export async function POST(req: Request) {
       userId = existingUser.id;
     } else {
       // Create new user with this phone number
+      const userRole = role.toUpperCase() as keyof typeof Role;
       const newUser = await prisma.user.create({
         data: {
           phone: normalizedPhone,
-          role,
+          role: userRole,
           name: `New ${role}`, // Default name
         },
       });
@@ -75,7 +79,10 @@ export async function POST(req: Request) {
       // Create corresponding doctor or patient record
       if (role === "doctor") {
         await prisma.doctor.create({
-          data: { userId: newUser.id },
+          data: { 
+            userId: newUser.id,
+            specialization: "General" // Default specialization, can be updated later
+          },
         });
       } else if (role === "patient") {
         await prisma.patient.create({
@@ -86,9 +93,10 @@ export async function POST(req: Request) {
       userId = newUser.id;
     }
 
-    // Consume the OTP by deleting it
-    await prisma.otpCode.delete({
-      where: { phone: normalizedPhone },
+    // Consume the OTP by marking it as consumed
+    await prisma.otpCode.update({
+      where: { id: otpRecord.id },
+      data: { consumedAt: new Date() }
     });
 
     // Generate JWT token
@@ -99,16 +107,15 @@ export async function POST(req: Request) {
     });
 
     // Set cookie
-    cookies().set({
-      name: "token",
-      value: token,
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set("token", token, {
       httpOnly: true,
       path: "/",
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    return NextResponse.json({ ok: true });
+    return response;
   } catch (err) {
     const message = err instanceof Error ? err.message : "failed";
     return NextResponse.json({ error: message }, { status: 400 });

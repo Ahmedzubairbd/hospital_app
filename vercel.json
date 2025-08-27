@@ -1,15 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "./vercel-build.sh",
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["sin1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://amindiagnostic.net"
+    "NEXT_PUBLIC_API_URL": "https://amindiagnostic.net",
+    "DATABASE_URL": "${DATABASE_URL}"
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_URL": "https://amindiagnostic.net"
+      "NEXT_PUBLIC_API_URL": "https://amindiagnostic.net",
+      "DATABASE_URL": "${DATABASE_URL}"
     }
   }
 }

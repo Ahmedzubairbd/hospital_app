@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "biome check",
+    "lint": "biome check tsc --no-emit",
     "prisma:gen": "prisma generate",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "vercel-build": "prisma generate && next build",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -27,6 +29,7 @@
     "prisma": "^6.14.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "vercel": "^32.0.1",
     "zod": "^4.1.1"
   },
   "devDependencies": {

@@ -21,11 +21,23 @@ export async function POST(req: Request) {
     // Store OTP in database with 5-minute expiration
     const expiresAt = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes
 
-    await prisma.otpCode.upsert({
-      where: { phone: normalizedPhone },
-      update: { code: otp, expiresAt },
-      create: { phone: normalizedPhone, code: otp, expiresAt },
+    // Find existing OTP for this phone number
+    const existingOtp = await prisma.otpCode.findFirst({
+      where: { phone: normalizedPhone }
     });
+    
+    if (existingOtp) {
+      // Update existing OTP
+      await prisma.otpCode.update({
+        where: { id: existingOtp.id },
+        data: { codeHash: otp, expiresAt }
+      });
+    } else {
+      // Create new OTP
+      await prisma.otpCode.create({
+        data: { phone: normalizedPhone, codeHash: otp, expiresAt }
+      });
+    }
 
     // Send SMS with OTP
     const message = `Your Amin Diagnostic login code is: ${otp}. Valid for 5 minutes.`;

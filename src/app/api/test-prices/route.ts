@@ -16,20 +16,24 @@ export async function GET(req: Request) {
   const q = searchParams.get("q")?.trim();
   const includeInactive = searchParams.get("includeInactive") === "1";
 
-  const where = {
-    AND: [
-      q
-        ? {
-            OR: [
-              { code: { contains: q, mode: "insensitive" } },
-              { name: { contains: q, mode: "insensitive" } },
-              { description: { contains: q, mode: "insensitive" } },
-            ],
-          }
-        : {},
-      includeInactive ? {} : { active: true },
-    ],
-  };
+  let where: any = {};
+  
+  if (q) {
+    where = {
+      OR: [
+        { code: { contains: q, mode: "insensitive" } },
+        { name: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+      ]
+    };
+  }
+  
+  if (!includeInactive) {
+    where = {
+      ...where,
+      active: true
+    };
+  }
 
   const data = await prisma.testPrice.findMany({
     where,
