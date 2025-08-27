@@ -1,0 +1,328 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//////////////////////////////////////
+// Enums
+//////////////////////////////////////
+enum AuthTokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+  MODERATOR
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  UNSPECIFIED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum OrderStatus {
+  DRAFT
+  REQUESTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+//////////////////////////////////////
+// Core Auth / Identity
+//////////////////////////////////////
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Identity
+  name  String?
+  email String? @unique
+  phone String? @unique
+  role  Role
+
+  // Optional: only for local/JWT auth paths
+  passwordHash String?
+
+  // Relations
+  patient Patient?
+  doctor  Doctor?
+  files   FileAsset[] @relation("UserFiles")
+
+  // Content / actions
+  createdPrices TestPrice[] @relation("PriceCreatedBy")
+  createdOrders TestOrder[] @relation("OrderCreatedBy")
+
+  // NEW: back-reference for Appointment.createdBy
+  appointmentsCreated Appointment[] @relation("AppointmentCreatedBy")
+
+  auditLogs AuditLog[]
+
+  emailVerifiedAt DateTime?
+  authTokens      AuthToken[]
+
+  @@index([role])
+}
+
+model OtpCode {
+  id         String    @id @default(cuid())
+  phone      String
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([phone])
+}
+
+//////////////////////////////////////
+// People
+//////////////////////////////////////
+
+model Patient {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dateOfBirth    DateTime?
+  gender         Gender?
+  medicalHistory Json?
+  insuranceNo    String?
+
+  appointments Appointment[]
+  testOrders   TestOrder[]
+  files        FileAsset[]   @relation("PatientFiles")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Doctor {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  specialization String
+  registrationNo String?
+  bio            String?
+  branchId       String?
+  branch         Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  availableFrom String?
+  availableTo   String?
+  weekdays      String?
+
+  appointments Appointment[]
+  testOrders   TestOrder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//////////////////////////////////////
+// Facilities
+//////////////////////////////////////
+
+model Branch {
+  id       String  @id @default(cuid())
+  name     String
+  address  String?
+  city     String?
+  state    String?
+  postcode String?
+  country  String?
+  phone    String?
+  email    String?
+  geoLat   Float?
+  geoLng   Float?
+
+  doctors   Doctor[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city])
+}
+
+//////////////////////////////////////
+// Appointments
+//////////////////////////////////////
+
+model Appointment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  patientId   String
+  doctorId    String
+  scheduledAt DateTime
+  status      AppointmentStatus @default(PENDING)
+
+  reason String?
+  notes  String?
+
+  // Creator (admin/moderator/doctor) — optional
+  createdByUserId String?
+  createdBy       User?   @relation(name: "AppointmentCreatedBy", fields: [createdByUserId], references: [id])
+
+  patient Patient @relation(fields: [patientId], references: [id])
+  doctor  Doctor  @relation(fields: [doctorId], references: [id])
+
+  @@unique([doctorId, scheduledAt])
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([scheduledAt])
+}
+
+//////////////////////////////////////
+// Medical Tests & Pricing
+//////////////////////////////////////
+
+model TestPrice {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+  priceCents  Int
+  active      Boolean @default(true)
+
+  createdByUserId String?
+  createdBy       User?   @relation("PriceCreatedBy", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderItems TestOrderItem[]
+
+  @@index([active])
+  @@index([name])
+}
+
+model TestOrder {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status     OrderStatus @default(REQUESTED)
+  totalCents Int         @default(0)
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  doctorId String?
+  doctor   Doctor? @relation(fields: [doctorId], references: [id])
+
+  createdByUserId String?
+  createdBy       User?   @relation("OrderCreatedBy", fields: [createdByUserId], references: [id])
+
+  // Result file (PDF/Image) stored in R2 → FileAsset
+  resultFileId String?
+  resultFile   FileAsset? @relation(name: "OrderResultFile", fields: [resultFileId], references: [id])
+
+  items TestOrderItem[]
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([status])
+}
+
+model TestOrderItem {
+  id             String @id @default(cuid())
+  orderId        String
+  testPriceId    String
+  quantity       Int    @default(1)
+  unitPriceCents Int
+  lineTotalCents Int
+
+  order     TestOrder @relation(fields: [orderId], references: [id])
+  testPrice TestPrice @relation(fields: [testPriceId], references: [id])
+
+  @@index([orderId])
+  @@index([testPriceId])
+}
+
+//////////////////////////////////////
+// Files (Cloudflare R2 references)
+//////////////////////////////////////
+
+model FileAsset {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bucketKey   String  @unique
+  url         String
+  contentType String?
+  sizeBytes   Int?
+
+  ownerUserId String?
+  ownerUser   User?   @relation("UserFiles", fields: [ownerUserId], references: [id])
+
+  patientId String?
+  patient   Patient? @relation("PatientFiles", fields: [patientId], references: [id])
+
+  // NEW: back-reference for TestOrder.resultFile
+  resultForOrders TestOrder[] @relation("OrderResultFile")
+}
+
+//////////////////////////////////////
+// Auditing
+//////////////////////////////////////
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  action    String
+  entity    String?
+  entityId  String?
+  ip        String?
+  userAgent String?
+
+  @@index([userId])
+  @@index([entity, entityId])
+}
+
+//////////////////////////////////////
+// New model AuthToken
+//////////////////////////////////////
+
+model AuthToken {
+  id         String        @id @default(cuid())
+  type       AuthTokenType
+  tokenHash  String
+  userId     String
+  user       User          @relation(fields: [userId], references: [id])
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime      @default(now())
+
+  @@index([userId, type])
+}
