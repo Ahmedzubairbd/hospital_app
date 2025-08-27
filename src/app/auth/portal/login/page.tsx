@@ -1,14 +1,13 @@
 "use client";
 import * as React from "react";
 import {
+  Alert,
   Box,
   Button,
   MenuItem,
-  Paper,
   Stack,
   TextField,
   Typography,
-  Alert,
 } from "@mui/material";
 
 export default function PortalLoginPage() {
@@ -51,22 +50,57 @@ export default function PortalLoginPage() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Portal Login (SMS OTP)
-      </Typography>
-      <Paper sx={{ p: 2, maxWidth: 520 }}>
+    <Box
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)",
+      }}
+    >
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 3,
+        }}
+      >
+        <Stack spacing={3} alignItems="center">
+          <Typography variant="h4">Hi, Welcome back</Typography>
+          <Box
+            component="img"
+            src="/assets/illustrations/illustration_dashboard.png"
+            alt="welcome"
+            sx={{ maxWidth: 480, width: "100%" }}
+          />
+        </Stack>
+      </Box>
+      <Box
+        sx={{
+          width: { xs: "100%", md: 420 },
+          bgcolor: "#ffffff",
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          boxShadow: 3,
+        }}
+      >
         <Stack spacing={2}>
+          <Typography variant="h6">Portal Login (SMS OTP)</Typography>
           <TextField
             label="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            fullWidth
           />
           <TextField
             select
             label="Role"
             value={role}
             onChange={(e) => setRole(e.target.value as "patient" | "doctor")}
+            fullWidth
           >
             <MenuItem value="patient">Patient</MenuItem>
             <MenuItem value="doctor">Doctor</MenuItem>
@@ -78,6 +112,7 @@ export default function PortalLoginPage() {
             label="OTP"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            fullWidth
           />
           <Button variant="contained" onClick={verify}>
             Verify & Login
@@ -88,7 +123,7 @@ export default function PortalLoginPage() {
           {err && <Alert severity="error">{err}</Alert>}
           {msg && <Alert severity="success">{msg}</Alert>}
         </Stack>
-      </Paper>
+      </Box>
     </Box>
   );
 }
