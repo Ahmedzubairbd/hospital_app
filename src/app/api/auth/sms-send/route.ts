@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
-import { normalizePhoneBD, sendSms } from "@/lib/sms";
+import { normalizePhoneBD } from "@/lib/sms";
+import { absoluteUrl } from "@/lib/url";
 
 const schema = z.object({
   phone: z.string().min(10).max(15),
@@ -39,15 +40,20 @@ export async function POST(req: Request) {
       });
     }
 
-    // Send SMS with OTP
+    // Send SMS with OTP via internal SMS route
     const message = `Your Amin Diagnostic login code is: ${otp}. Valid for 5 minutes.`;
-    const smsResult = await sendSms(normalizedPhone, message);
+    const smsRes = await fetch(absoluteUrl("/api/sms/send"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: normalizedPhone, message }),
+    });
 
     // For development, return the OTP in the response
     const devOtp = process.env.NODE_ENV !== "production" ? otp : undefined;
 
-    if (!smsResult.ok) {
-      console.error("SMS sending failed:", smsResult);
+    if (!smsRes.ok) {
+      const body = await smsRes.text();
+      console.error("SMS sending failed:", smsRes.status, body);
       return NextResponse.json(
         { error: "Failed to send SMS. Please try again." },
         { status: 500 },

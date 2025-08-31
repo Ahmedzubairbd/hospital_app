@@ -48,9 +48,12 @@ A complete healthcare management system with role-based access control for admin
    # Authentication
    JWT_SECRET="your-jwt-secret"
    
-   # SMS API
-   SMS_API_KEY="your-sms-api-key"
-   SMS_API_URL="your-sms-api-url"
+   # Sonali SMS (server-only)
+   SONALI_SMS_API_KEY="your-sonali-sms-api-key"
+   SONALI_SMS_SECRET_KEY="your-sonali-sms-secret-key"
+   SONALI_SMS_SENDER_ID="your-sender-id"
+   SONALI_SMS_BASE_URL="http://api.sonalisms.com:7788"
+   SONALI_SMS_FALLBACK_BASE_URL="http://103.177.125.106:7788"
    ```
 
 2. Install dependencies and run database migrations:
