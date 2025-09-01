@@ -9,10 +9,11 @@ declare global {
 const logLevel =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
-// Provide a sensible default to avoid runtime crashes when DATABASE_URL is missing
-const connectionString =
-  process.env.DATABASE_URL ||
-  "postgresql://postgres:postgres@localhost:5432/postgres";
+// Require an explicit DATABASE_URL so credentials aren't baked into client bundles
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not set");
+}
 
 export const prisma =
   global.prisma ||

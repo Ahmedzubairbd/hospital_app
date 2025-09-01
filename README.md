@@ -42,9 +42,10 @@ A complete healthcare management system with role-based access control for admin
 
 1. Set up environment variables in `.env.local`:
    ```
-   # Database
-   DATABASE_URL="postgresql://user:password@host:port/database"
-   
+   # Database (Neon)
+   # Replace <PASSWORD> with your Neon password and keep this secret
+   DATABASE_URL="postgresql://neondb_owner:<PASSWORD>@ep-weathered-fire-a1h379xo-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
    # Authentication
    JWT_SECRET="your-jwt-secret"
    
