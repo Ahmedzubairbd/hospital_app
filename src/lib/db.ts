@@ -9,9 +9,15 @@ declare global {
 const logLevel =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
+// Provide a sensible default to avoid runtime crashes when DATABASE_URL is missing
+const connectionString =
+  process.env.DATABASE_URL ||
+  "postgresql://postgres:postgres@localhost:5432/postgres";
+
 export const prisma =
   global.prisma ||
   new PrismaClient({
+    datasources: { db: { url: connectionString } },
     log: logLevel as any, // keeps performance tight in prod (no 'query' logs)
   });
 
