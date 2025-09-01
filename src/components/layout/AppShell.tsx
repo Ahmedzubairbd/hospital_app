@@ -36,6 +36,7 @@ import { getNavItems } from "./NavItems";
 import Logo from "@/components/common/Logo";
 import BackgroundFX from "./BackgroundFX";
 import { useColorMode } from "@/lib/theme/ThemeRegistry";
+import { useSession, signOut } from "next-auth/react";
 
 export type AppRole = "admin" | "moderator" | "doctor" | "patient";
 
@@ -43,21 +44,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { mode, toggle } = useColorMode();
   const { lang } = useI18n();
-
-  // Auth snapshot
-  const [authed, setAuthed] = React.useState(false);
-  const [role, setRole] = React.useState<AppRole | null>(null);
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch("/api/auth/me", { cache: "no-store" });
-        if (!r.ok) return;
-        const j = await r.json();
-        setAuthed(Boolean(j.authenticated));
-        setRole((j.payload?.role as AppRole) ?? null);
-      } catch {}
-    })();
-  }, []);
+  const { data: session } = useSession();
+  const authed = Boolean(session);
+  const role = (session?.user as any)?.role as AppRole | null;
 
   const dashboardHref =
     role === "admin" || role === "moderator"
@@ -70,8 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const toggleMobile = (open: boolean) => () => setMobileOpen(open);
 
   const logout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/";
+    await signOut({ callbackUrl: "/" });
   };
 
   return (

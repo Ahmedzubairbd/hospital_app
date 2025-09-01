@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import * as React from "react";
+import { signIn } from "next-auth/react";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = React.useState("");
@@ -18,13 +19,12 @@ export default function AdminLoginPage() {
 
   const submit = async () => {
     setErr(null);
-    const r = await fetch("/api/auth/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
     });
-    const j = await r.json();
-    if (!r.ok) return setErr(j.error || "Failed");
+    if (res?.error) return setErr(res.error);
     window.location.href = "/dashboard/admin";
   };
 
@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
               color: "#ecfeff",
             }}
           >
-            Use email: admin@gmail.com | password: 123456
+            Use email: ahmedzubairbd@gmail.com | password: Next@722833
           </Alert>
           <TextField
             label="Email address"

@@ -4,6 +4,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { ThemeRegistry } from "@/lib/theme/ThemeRegistry";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body>
         <ThemeRegistry>
           <I18nProvider>
-            <AppShell>{children}</AppShell>
+            <SessionProvider>
+              <AppShell>{children}</AppShell>
+            </SessionProvider>
           </I18nProvider>
         </ThemeRegistry>
       </body>
