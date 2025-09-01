@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import AppShell from "@/components/layout/AppShell";
-import { I18nProvider } from "@/lib/i18n";
-import { ThemeRegistry } from "@/lib/theme/ThemeRegistry";
+import Providers from "@/components/Providers";
 import "@/styles/globals.css";
 import { Inter } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -21,13 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`}>
       <body>
-        <ThemeRegistry>
-          <I18nProvider>
-            <SessionProvider>
-              <AppShell>{children}</AppShell>
-            </SessionProvider>
-          </I18nProvider>
-        </ThemeRegistry>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );
