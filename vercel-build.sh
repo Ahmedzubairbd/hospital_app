@@ -10,4 +10,4 @@ echo "NPM version: $(npm -v)"
 
 # Run the vercel-build script from package.json
 echo "Running vercel-build script..."
-npm run vercel-build
+npx prisma generate && npx prisma deploy && npm run build
