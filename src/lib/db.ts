@@ -11,7 +11,7 @@ const logLevel: Prisma.LogLevel[] =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
 const PLACEHOLDER_DATABASE_URL =
-  "postgresql://postgres:postgres@localhost:5432/placeholder";
+  "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-weathered-fire-a1h379xo-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
 function resolveDatabaseUrl(): string {
   const url = process.env.DATABASE_URL;
@@ -38,10 +38,10 @@ function resolveDatabaseUrl(): string {
   }
 }
 
-const connectionString = resolveDatabaseUrl();
+const resolvedConnectionString = resolveDatabaseUrl();
 
 const connectionString =
-  process.env.DATABASE_URL ?? "postgresql://localhost:5432/placeholder";
+  process.env.DATABASE_URL ?? resolvedConnectionString;
 
 if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
   // eslint-disable-next-line no-console
