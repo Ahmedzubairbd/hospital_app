@@ -6,15 +6,15 @@ declare global {
   // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
-
 const logLevel: Prisma.LogLevel[] =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
-// Prefer the DATABASE_URL from the environment but fall back to a dummy
-// connection string so that the project can build without a real database
-// connection.  Vercel injects the real connection string at runtime.
 const PLACEHOLDER_DATABASE_URL =
   "postgresql://postgres:postgres@localhost:5432/placeholder";
+
+const PLACEHOLDER_DATABASE_URL =
+  "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require&application_name=neondb";
+
 
 function resolveDatabaseUrl(): string {
   const url = process.env.DATABASE_URL;
@@ -43,6 +43,19 @@ function resolveDatabaseUrl(): string {
 
 const connectionString = resolveDatabaseUrl();
 
+}
+
+const resolvedConnectionString = resolveDatabaseUrl();
+
+const connectionString =
+  process.env.DATABASE_URL ?? resolvedConnectionString;
+
+if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "DATABASE_URL is not set. Using a placeholder connection string instead.",
+  );
+}
 /* biome-ignore lint/suspicious/noRedeclare: reuse single Prisma client */
 export const prisma =
   global.prisma ||

@@ -10,7 +10,7 @@
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_URL": "https://hospital-app-drab.vercel.app",
+      "NEXT_PUBLIC_API_URL": "https://api.hospital-app-drab.vercel.app",
       "DATABASE_URL": "${DATABASE_URL}"
     }
   }
