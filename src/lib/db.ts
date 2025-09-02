@@ -11,7 +11,7 @@ const logLevel: Prisma.LogLevel[] =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
 const PLACEHOLDER_DATABASE_URL =
-  "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-weathered-fire-a1h379xo-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+  "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require&application_name=neondb";
 
 function resolveDatabaseUrl(): string {
   const url = process.env.DATABASE_URL;
