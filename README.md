@@ -48,6 +48,7 @@ A complete healthcare management system with role-based access control for admin
 
    # Authentication
    JWT_SECRET="your-jwt-secret"
+   NEXTAUTH_SECRET="your-nextauth-secret" # used by NextAuth; falls back to JWT_SECRET if unset
    
    # Sonali SMS (server-only)
    SONALI_SMS_API_KEY="your-sonali-sms-api-key"
