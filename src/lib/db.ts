@@ -10,9 +10,6 @@ declare global {
 const logLevel: Prisma.LogLevel[] =
   process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"];
 
-// Prefer the DATABASE_URL from the environment but fall back to a dummy
-// connection string so that the project can build without a real database
-// connection.  Vercel injects the real connection string at runtime.
 const PLACEHOLDER_DATABASE_URL =
   "postgresql://postgres:postgres@localhost:5432/placeholder";
 
@@ -42,6 +39,16 @@ function resolveDatabaseUrl(): string {
 }
 
 const connectionString = resolveDatabaseUrl();
+
+const connectionString =
+  process.env.DATABASE_URL ?? "postgresql://localhost:5432/placeholder";
+
+if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "DATABASE_URL is not set. Using a placeholder connection string instead.",
+  );
+}
 
 /* biome-ignore lint/suspicious/noRedeclare: reuse single Prisma client */
 export const prisma =
