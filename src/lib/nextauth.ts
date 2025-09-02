@@ -6,6 +6,9 @@ import { prisma } from "@/lib/db";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
+  // Use NEXTAUTH_SECRET if set, otherwise fall back to the JWT secret.
+  // Ensures NextAuth has a secret in production to avoid runtime errors.
+  secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
   providers: [
     CredentialsProvider({
       name: "Credentials",
