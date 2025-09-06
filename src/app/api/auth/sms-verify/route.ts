@@ -1,10 +1,9 @@
+import type { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { Role } from "@prisma/client";
 import { z } from "zod";
-import { normalizePhoneBD } from "@/lib/sms";
 import { signJwt } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { prisma } from "@/lib/db";
+import { normalizePhoneBD } from "@/lib/sms";
 
 const schema = z.object({
   phone: z.string().min(10).max(15),
@@ -23,7 +22,7 @@ export async function POST(req: Request) {
     // Find the most recent OTP in the database
     const otpRecord = await prisma.otpCode.findFirst({
       where: { phone: normalizedPhone },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
     // Verify OTP exists, is not expired, and matches
@@ -48,14 +47,16 @@ export async function POST(req: Request) {
     // Find or create user based on role
     let userId: string;
 
+    // Determine Prisma enum role once for consistency
+    const userRole = role.toUpperCase() as Role;
+
     // Find existing user with this phone number
     const existingUser = await prisma.user.findFirst({
       where: { phone: normalizedPhone },
     });
 
     if (existingUser) {
-      // Verify role matches (convert string role to enum)
-      const userRole = role.toUpperCase() as keyof typeof Role;
+      // Verify role matches
       if (existingUser.role !== userRole) {
         return NextResponse.json(
           {
@@ -67,7 +68,6 @@ export async function POST(req: Request) {
       userId = existingUser.id;
     } else {
       // Create new user with this phone number
-      const userRole = role.toUpperCase() as keyof typeof Role;
       const newUser = await prisma.user.create({
         data: {
           phone: normalizedPhone,
@@ -79,9 +79,9 @@ export async function POST(req: Request) {
       // Create corresponding doctor or patient record
       if (role === "doctor") {
         await prisma.doctor.create({
-          data: { 
+          data: {
             userId: newUser.id,
-            specialization: "General" // Default specialization, can be updated later
+            specialization: "General", // Default specialization, can be updated later
           },
         });
       } else if (role === "patient") {
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
     // Consume the OTP by marking it as consumed
     await prisma.otpCode.update({
       where: { id: otpRecord.id },
-      data: { consumedAt: new Date() }
+      data: { consumedAt: new Date() },
     });
 
     // Generate JWT token
