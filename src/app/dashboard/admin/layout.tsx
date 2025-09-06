@@ -1,64 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { CircularProgress, Box } from "@mui/material";
 
-export default function AdminDashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("Admin");
-
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.role !== "admin") {
-            router.push("/");
-            return;
-          }
-          setUserName(data.name || "Admin");
-        } else {
-          router.push("/auth/admin/login");
-          return;
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        router.push("/auth/admin/login");
-        return;
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    checkAuth();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  return (
-    <DashboardLayout role="admin" userName={userName}>
-      {children}
-    </DashboardLayout>
-  );
+export default function AdminDashboardLayout({ children }: { children: ReactNode }) {
+  return <DashboardLayout role="admin" userName="Admin">{children}</DashboardLayout>;
 }
