@@ -134,6 +134,7 @@ export default function AdminTestPricesPage() {
   }
 
   return (
+    
     <Box sx={{ p: 1 }}>
       <Typography variant="h4" gutterBottom>
         Manage Test Prices

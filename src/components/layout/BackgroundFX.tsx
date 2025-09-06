@@ -61,7 +61,7 @@ export default function BackgroundFX() {
           backgroundImage:
             theme.palette.mode === "dark"
               ? "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)"
-              : "linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
+              : "linear-gradient(rgba(3, 59, 0, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)",
           backgroundSize: "48px 48px, 48px 48px",
         },
       }}

@@ -3,7 +3,7 @@
 <g filter="url(#filter0_d_1255_158049)">
 <path d="M35.1548 12.1381C35.4678 12.4537 35.2443 12.9902 34.7998 12.9902H29C26.4227 12.9902 24.0976 10.7233 24.0976 8.21031V2.20435C24.0976 1.75791 24.6382 1.53528 24.9526 1.85224L35.1548 12.1381Z" fill="white" fill-opacity="0.24" shape-rendering="crispEdges"/>
 </g>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M10 16.9902H24V18.7402H10V16.9902ZM10 20.4902H24V22.2402H10V20.4902ZM10 23.9902H24V25.7402H10V23.9902ZM10 27.4902H17V29.2402H10V27.4902Z" fill="white"/>
+<path fill-rule="evenodd" clipRule="evenodd" d="M10 16.9902H24V18.7402H10V16.9902ZM10 20.4902H24V22.2402H10V20.4902ZM10 23.9902H24V25.7402H10V23.9902ZM10 27.4902H17V29.2402H10V27.4902Z" fill="white"/>
 <defs>
 <filter id="filter0_d_1255_158049" x="22.0977" y="1.70337" width="15.2031" height="15.2869" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>

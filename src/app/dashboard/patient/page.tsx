@@ -41,12 +41,34 @@ export default function PatientDashboard() {
   const [reason, setReason] = React.useState("");
   const [msg, setMsg] = React.useState<string | null>(null);
   const [err, setErr] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function load() {
-    const r1 = await fetch("/api/appointments/doctors", { cache: "no-store" });
-    setDocs(await r1.json());
-    const r2 = await fetch("/api/appointments", { cache: "no-store" });
-    setAppts(await r2.json());
+    setLoading(true);
+    setErr(null);
+    try {
+      const [r1, r2] = await Promise.all([
+        fetch("/api/appointments/doctors", { cache: "no-store" }),
+        fetch("/api/appointments", { cache: "no-store" }),
+      ]);
+
+      // --- doctors ---
+      let j1: unknown = await r1.json().catch(() => []);
+      const docsArr = Array.isArray(j1) ? j1 : (j1 as any)?.data ?? [];
+      setDocs(docsArr);
+
+      // --- appointments ---
+      let j2: unknown = await r2.json().catch(() => []);
+      const apptsArr = Array.isArray(j2) ? j2 : (j2 as any)?.data ?? [];
+      if (!Array.isArray(apptsArr)) throw new Error("Bad appointments payload");
+      setAppts(apptsArr);
+    } catch (e: any) {
+      setErr(e?.message || "Failed to load data");
+      setDocs([]);
+      setAppts([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   React.useEffect(() => {
@@ -65,9 +87,9 @@ export default function PatientDashboard() {
         reason,
       }),
     });
-    const j = await r.json();
+    const j = await r.json().catch(() => ({}));
     if (!r.ok) {
-      setErr(j.error || "failed");
+      setErr((j as any).error || "failed");
       return;
     }
     setMsg("Appointment requested");
@@ -83,9 +105,9 @@ export default function PatientDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "CANCELLED" }),
     });
-    const j = await r.json();
+    const j = await r.json().catch(() => ({}));
     if (!r.ok) {
-      setErr(j.error || "failed");
+      setErr((j as any).error || "failed");
       return;
     }
     setMsg("Cancelled");
@@ -113,40 +135,46 @@ export default function PatientDashboard() {
           {msg}
         </Alert>
       )}
+      <>
 
-      <Grid container gap={2}>
-        {appts.map((a) => (
-          <Grid key={a.id} size={{ xs: 12, md: 6, lg: 4 }}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6">
-                  {a.doctor.user.name ?? "Doctor"}
-                </Typography>
-                <Typography color="text.secondary">
-                  {new Date(a.scheduledAt).toLocaleString()}
-                </Typography>
-                <Typography>Status: {a.status}</Typography>
-                {a.reason && <Typography>Reason: {a.reason}</Typography>}
-                {a.status !== "CANCELLED" && a.status !== "COMPLETED" && (
-                  <Button
-                    size="small"
-                    sx={{ mt: 1 }}
-                    onClick={() => void cancel(a.id)}
-                  >
-                    Cancel
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+      <Grid container spacing={2}>
+        {loading ? (
+          <Grid xs={12}>
+            <Typography>Loading…</Typography>
           </Grid>
-        ))}
-        {appts.length === 0 && (
-          <Grid size={12}>
+        ) : appts.length > 0 ? (
+          appts.map((a) => (
+            <Grid item xs={12} md={6} lg={4} key={a.id}>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="h6">
+                    {a.doctor?.user?.name ?? "Doctor"}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    {new Date(a.scheduledAt).toLocaleString()}
+                  </Typography>
+                  <Typography>Status: {a.status}</Typography>
+                  {a.reason && <Typography>Reason: {a.reason}</Typography>}
+                  {a.status !== "CANCELLED" && a.status !== "COMPLETED" && (
+                    <Button
+                      size="small"
+                      sx={{ mt: 1 }}
+                      onClick={() => void cancel(a.id)}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Grid item xs={12}>
             <Typography>No appointments yet.</Typography>
           </Grid>
         )}
       </Grid>
-
+</>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Book appointment</DialogTitle>
         <DialogContent>
@@ -159,7 +187,7 @@ export default function PatientDashboard() {
             >
               {docs.map((d) => (
                 <MenuItem key={d.id} value={d.id}>
-                  {d.user.name ?? "Doctor"} — {d.specialization}
+                  {d.user?.name ?? "Doctor"} — {d.specialization}
                 </MenuItem>
               ))}
             </TextField>

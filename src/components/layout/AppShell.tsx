@@ -19,7 +19,6 @@ import {
   ListItemText,
   Divider,
   Tooltip,
-  ButtonGroup,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -29,7 +28,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { motion, LayoutGroup } from "framer-motion";
-import LanguageSwitch from "@/components/common/LanguageSwitch";
+import TranslateIcon from "@mui/icons-material/Translate";
 import { useI18n } from "@/lib/i18n";
 import { getNavItems } from "./NavItems";
 
@@ -43,8 +42,8 @@ export type AppRole = "admin" | "moderator" | "doctor" | "patient";
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { mode, toggle } = useColorMode();
-  const { lang } = useI18n();
   const { data: session } = useSession();
+  const { lang, setLang } = useI18n();
   const authed = Boolean(session);
   const role = (session?.user as any)?.role as AppRole | null;
 
@@ -63,6 +62,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
+    <>
     <Box
       sx={{
         minHeight: "100dvh",
@@ -127,8 +127,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 })}
               </LayoutGroup>
             </Box>
-            {/* <LanguageSwitch /> */}
-
             {/* Spacer on mobile so brand centers */}
             <Box sx={{ flexGrow: { xs: 1, md: 0 } }} />
 
@@ -150,7 +148,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
                 </IconButton>
               </Tooltip>
-              <LanguageSwitch />
+               {/* Language Switch Toogle Button */}
+              <Tooltip title={lang === "en" ? "Switch to বাংলা" : "Switch to English"}>
+              <IconButton
+                color="inherit"
+                onClick={() => setLang(lang === "en" ? "bn" : "en")}
+                aria-label="Toggle language"
+              >
+                <TranslateIcon />
+              </IconButton>
+            </Tooltip>
               {authed ? (
                 <>
                   <Tooltip title="Dashboard">
@@ -256,7 +263,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <List>
             <ListItemButton
               onClick={() => {
-                /* handled in LanguageSwitch UI; keep Mobile clean */
+                setLang(lang === "en" ? "bn" : "en");
               }}
             >
               <ListItemText
@@ -299,17 +306,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       >
         {children}
       </Container>
-
-      {/* Footer */}
-      <Box
-        component="footer"
-        sx={{
-          borderTop: (t) => `1px solid ${t.palette.divider}`,
-          py: 3,
-          mt: "auto",
-          position: "relative",
-          zIndex: 1,
-        }}
+    </Box>
+    <Box
+      component="footer"
+      sx={{
+        borderTop: (t) => `1px solid ${t.palette.divider}`,
+        py: 3,
+        mt: "auto",
+        position: "relative",
+        zIndex: 1,
+      }}
       >
         <Container maxWidth="lg">
           <Typography variant="body2" color="text.secondary">
@@ -317,6 +323,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </Typography>
         </Container>
       </Box>
-    </Box>
+    </>
   );
+   
 }
