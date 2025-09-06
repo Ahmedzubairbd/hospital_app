@@ -22,6 +22,13 @@ A complete healthcare management system with role-based access control for admin
   - View and manage test prices
   - Track patient test results
 
+## Demo Admin Credentials
+
+Use the following credentials to access the admin dashboard:
+
+- **Email:** admin@example.com
+- **Password:** Admin123
+
 ## Tech Stack
 
 - **Frontend**: Next.js, Material UI, TypeScript
