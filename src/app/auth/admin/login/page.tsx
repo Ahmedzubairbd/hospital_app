@@ -9,23 +9,38 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import * as React from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import * as React from "react";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [err, setErr] = React.useState<string | null>(null);
+  const router = useRouter();
 
   const submit = async () => {
     setErr(null);
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (res?.error) return setErr(res.error);
-    window.location.href = "/dashboard/admin";
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+      if (!res)
+        throw new Error("No response from server. Please try again later.");
+      if (res.error) {
+        setErr(
+          res.error === "CredentialsSignin"
+            ? "Invalid email or password"
+            : res.error,
+        );
+        return;
+      }
+      router.push("/dashboard/admin");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Login failed");
+    }
   };
 
   return (
