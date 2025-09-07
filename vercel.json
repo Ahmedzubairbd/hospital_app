@@ -6,12 +6,12 @@
   "regions": ["sin1"],
   "env": {
     "NEXT_PUBLIC_API_URL": "https://hospital-app-drab.vercel.app",
-    "DATABASE_URL": "${DATABASE_URL}"
+    "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app"
   },
   "build": {
     "env": {
       "NEXT_PUBLIC_API_URL": "https://api.hospital-app-drab.vercel.app",
-      "DATABASE_URL": "${DATABASE_URL}"
+      "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app"
     }
   }
 }

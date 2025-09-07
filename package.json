@@ -7,10 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check tsc --no-emit",
-    "prisma:gen": "prisma generate",
     "format": "biome format --write",
-    "vercel-build": "prisma generate && next build",
-    "postinstall": "prisma generate"
+    "vercel-build": "prisma generate && next build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

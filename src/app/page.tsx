@@ -7,6 +7,8 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
+import Bullet from "@/components/common/Bullet"
+
 
 export default function HomePage() {
   const { lang } = useI18n();
@@ -131,6 +133,188 @@ export default function HomePage() {
           <Typography sx={{ whiteSpace: "pre-line" }}>{bullets[3]}</Typography>
         </Paper>
       </motion.div>
+      {/* === Services / Offerings === */}
+      <Box sx={{ mt: { xs: 4, md: 6 } }}>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.45 }}
+        >
+    <Stack spacing={1} sx={{ mb: 2 }}>
+      <Typography variant="overline" color="primary" sx={{ fontWeight: 800, letterSpacing: 2 }}>
+        {lang === "bn" ? "AMIN DIAGNOSTICS" : "AMIN DIAGNOSTICS"}
+      </Typography>
+      <Typography variant="h4" sx={{ fontWeight: 900, lineHeight: 1.1 }}>
+        {lang === "bn" ? "আমাদের সেবাসমূহ" : "Our Services"}
+      </Typography>
+      <Typography color="text.secondary">
+        {lang === "bn"
+          ? "আমিন ডায়াগনস্টিক এ আমরা আধুনিক প্রযুক্তি ও অভিজ্ঞ চিকিৎসকদের সহায়তায় নিম্নলিখিত সেবা প্রদান করি:"
+          : "At Amin Diagnostics, we combine modern technology and expert physicians to offer the following services:"}
+      </Typography>
+    </Stack>
+  </motion.div>
+
+  {/* Cards Row */}
+  <Grid container spacing={3}>
+    {/* Card 1 — Diagnostic Services */}
+    <Grid size={{ xs: 12, md: 4 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.45, delay: 0.05 }}
+        whileHover={{ y: -4 }}
+      >
+        <Paper sx={{ p: 2.25, overflow: "hidden" }}>
+          <Box
+            component="img"
+            src="/assets/doc_1.JPG"
+            alt="Diagnostic Lab"
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              borderRadius: 1.5,
+              mb: 1.5,
+            }}
+          />
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+            {lang === "bn" ? "ডায়াগনস্টিক সেবা" : "Diagnostic Services"}
+          </Typography>
+          <Stack spacing={1}>
+            <Bullet>
+              {lang === "bn"
+                ? "অত্যাধুনিক ল্যাবে বিশ্বসেরা ব্র্যান্ডের মেশিনে পরীক্ষা-নীরিক্ষা"
+                : "State-of-the-art analyzers from top global brands"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "FNAC, হিস্টোপ্যাথলজি ও যাবতীয় ক্যান্সার স্ক্রিনিং"
+                : "FNAC, histopathology & comprehensive cancer screening"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "স্ব স্ব বিভাগে বিশেষজ্ঞ চিকিৎসকের পরামর্শ"
+                : "Consultations with specialists in respective departments"}
+            </Bullet>
+          </Stack>
+        </Paper>
+      </motion.div>
+    </Grid>
+
+    {/* Card 2 — Health Check Packages */}
+    <Grid size={{ xs: 12, md: 4 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.45, delay: 0.1 }}
+        whileHover={{ y: -4 }}
+      >
+        <Paper sx={{ p: 2.25, overflow: "hidden" }}>
+          <Box
+            component="img"
+            src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=1600&auto=format&fit=crop"
+            alt="Health Check Packages"
+            sx={{
+              width: "100%",
+              height:"100%",
+              objectFit: "cover",
+              borderRadius: 1.5,
+              mb: 1.5,
+            }}
+          />
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+            {lang === "bn" ? "স্বাস্থ্য পরীক্ষা প্যাকেজ" : "Health Check Packages"}
+          </Typography>
+          <Stack spacing={1}>
+            <Bullet>
+              {lang === "bn"
+                ? "হোম/অফিস স্যাম্পল কালেকশন সুবিধা"
+                : "Home/office sample collection available"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "ইমেজিং ও বিশেষ পরীক্ষা: আল্ট্রাসাউন্ড, ডিজিটাল এক্স-রে, সিটি স্ক্যান"
+                : "Imaging & specials: Ultrasound, Digital X-ray, CT scan"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "কার্ডিয়াক ইমেজিং, ইসিজি, ইটিটি, ইকোকার্ডিওগ্রাম"
+                : "Cardiac imaging, ECG, ETT, Echocardiogram"}
+            </Bullet>
+          </Stack>
+        </Paper>
+      </motion.div>
+    </Grid>
+
+    {/* Card 3 — Clinical Services */}
+    <Grid size={{ xs: 12, md: 4 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.45, delay: 0.15 }}
+        whileHover={{ y: -4 }}
+      >
+        <Paper sx={{ p: 2.25, overflow: "hidden" }}>
+          <Box
+            component="img"
+            src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1600&auto=format&fit=crop"
+            alt="Clinical Services"
+            sx={{
+              width: "100%",
+              height:"100%",
+              objectFit: "cover",
+              borderRadius: 1.5,
+              mb: 1.5,
+            }}
+          />
+          <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+            {lang === "bn" ? "ক্লিনিকাল সেবা" : "Clinical Services"}
+          </Typography>
+          <Stack spacing={1}>
+            <Bullet>
+              {lang === "bn"
+                ? "মেডিসিন, শিশু, গাইনী, ইএনটি, হৃদরোগ, অর্থোপেডিক, ইউরোলজি"
+                : "Medicine, Pediatrics, Gynae, ENT, Cardiology, Ortho, Urology"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "চর্মরোগ, গ্যাস্ট্রো, নিউরো, ডায়াবেটিস ও থাইরয়েড"
+                : "Dermatology, Gastro, Neuro, Diabetes & Thyroid"}
+            </Bullet>
+            <Bullet>
+              {lang === "bn"
+                ? "ক্যান্সার, মানসিক স্বাস্থ্য ও আরও বিশেষায়িত বিভাগ"
+                : "Oncology, Mental Health & other specialties"}
+            </Bullet>
+          </Stack>
+        </Paper>
+      </motion.div>
+    </Grid>
+  </Grid>
+
+  {/* Closing Statement */}
+  <motion.div
+    initial={{ opacity: 0, y: 12 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.3 }}
+    transition={{ duration: 0.45, delay: 0.1 }}
+  >
+    <Paper sx={{ p: 3, mt: 3 }}>
+      <Typography>
+        {lang === "bn"
+          ? "আমাদের লক্ষ্য, প্রতিটি রোগীকে সর্বোচ্চ যত্ন ও নির্ভুল রোগ নির্ণয়ের মাধ্যমে সুস্থ জীবনের পথে এগিয়ে দেওয়া।"
+          : "Our goal is to empower every patient toward a healthier life through precise diagnostics and compassionate care."}
+      </Typography>
+    </Paper>
+  </motion.div>
+  </Box>
     </Box>
+    
   );
 }
+

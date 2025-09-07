@@ -48,8 +48,8 @@ export default function AdminLoginPage() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-        color: "white",
+        // background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+        // color: "white",
       }}
     >
       <Box
@@ -74,7 +74,6 @@ export default function AdminLoginPage() {
       <Box
         sx={{
           width: { xs: "100%", md: 420 },
-          bgcolor: "#1f2937",
           p: 4,
           display: "flex",
           flexDirection: "column",
@@ -90,7 +89,7 @@ export default function AdminLoginPage() {
               color: "#ecfeff",
             }}
           >
-            Use email: ahmedzubairbd@gmail.com | password: Next@722833
+            Use email: admin@example.com | password: Admin123
           </Alert>
           <TextField
             label="Email address"

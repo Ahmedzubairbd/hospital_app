@@ -54,7 +54,7 @@ export default function PortalLoginPage() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)",
+        // background: "linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)",
       }}
     >
       <Box
@@ -78,8 +78,7 @@ export default function PortalLoginPage() {
       </Box>
       <Box
         sx={{
-          width: { xs: "100%", md: 420 },
-          bgcolor: "#ffffff",
+          width: { xs: "50%", md: 420 },
           p: 4,
           display: "flex",
           flexDirection: "column",
@@ -123,6 +122,12 @@ export default function PortalLoginPage() {
           {err && <Alert severity="error">{err}</Alert>}
           {msg && <Alert severity="success">{msg}</Alert>}
         </Stack>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            Don't have an account?{" "}
+            <a href="/auth/portal/register">Register</a>
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
