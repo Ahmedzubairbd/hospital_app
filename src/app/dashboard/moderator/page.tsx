@@ -1,3 +1,2 @@
-export default function ModeratorDashboard() {
-  return <div>Moderator dashboard — manage FAQs / announcements.</div>;
-}
+'use client';
+export { default } from '@/dashboards/moderator/page';
