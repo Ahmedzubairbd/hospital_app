@@ -78,6 +78,18 @@ export default function FindDoctorPage() {
 
         {filtered.length === 0 && (
           <Grid size={12}>
+            <Box
+              component="img"
+              src="/assets/amjad_hossain_pramanik.JPG"
+              alt="Diagnostic Lab"
+              sx={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                borderRadius: 1.5,
+                mb: 1.5,
+              }}
+            />
             <Typography>No doctors found.</Typography>
           </Grid>
         )}
