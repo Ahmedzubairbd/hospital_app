@@ -170,7 +170,7 @@ export default function HomePage() {
         <Paper sx={{ p: 2.25, overflow: "hidden" }}>
           <Box
             component="img"
-            src="/assets/doc_1.JPG"
+            src="/assets/amjad_hossain_pramanik.JPG"
             alt="Diagnostic Lab"
             sx={{
               width: "100%",
@@ -181,7 +181,7 @@ export default function HomePage() {
             }}
           />
           <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
-            {lang === "bn" ? "ডায়াগনস্টিক সেবা" : "Diagnostic Services"}
+            {lang === "bn" ? "ডাঃ আমজাদ হোসেন প্রামাণিক" : "Dr .Amjad Hossain Pramanik"}
           </Typography>
           <Stack spacing={1}>
             <Bullet>
