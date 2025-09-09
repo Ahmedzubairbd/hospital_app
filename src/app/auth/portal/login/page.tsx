@@ -4,7 +4,6 @@ import {
   Alert,
   Box,
   Button,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -14,7 +13,7 @@ export default function PortalLoginPage() {
   const [phone, setPhone] = React.useState("");
   const [code, setCode] = React.useState("");
   const [normalized, setNormalized] = React.useState<string | undefined>();
-  const [role, setRole] = React.useState<"patient" | "doctor">("patient");
+  const role = "patient";
   const [msg, setMsg] = React.useState<string | null>(null);
   const [err, setErr] = React.useState<string | null>(null);
   const [devOtp, setDevOtp] = React.useState<string | undefined>();
@@ -45,8 +44,7 @@ export default function PortalLoginPage() {
     const j = await r.json();
     if (!r.ok) return setErr(j.error || "Failed");
     setMsg("Logged in. Redirecting...");
-    window.location.href =
-      role === "doctor" ? "/dashboard/doctor" : "/dashboard/patient";
+    window.location.href = "/dashboard/patient";
   };
 
   return (
@@ -87,23 +85,13 @@ export default function PortalLoginPage() {
         }}
       >
         <Stack spacing={2}>
-          <Typography variant="h6">Portal Login (SMS OTP)</Typography>
+          <Typography variant="h6">Patient Portal Login (SMS OTP)</Typography>
           <TextField
             label="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             fullWidth
           />
-          <TextField
-            select
-            label="Role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as "patient" | "doctor")}
-            fullWidth
-          >
-            <MenuItem value="patient">Patient</MenuItem>
-            <MenuItem value="doctor">Doctor</MenuItem>
-          </TextField>
           <Button variant="contained" onClick={send}>
             Send OTP
           </Button>

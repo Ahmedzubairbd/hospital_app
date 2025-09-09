@@ -15,6 +15,10 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email } });
     // Always respond OK to prevent user enumeration
     if (!user) return NextResponse.json({ ok: true });
+    // Only staff accounts can reset via this route
+    if (user.role !== "ADMIN" && user.role !== "MODERATOR") {
+      return NextResponse.json({ ok: true });
+    }
 
     const token = newToken();
     const tokenHash = hashToken(token);

@@ -8,13 +8,14 @@ import { normalizePhoneBD } from "@/lib/sms";
 const schema = z.object({
   phone: z.string().min(10).max(15),
   code: z.string().min(6).max(6),
-  role: z.enum(["doctor", "patient"]),
+  role: z.enum(["patient"]),
+  name: z.string().optional(),
 });
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { phone, code, role } = schema.parse(body);
+    const { phone, code, role, name } = schema.parse(body);
 
     // Normalize phone number for Bangladesh format
     const normalizedPhone = normalizePhoneBD(phone);
@@ -72,19 +73,12 @@ export async function POST(req: Request) {
         data: {
           phone: normalizedPhone,
           role: userRole,
-          name: `New ${role}`, // Default name
+          name: name || `New ${role}`, // Default name
         },
       });
 
-      // Create corresponding doctor or patient record
-      if (role === "doctor") {
-        await prisma.doctor.create({
-          data: {
-            userId: newUser.id,
-            specialization: "General", // Default specialization, can be updated later
-          },
-        });
-      } else if (role === "patient") {
+      // Create corresponding patient record
+      if (role === "patient") {
         await prisma.patient.create({
           data: { userId: newUser.id },
         });

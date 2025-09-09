@@ -22,6 +22,10 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
         if (!user || !user.passwordHash) return null;
+        // Restrict to admin/moderator accounts only
+        if (user.role !== "ADMIN" && user.role !== "MODERATOR") return null;
+        // Require verified email
+        if (!user.emailVerifiedAt) return null;
         const valid = await compare(credentials.password, user.passwordHash);
         if (!valid) return null;
         return {
@@ -29,7 +33,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name ?? undefined,
           email: user.email ?? undefined,
           role: user.role,
-        };
+        } as User & { role: string };
       },
     }),
   ],
@@ -38,14 +42,17 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      // Persist role and id in the token for session
       if (user) {
-        token.role = (user as User).role;
+        token.role = (user as any).role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token && session.user) {
-        session.user.role = token.role as string | undefined;
+      if (session.user) {
+        // NextAuth puts user id in token.sub
+        (session.user as any).id = token.sub as string | undefined;
+        (session.user as any).role = token.role as string | undefined;
       }
       return session;
     },

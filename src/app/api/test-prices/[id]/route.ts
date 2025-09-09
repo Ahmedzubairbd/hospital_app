@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { verifyJwt } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/nextauth";
 
 const patchSchema = z.object({
   code: z.string().min(1).optional(),
@@ -11,13 +13,21 @@ const patchSchema = z.object({
   active: z.boolean().optional(),
 });
 
-function requireStaff(req: Request) {
-  const cookie = req.headers.get("cookie") ?? "";
-  const token = /(?:^|; )token=([^;]+)/.exec(cookie)?.[1];
-  const payload = token ? verifyJwt(decodeURIComponent(token)) : null;
-  const role = payload?.role;
-  const ok = role === "admin" || role === "moderator";
-  return { ok, userId: payload?.sub ?? null };
+async function requireStaff(req: Request) {
+  const session = await getServerSession(authOptions).catch(() => null);
+  const sessionRole = (session?.user as any)?.role as string | undefined;
+  const sessionUserId = (session?.user as any)?.id as string | undefined;
+  let ok = sessionRole === "ADMIN" || sessionRole === "MODERATOR";
+  let userId: string | null = sessionUserId ?? null;
+  if (!ok) {
+    const cookie = req.headers.get("cookie") ?? "";
+    const token = /(?:^|; )token=([^;]+)/.exec(cookie)?.[1];
+    const payload = token ? verifyJwt(decodeURIComponent(token)) : null;
+    const role = payload?.role;
+    ok = role === "admin" || role === "moderator";
+    userId = payload?.sub ?? null;
+  }
+  return { ok, userId };
 }
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -31,7 +41,7 @@ export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const guard = requireStaff(req);
+  const guard = await requireStaff(req);
   if (!guard.ok)
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
@@ -57,7 +67,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const guard = requireStaff(req);
+  const guard = await requireStaff(req);
   if (!guard.ok)
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
     

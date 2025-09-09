@@ -136,9 +136,8 @@ model Doctor {
   branchId       String?
   branch         Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
-  availableFrom String?
-  availableTo   String?
-  weekdays      String?
+  sliderPictureUrl String?
+  schedule         String?
 
   appointments Appointment[]
   testOrders   TestOrder[]

@@ -1,9 +1,8 @@
-// src/components/layout/AppShell.tsx
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   AppBar,
   Toolbar,
@@ -18,63 +17,89 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
+  ListItemIcon,
+  ListSubheader,
   Tooltip,
+  Avatar,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
-import { motion, LayoutGroup } from "framer-motion";
 import TranslateIcon from "@mui/icons-material/Translate";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { motion, LayoutGroup } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { getNavItems } from "./NavItems";
-
 import Logo from "@/components/common/Logo";
 import BackgroundFX from "./BackgroundFX";
 import { useColorMode } from "@/lib/theme/ThemeRegistry";
-import { useSession, signOut } from "next-auth/react";
-
-export type AppRole = "admin" | "moderator" | "doctor" | "patient";
+import { signOut } from "next-auth/react";
+import SupportChatWidget from "@/components/chat/SupportChatWidget";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { mode, toggle } = useColorMode();
-  const { data: session } = useSession();
   const { lang, setLang } = useI18n();
-  const authed = Boolean(session);
-  const role = (session?.user as any)?.role as AppRole | null;
 
-  const dashboardHref =
-    role === "admin" || role === "moderator"
-      ? "/dashboard/admin"
-      : role === "doctor"
-        ? "/dashboard/doctor"
-        : "/dashboard/patient";
+  const [currentUser, setCurrentUser] = React.useState<{ name: string; role: string } | null>(null);
+  const [authLoading, setAuthLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/user/me");
+        if (res.ok) {
+          const data = await res.json();
+          setCurrentUser(data);
+        }
+      } catch (e) {
+        // ignore
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+    checkAuth();
+  }, [pathname]); // Re-check on path change
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const toggleMobile = (open: boolean) => () => setMobileOpen(open);
 
-  const logout = async () => {
-    await signOut({ callbackUrl: "/" });
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    handleMenuClose();
   };
 
-  return (
-    <>
-    <Box
-      sx={{
-        minHeight: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
-      {/* Background FX behind everything */}
-      <BackgroundFX />
+  const handleMobileNavigate = (path: string) => () => {
+    router.push(path);
+    setMobileOpen(false);
+  };
 
-      {/* Top Navbar */}
+  const logout = async () => {
+    handleMenuClose();
+    // Clear manual JWT cookie
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Sign out from NextAuth
+    await signOut({ callbackUrl: "/" });
+    setCurrentUser(null);
+  };
+
+  const dashboardHref = `/dashboard/${currentUser?.role}`;
+
+  return (
+    <Box sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+      <BackgroundFX />
       <AppBar
         position="sticky"
         color="transparent"
@@ -89,37 +114,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Container maxWidth="lg">
           <Toolbar disableGutters sx={{ gap: 1, minHeight: 64 }}>
             <Logo />
-            {/* Desktop nav */}
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: 0.5,
-                flexGrow: 1,
-              }}
-            >
+            <Box sx={{ display: { xs: "none", md: "flex" }, gap: 0.5, flexGrow: 1 }}>
               <LayoutGroup id="topnav">
                 {getNavItems(lang).map((it) => {
                   const active = pathname === it.href;
                   return (
                     <Box key={it.href} sx={{ position: "relative" }}>
-                      <Button
-                        component={Link}
-                        href={it.href}
-                        color={active ? "primary" : "inherit"}
-                        sx={{ fontWeight: active ? 700 : 500 }}
-                      >
+                      <Button component={Link} href={it.href} color={active ? "primary" : "inherit"}>
                         {it.label}
                       </Button>
                       {active && (
                         <motion.div
                           layoutId="nav-underline"
-                          style={{
-                            height: 2,
-                            position: "absolute",
-                            left: 12,
-                            right: 12,
-                            bottom: -2,
-                          }}
+                          style={{ height: 2, position: "absolute", left: 12, right: 12, bottom: -2 }}
                         />
                       )}
                     </Box>
@@ -127,83 +134,55 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 })}
               </LayoutGroup>
             </Box>
-            {/* Spacer on mobile so brand centers */}
             <Box sx={{ flexGrow: { xs: 1, md: 0 } }} />
 
-            {/* Right actions (desktop) */}
-            <Stack
-              direction="row"
-              spacing={1}
-              alignItems="center"
-              sx={{ display: { xs: "none", md: "flex" } }}
-            >
-              <Tooltip
-                title={mode === "dark" ? "Switch to light" : "Switch to dark"}
-              >
-                <IconButton
-                  color="inherit"
-                  onClick={toggle}
-                  aria-label="Toggle color mode"
-                >
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: "none", md: "flex" } }}>
+              <Tooltip title={mode === "dark" ? "Switch to light" : "Switch to dark"}>
+                <IconButton color="inherit" onClick={toggle} aria-label="Toggle color mode">
                   {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
                 </IconButton>
               </Tooltip>
-               {/* Language Switch Toogle Button */}
               <Tooltip title={lang === "en" ? "Switch to বাংলা" : "Switch to English"}>
-              <IconButton
-                color="inherit"
-                onClick={() => setLang(lang === "en" ? "bn" : "en")}
-                aria-label="Toggle language"
-              >
-                <TranslateIcon />
-              </IconButton>
-            </Tooltip>
-              {authed ? (
+                <IconButton color="inherit" onClick={() => setLang(lang === "en" ? "bn" : "en")} aria-label="Toggle language">
+                  <TranslateIcon />
+                </IconButton>
+              </Tooltip>
+
+              {!authLoading && currentUser ? (
                 <>
-                  <Tooltip title="Dashboard">
-                    <IconButton
-                      color="inherit"
-                      component={Link}
-                      href={dashboardHref}
-                      aria-label="Dashboard"
-                    >
-                      <DashboardIcon />
+                  <Tooltip title="Account settings">
+                    <IconButton onClick={handleMenuOpen} size="small">
+                      <Avatar sx={{ width: 32, height: 32 }}>
+                        {currentUser.name?.charAt(0).toUpperCase()}
+                      </Avatar>
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Logout">
-                    <IconButton
-                      color="inherit"
-                      onClick={logout}
-                      aria-label="Logout"
-                    >
-                      <LogoutIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuItem onClick={() => handleNavigate(dashboardHref)}>Dashboard</MenuItem>
+                    <MenuItem onClick={() => handleNavigate("/dashboard/profile")}>Profile</MenuItem>
+                    <MenuItem onClick={() => handleNavigate("/dashboard/settings")}>Settings</MenuItem>
+                    <Divider />
+                    <MenuItem onClick={logout}>Logout</MenuItem>
+                  </Menu>
                 </>
               ) : (
                 <>
-                  <Button
-                    component={Link}
-                    href="/auth/portal/login"
-                    color="inherit"
-                    startIcon={<LoginIcon />}
-                    sx={{ fontWeight: 600 }}
-                  >
+                  <Button component={Link} href="/auth/portal/login" color="inherit" startIcon={<LoginIcon />}>
                     Portal
                   </Button>
-                  <Button
-                    component={Link}
-                    href="/auth/admin/login"
-                    variant="contained"
-                    sx={{ fontWeight: 700 }}
-                  >
+                  <Button component={Link} href="/auth/admin/login" variant="contained">
                     Admin Login
                   </Button>
                 </>
               )}
             </Stack>
 
-            {/* Mobile menu button */}
             <IconButton
               color="inherit"
               onClick={toggleMobile(true)}
@@ -216,114 +195,99 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </Container>
       </AppBar>
 
-      {/* Mobile top drawer */}
-      <Drawer
-        anchor="top"
-        open={mobileOpen}
-        onClose={toggleMobile(false)}
-        PaperProps={{
-          sx: { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
-        }}
-      >
-        <Box
-          role="presentation"
-          onClick={toggleMobile(false)}
-          onKeyDown={toggleMobile(false)}
-        >
-          <List>
+      <Drawer anchor="top" open={mobileOpen} onClose={toggleMobile(false)}>
+        <Box role="menu" sx={{ width: "100vw", maxWidth: 560, mx: "auto" }}>
+          <List
+            subheader={<ListSubheader disableSticky>Navigation</ListSubheader>}
+            sx={{ py: 0 }}
+          >
             {getNavItems(lang).map((it) => {
               const active = pathname === it.href;
               return (
-                <Box key={it.href} sx={{ position: "relative" }}>
-                  <Button
-                    component={Link}
-                    href={it.href}
-                    color={active ? "primary" : "inherit"}
-                    sx={{ fontWeight: active ? 700 : 500 }}
-                  >
-                    {it.label}
-                  </Button>
-                  {active && (
-                    <motion.div
-                      layoutId="nav-underline"
-                      style={{
-                        height: 2,
-                        position: "absolute",
-                        left: 12,
-                        right: 12,
-                        bottom: -2,
-                      }}
-                    />
-                  )}
-                </Box>
+                <ListItemButton key={it.href} selected={active} onClick={handleMobileNavigate(it.href)}>
+                  {it.icon ? <ListItemIcon>{it.icon}</ListItemIcon> : null}
+                  <ListItemText primary={it.label} />
+                </ListItemButton>
               );
             })}
           </List>
-          <Divider component="li" />
-          <List>
-            <ListItemButton
-              onClick={() => {
-                setLang(lang === "en" ? "bn" : "en");
-              }}
+          <Divider />
+          {currentUser ? (
+            <List
+              subheader={<ListSubheader disableSticky>Account</ListSubheader>}
+              sx={{ py: 0 }}
             >
-              <ListItemText
-                primary={`Language: ${lang === "bn" ? "বাংলা" : "English"}`}
-              />
+              <ListItemButton onClick={handleMobileNavigate(dashboardHref)}>
+                <ListItemIcon>
+                  <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+              <ListItemButton onClick={handleMobileNavigate("/dashboard/profile")}>
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Profile" />
+              </ListItemButton>
+              <ListItemButton onClick={handleMobileNavigate("/dashboard/settings")}>
+                <ListItemIcon>
+                  <SettingsIcon />
+                </ListItemIcon>
+                <ListItemText primary="Settings" />
+              </ListItemButton>
+              <ListItemButton
+                onClick={async () => {
+                  setMobileOpen(false);
+                  await logout();
+                }}
+              >
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Logout" />
+              </ListItemButton>
+            </List>
+          ) : (
+            <List sx={{ py: 0 }} subheader={<ListSubheader disableSticky>Sign in</ListSubheader>}>
+              <ListItemButton onClick={handleMobileNavigate("/auth/portal/login")}> 
+                <ListItemIcon>
+                  <LoginIcon />
+                </ListItemIcon>
+                <ListItemText primary="Portal" />
+              </ListItemButton>
+              <ListItemButton onClick={handleMobileNavigate("/auth/admin/login")}> 
+                <ListItemText primary="Admin Login" />
+              </ListItemButton>
+            </List>
+          )}
+          <Divider />
+          <List sx={{ py: 0 }} subheader={<ListSubheader disableSticky>Preferences</ListSubheader>}>
+            <ListItemButton onClick={() => { toggle(); setMobileOpen(false); }}>
+              <ListItemIcon>{mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
+              <ListItemText primary={mode === "dark" ? "Light Mode" : "Dark Mode"} />
             </ListItemButton>
-
-            <ListItemButton onClick={toggle}>
-              <ListItemText
-                primary={mode === "dark" ? "Light mode" : "Dark mode"}
-              />
+            <ListItemButton onClick={() => { setLang(lang === "en" ? "bn" : "en"); setMobileOpen(false); }}>
+              <ListItemIcon>
+                <TranslateIcon />
+              </ListItemIcon>
+              <ListItemText primary={lang === "en" ? "বাংলা" : "English"} />
             </ListItemButton>
-            {authed ? (
-              <>
-                <ListItemButton component={Link} href={dashboardHref}>
-                  <ListItemText primary="Dashboard" />
-                </ListItemButton>
-                <ListItemButton onClick={logout}>
-                  <ListItemText primary="Logout" />
-                </ListItemButton>
-              </>
-            ) : (
-              <>
-                <ListItemButton component={Link} href="/auth/portal/login">
-                  <ListItemText primary="Portal Login" />
-                </ListItemButton>
-                <ListItemButton component={Link} href="/auth/admin/login">
-                  <ListItemText primary="Admin Login" />
-                </ListItemButton>
-              </>
-            )}
           </List>
         </Box>
       </Drawer>
 
-      {/* Page content */}
-      <Container
-        maxWidth="lg"
-        sx={{ flex: 1, py: 3, position: "relative", zIndex: 1 }}
-      >
+      <Container component="main" maxWidth="lg" sx={{ flex: "1 0 auto", py: 3, position: "relative", zIndex: 2 }}>
         {children}
       </Container>
-    </Box>
-    <Box
-      component="footer"
-      sx={{
-        borderTop: (t) => `1px solid ${t.palette.divider}`,
-        py: 3,
-        mt: "auto",
-        position: "relative",
-        zIndex: 1,
-      }}
-      >
+
+      <Box component="footer" sx={{ borderTop: (t) => `1px solid ${t.palette.divider}`, py: 3, zIndex: 1 }}>
         <Container maxWidth="lg">
           <Typography variant="body2" color="text.secondary">
             © {new Date().getFullYear()} Amin Diagnostics • All rights reserved.
           </Typography>
         </Container>
       </Box>
-    </>
+      <SupportChatWidget />
+    </Box>
   );
-   
 }

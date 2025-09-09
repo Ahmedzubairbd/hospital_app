@@ -12,12 +12,10 @@ import {
   Typography,
 } from "@mui/material";
 
-type Role = "patient" | "doctor";
-
 export default function PortalRegisterPage() {
   const [fullName, setFullName] = React.useState("");
   const [phone, setPhone] = React.useState("");
-  const [role, setRole] = React.useState<Role>("patient");
+  const role = "patient";
   const [code, setCode] = React.useState("");
   const [normalized, setNormalized] = React.useState<string | undefined>();
 
@@ -28,7 +26,6 @@ export default function PortalRegisterPage() {
   const [devOtp, setDevOtp] = React.useState<string | undefined>();
   const [sending, setSending] = React.useState(false);
   const [verifying, setVerifying] = React.useState(false);
-  const [registering, setRegistering] = React.useState(false);
 
   // resend cooldown
   const [cooldown, setCooldown] = React.useState(0);
@@ -76,7 +73,7 @@ export default function PortalRegisterPage() {
     }
   };
 
-  const verify = async () => {
+  const verifyAndRegister = async () => {
     setErr(null);
     setMsg(null);
     if (!code.trim()) return setErr("Enter the OTP you received.");
@@ -89,7 +86,8 @@ export default function PortalRegisterPage() {
         body: JSON.stringify({
           phone: normalized ?? phone,
           code,
-          role, // your verify endpoint already accepted role in login — keeps parity
+          role,
+          name: fullName.trim(),
         }),
       });
       const j = await r.json();
@@ -97,38 +95,12 @@ export default function PortalRegisterPage() {
         setErr(j.error || "OTP verification failed");
         return;
       }
-      setMsg("OTP verified. Creating your account…");
-      await doRegister();
+      setMsg("Registration complete. Redirecting…");
+      window.location.href = "/dashboard/patient";
     } catch (e: any) {
       setErr("OTP verification failed.");
     } finally {
       setVerifying(false);
-    }
-  };
-
-  const doRegister = async () => {
-    try {
-      setRegistering(true);
-      const r = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: fullName.trim(),
-          phone: (normalized ?? phone).trim(),
-          role,
-        }),
-      });
-      const j = await r.json();
-      if (!r.ok) {
-        setErr(j.error || "Registration failed");
-        return;
-      }
-      setMsg("Registration complete. Redirecting…");
-      window.location.href = role === "doctor" ? "/dashboard/doctor" : "/dashboard/patient";
-    } catch (e: any) {
-      setErr("Registration failed.");
-    } finally {
-      setRegistering(false);
     }
   };
 
@@ -172,7 +144,7 @@ export default function PortalRegisterPage() {
         }}
       >
         <Stack spacing={2}>
-          <Typography variant="h6">Portal Registration (SMS OTP)</Typography>
+          <Typography variant="h6">Patient Registration (SMS OTP)</Typography>
 
           <TextField
             label="Full name"
@@ -188,17 +160,6 @@ export default function PortalRegisterPage() {
             helperText={normalized && normalized !== phone ? `Normalized: ${normalized}` : " "}
             fullWidth
           />
-
-          <TextField
-            select
-            label="Role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as Role)}
-            fullWidth
-          >
-            <MenuItem value="patient">Patient</MenuItem>
-            <MenuItem value="doctor">Doctor</MenuItem>
-          </TextField>
 
           <FormControlLabel
             control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
@@ -226,10 +187,10 @@ export default function PortalRegisterPage() {
             />
             <Button
               variant="contained"
-              onClick={verify}
-              disabled={verifying || registering}
+              onClick={verifyAndRegister}
+              disabled={verifying}
             >
-              {verifying ? "Verifying…" : registering ? "Creating…" : "Verify & Register"}
+              {verifying ? "Verifying…" : "Verify & Register"}
             </Button>
           </Stack>
 

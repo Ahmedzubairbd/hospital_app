@@ -135,9 +135,14 @@ export default function AdminLoginPage() {
           >
             Login
           </Button>
-          <MLink href="/auth/admin/forgot-password" sx={{ color: "#38bdf8" }}>
-            Forgot password?
-          </MLink>
+          <Stack direction="row" justifyContent="space-between">
+            <MLink href="/auth/admin/forgot-password" sx={{ color: "#38bdf8" }}>
+              Forgot password?
+            </MLink>
+            <MLink href="/auth/admin/register" sx={{ color: "#38bdf8" }}>
+              Register
+            </MLink>
+          </Stack>
           {err && <Alert severity="error">{err}</Alert>}
         </Stack>
       </Box>

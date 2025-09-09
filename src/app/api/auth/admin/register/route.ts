@@ -20,6 +20,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, password, role } = schema.parse(body);
 
+    // Enforce max 10 staff accounts (ADMIN + MODERATOR)
+    const staffCount = await prisma.user.count({
+      where: { role: { in: ["ADMIN", "MODERATOR"] } },
+    });
+    if (staffCount >= 10) {
+      return NextResponse.json(
+        { error: "Registration limit reached (max 10 users)." },
+        { status: 403 },
+      );
+    }
+
     const exists = await prisma.user.findUnique({ where: { email } });
     if (exists)
       return NextResponse.json(

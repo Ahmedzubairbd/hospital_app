@@ -1,8 +1,31 @@
-"use client";
-
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { verifyJwt } from "@/lib/auth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { prisma } from "@/lib/db";
 
-export default function PatientDashboardLayout({ children }: { children: ReactNode }) {
-  return <DashboardLayout role="patient" userName="Patient">{children}</DashboardLayout>;
+export default async function PatientDashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const payload = token ? verifyJwt(token) : null;
+
+  if (!payload) {
+    redirect("/auth/portal/login");
+  }
+  if (payload.role !== "patient") {
+    redirect("/access-denied");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+
+  return (
+    <DashboardLayout role="patient" userName={user?.name ?? "Patient"}>
+      {children}
+    </DashboardLayout>
+  );
 }

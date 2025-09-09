@@ -1,63 +1,31 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/nextauth";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { CircularProgress, Box } from "@mui/material";
 
-export default function ModeratorDashboardLayout({
+export default async function ModeratorDashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState("Moderator");
+  const session = await getServerSession(authOptions);
 
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.role !== "moderator") {
-            router.push("/");
-            return;
-          }
-          setUserName(data.name || "Moderator");
-        } else {
-          router.push("/auth/admin/login");
-          return;
-        }
-      } catch (error) {
-        console.error("Auth check failed:", error);
-        router.push("/auth/admin/login");
-        return;
-      } finally {
-        setLoading(false);
-      }
-    }
+  if (!session?.user) {
+    redirect("/auth/admin/login");
+  }
 
-    checkAuth();
-  }, [router]);
+  const userRole = session.user.role;
 
-  if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+  if (userRole !== "MODERATOR" && userRole !== "ADMIN") {
+    redirect("/access-denied");
   }
 
   return (
-    <DashboardLayout role="moderator" userName={userName}>
+    <DashboardLayout
+      role="moderator"
+      userName={session.user.name ?? "Moderator"}
+    >
       {children}
     </DashboardLayout>
   );

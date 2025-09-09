@@ -31,6 +31,17 @@ export async function POST(req: Request) {
         { status: 401 },
       );
 
+    // Restrict to ADMIN/MODERATOR only and require verified email
+    if (user.role !== "ADMIN" && user.role !== "MODERATOR") {
+      return NextResponse.json({ error: "unauthorized" }, { status: 403 });
+    }
+    if (!user.emailVerifiedAt) {
+      return NextResponse.json(
+        { error: "email not verified" },
+        { status: 403 },
+      );
+    }
+
     // Prisma role likely 'ADMIN' | 'MODERATOR' — map to lowercase AppRole
     const appRole = (user.role as "ADMIN" | "MODERATOR").toLowerCase() as
       | "admin"

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { verifyJwt } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/nextauth";
 
 const createSchema = z.object({
   code: z.string().min(1),
@@ -45,15 +47,21 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  // RBAC: admin/moderator only
-  const cookie = req.headers.get("cookie") ?? "";
-  const token = /(?:^|; )token=([^;]+)/.exec(cookie)?.[1];
-  const payload = token ? verifyJwt(decodeURIComponent(token)) : null;
-  const role = payload?.role;
-
-  if (role !== "admin" && role !== "moderator") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  // RBAC: admin/moderator via NextAuth or JWT cookie
+  const session = await getServerSession(authOptions).catch(() => null);
+  const sessionRole = (session?.user as any)?.role as string | undefined;
+  const sessionUserId = (session?.user as any)?.id as string | undefined;
+  let userId = sessionUserId;
+  let allowed = sessionRole === "ADMIN" || sessionRole === "MODERATOR";
+  if (!allowed) {
+    const cookie = req.headers.get("cookie") ?? "";
+    const token = /(?:^|; )token=([^;]+)/.exec(cookie)?.[1];
+    const payload = token ? verifyJwt(decodeURIComponent(token)) : null;
+    const role = payload?.role;
+    allowed = role === "admin" || role === "moderator";
+    userId = payload?.sub ?? undefined;
   }
+  if (!allowed) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
   try {
     const body = await req.json();
@@ -66,7 +74,7 @@ export async function POST(req: Request) {
         description: input.description ?? null,
         priceCents: input.priceCents,
         active: input.active,
-        createdByUserId: payload?.sub ?? "",
+        createdByUserId: userId ?? "",
       },
     });
 
