@@ -10,8 +10,11 @@ function sseHeaders() {
   });
 }
 
-export async function GET(_req: NextRequest, { params }: { params: { threadId: string } }) {
-  const { threadId } = params;
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ threadId: string }> },
+) {
+  const { threadId } = await params;
   // eslint-disable-next-line no-console
   console.log("[chat] SSE connect", threadId);
 
@@ -48,4 +51,3 @@ export async function GET(_req: NextRequest, { params }: { params: { threadId: s
 
   return new Response(stream, { headers: sseHeaders() });
 }
-

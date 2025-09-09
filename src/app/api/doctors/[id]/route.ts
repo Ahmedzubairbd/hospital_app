@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/nextauth";
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 const patchSchema = z.object({
@@ -17,7 +18,7 @@ const patchSchema = z.object({
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
@@ -28,7 +29,7 @@ export async function PATCH(
   try {
     const body = await req.json();
     const input = patchSchema.parse(body);
-    const { id } = params;
+    const { id } = await params;
 
     const doctor = await prisma.doctor.findUnique({ where: { id } });
     if (!doctor) {
@@ -81,7 +82,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   const role = session?.user?.role;
@@ -90,7 +91,7 @@ export async function DELETE(
   }
 
   try {
-    const { id } = params; // This is doctor ID
+    const { id } = await params; // This is doctor ID
 
     const doctor = await prisma.doctor.findUnique({ where: { id } });
     if (!doctor) {
@@ -101,7 +102,7 @@ export async function DELETE(
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    if (e instanceof prisma.PrismaClientKnownRequestError && e.code === 'P2003') {
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2003') {
         return NextResponse.json({ error: "Cannot delete doctor with existing appointments. Please reassign or delete them first." }, { status: 409 });
     }
     const message = e instanceof Error ? e.message : "failed";
