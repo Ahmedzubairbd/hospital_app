@@ -16,9 +16,5 @@
       "NEXT_PUBLIC_APP_URL": "https://hospital-app-drab.vercel.app",
       "NEXTAUTH_URL": "https://hospital-app-drab.vercel.app"
     }
-  },
-  "functions": {
-    "api/chat/events/*": { "maxDuration": 300 },
-    "api/chat/admin/events": { "maxDuration": 300 }
   }
 }
