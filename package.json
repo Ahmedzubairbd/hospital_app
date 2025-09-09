@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "biome check tsc --no-emit",
     "format": "biome format --write",
+    "postinstall": "prisma generate",
     "vercel-build": "prisma generate && next build"
   },
   "dependencies": {
