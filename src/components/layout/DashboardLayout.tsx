@@ -88,8 +88,12 @@ const navItems = [
   { title: "Dashboard", path: "/dashboard/patient", icon: <DashboardIcon />, roles: ["patient"] },
   { title: "Support Chat", path: "/dashboard/admin/support-chat", icon: <GroupsIcon />, roles: ["admin"] },
   { title: "Support Chat", path: "/dashboard/moderator/support-chat", icon: <GroupsIcon />, roles: ["moderator"] },
-  { title: "Doctors", path: "/dashboard/admin/doctors", icon: <GroupsIcon />, roles: ["admin", "moderator"] },
-  { title: "Test Prices", path: "/dashboard/admin/test-prices", icon: <PriceChangeIcon />, roles: ["admin", "moderator"] },
+  // Admin-only doctor & pricing pages under admin namespace
+  { title: "Doctors", path: "/dashboard/admin/doctors", icon: <GroupsIcon />, roles: ["admin"] },
+  { title: "Test Prices", path: "/dashboard/admin/test-prices", icon: <PriceChangeIcon />, roles: ["admin"] },
+  // Moderator mirrors to moderator namespace (re-exported pages)
+  { title: "Doctors", path: "/dashboard/moderator/doctors", icon: <GroupsIcon />, roles: ["moderator"] },
+  { title: "Test Prices", path: "/dashboard/moderator/test-prices", icon: <PriceChangeIcon />, roles: ["moderator"] },
   { title: "Profile", path: "/dashboard/profile", icon: <AccountCircleIcon />, roles: ["admin", "moderator", "patient"] },
   { title: "Settings", path: "/dashboard/settings", icon: <SettingsIcon />, roles: ["admin", "moderator", "patient"] },
 ];

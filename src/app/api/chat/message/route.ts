@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
 
   let senderRole: "guest" | "patient" | "moderator" | "admin" = "guest";
   let senderId: string | undefined;
-  const role = (session?.user as any)?.role as string | undefined;
-  if (role === "ADMIN" || role === "MODERATOR") {
-    senderRole = role === "ADMIN" ? "admin" : "moderator";
+  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  if (role === "admin" || role === "moderator") {
+    senderRole = role;
     senderId = (session?.user as any)?.id as string | undefined;
   } else if (payload?.sub) {
     senderRole = "patient";
@@ -27,4 +27,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, message: msg });
 }
-

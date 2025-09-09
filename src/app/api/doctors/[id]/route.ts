@@ -21,8 +21,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "MODERATOR") {
+  const role = String(session?.user?.role || '').toLowerCase();
+  if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -85,8 +85,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  if (role !== "ADMIN" && role !== "MODERATOR") {
+  const role = String(session?.user?.role || '').toLowerCase();
+  if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

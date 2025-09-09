@@ -19,8 +19,8 @@ function sseHeaders() {
 
 export async function GET(_req: NextRequest) {
   const session = await getServerSession(authOptions).catch(() => null);
-  const role = (session?.user as any)?.role as string | undefined;
-  if (!session?.user || (role !== "ADMIN" && role !== "MODERATOR")) {
+  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  if (!session?.user || (role !== "admin" && role !== "moderator")) {
     return new Response("Unauthorized", { status: 401 });
   }
 

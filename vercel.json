@@ -6,15 +6,15 @@
   "regions": ["sin1"],
   "env": {
     "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app",
-    "NEXT_PUBLIC_APP_URL": "https://hospital-app-drab.vercel.app",
-    "NEXTAUTH_URL": "https://hospital-app-drab.vercel.app",
+    "NEXT_PUBLIC_APP_URL": "https://hospital-app-swart.vercel.app",
+    "NEXTAUTH_URL": "https://hospital-app-swart.vercel.app",
     "NEXTAUTH_SECRET": "WzP9AtnbkVG3NK1Hy8YFEwxsexLe6leShfk+LBGyZu8="
   },
   "build": {
     "env": {
       "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app",
-      "NEXT_PUBLIC_APP_URL": "https://hospital-app-drab.vercel.app",
-      "NEXTAUTH_URL": "https://hospital-app-drab.vercel.app"
+      "NEXT_PUBLIC_APP_URL": "https://hospital-app-swart.vercel.app",
+      "NEXTAUTH_URL": "https://hospital-app-swart.vercel.app"
     }
   }
 }

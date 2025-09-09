@@ -15,9 +15,9 @@ const patchSchema = z.object({
 
 async function requireStaff(req: Request) {
   const session = await getServerSession(authOptions).catch(() => null);
-  const sessionRole = (session?.user as any)?.role as string | undefined;
+  const sessionRole = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
   const sessionUserId = (session?.user as any)?.id as string | undefined;
-  let ok = sessionRole === "ADMIN" || sessionRole === "MODERATOR";
+  let ok = sessionRole === "admin" || sessionRole === "moderator";
   let userId: string | null = sessionUserId ?? null;
   if (!ok) {
     const cookie = req.headers.get("cookie") ?? "";

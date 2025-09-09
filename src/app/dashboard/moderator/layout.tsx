@@ -15,9 +15,9 @@ export default async function ModeratorDashboardLayout({
     redirect("/auth/admin/login");
   }
 
-  const userRole = session.user.role;
+  const userRole = String(session.user.role || '').toLowerCase();
 
-  if (userRole !== "MODERATOR" && userRole !== "ADMIN") {
+  if (userRole !== "moderator" && userRole !== "admin") {
     redirect("/access-denied");
   }
 

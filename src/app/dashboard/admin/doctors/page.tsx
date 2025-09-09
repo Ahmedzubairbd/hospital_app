@@ -23,6 +23,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Image from "next/image";
+import { compressImageFile } from "@/lib/images";
 
 type Doctor = {
   id: string;
@@ -294,6 +296,35 @@ export default function AdminDoctorsPage() {
                 setForm({ ...form, sliderPictureUrl: e.target.value })
               }
             />
+            {/* Optional: upload and auto-optimize image */}
+            <Stack spacing={1}>
+              <Button component="label" variant="outlined">
+                Upload Slider Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const dataUrl = await compressImageFile(file, { maxWidth: 1600, maxHeight: 900, quality: 0.8 });
+                    setForm({ ...form, sliderPictureUrl: dataUrl });
+                  }}
+                />
+              </Button>
+              {form.sliderPictureUrl && (
+                <Box sx={{ position: "relative", width: "100%", height: 160 }}>
+                  {/* next/image optimizes delivery when served from URL; data URL shown as-is */}
+                  <Image
+                    src={form.sliderPictureUrl}
+                    alt="Preview"
+                    fill
+                    style={{ objectFit: "cover", borderRadius: 8 }}
+                    sizes="(max-width: 600px) 100vw, 600px"
+                  />
+                </Box>
+              )}
+            </Stack>
             <TextField
               label="Bio"
               multiline

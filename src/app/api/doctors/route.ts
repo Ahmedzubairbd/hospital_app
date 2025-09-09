@@ -7,9 +7,9 @@ import { hashPassword } from "@/lib/password";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
+  const role = String(session?.user?.role || '').toLowerCase();
 
-  if (role !== "ADMIN" && role !== "MODERATOR") {
+  if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -38,9 +38,9 @@ const createSchema = z.object({
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
+  const role = String(session?.user?.role || '').toLowerCase();
 
-  if (role !== "ADMIN" && role !== "MODERATOR") {
+  if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

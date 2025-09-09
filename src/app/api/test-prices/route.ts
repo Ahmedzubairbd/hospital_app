@@ -49,10 +49,10 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   // RBAC: admin/moderator via NextAuth or JWT cookie
   const session = await getServerSession(authOptions).catch(() => null);
-  const sessionRole = (session?.user as any)?.role as string | undefined;
+  const sessionRole = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
   const sessionUserId = (session?.user as any)?.id as string | undefined;
   let userId = sessionUserId;
-  let allowed = sessionRole === "ADMIN" || sessionRole === "MODERATOR";
+  let allowed = sessionRole === "admin" || sessionRole === "moderator";
   if (!allowed) {
     const cookie = req.headers.get("cookie") ?? "";
     const token = /(?:^|; )token=([^;]+)/.exec(cookie)?.[1];

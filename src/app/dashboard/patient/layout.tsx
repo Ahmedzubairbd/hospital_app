@@ -22,6 +22,13 @@ export default async function PatientDashboardLayout({
   }
 
   const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+  const patient = await prisma.patient.findUnique({ where: { userId: payload.sub } });
+
+  // Require onboarding if basic profile incomplete
+  const needOnboarding = !user?.name || !patient?.dateOfBirth || !patient?.gender;
+  if (needOnboarding) {
+    redirect("/onboarding/patient");
+  }
 
   return (
     <DashboardLayout role="patient" userName={user?.name ?? "Patient"}>

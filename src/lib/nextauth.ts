@@ -28,31 +28,34 @@ export const authOptions: NextAuthOptions = {
         if (!user.emailVerifiedAt) return null;
         const valid = await compare(credentials.password, user.passwordHash);
         if (!valid) return null;
+        // Map Prisma role enum to lowercase AppRole
+        const appRole = user.role.toLowerCase() as any;
         return {
           id: user.id,
           name: user.name ?? undefined,
           email: user.email ?? undefined,
-          role: user.role,
+          role: appRole,
         } as User & { role: string };
       },
     }),
   ],
   session: {
     strategy: "jwt",
+    // Session expiry for dashboards (sliding window)
+    maxAge: 60 * 60 * 2, // 2 hours
+    updateAge: 60 * 30, // refresh token age every 30 minutes of activity
   },
   callbacks: {
     async jwt({ token, user }) {
       // Persist role and id in the token for session
-      if (user) {
-        token.role = (user as any).role;
-      }
+      if (user) token.role = (user as any).role; // already lowercase from authorize
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         // NextAuth puts user id in token.sub
         (session.user as any).id = token.sub as string | undefined;
-        (session.user as any).role = token.role as string | undefined;
+        (session.user as any).role = (token.role as string | undefined) ?? undefined;
       }
       return session;
     },
