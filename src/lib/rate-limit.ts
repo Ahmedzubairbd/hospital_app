@@ -38,3 +38,34 @@ export function rateLimit(req: Request, scope: string, extra?: string, opts?: Ra
   return takeToken(key, opts);
 }
 
+// Upstash Redis-backed fixed window limiter (fallbacks to in-memory on error)
+export async function rateLimitAsync(
+  req: Request,
+  scope: string,
+  extra?: string,
+  redisOpts?: { limit?: number; windowSec?: number },
+) {
+  const key = keyFrom(req, scope, extra);
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const limit = redisOpts?.limit ?? 30;
+  const windowSec = redisOpts?.windowSec ?? 60;
+  if (!url || !token) {
+    return rateLimit(req, scope, extra);
+  }
+  try {
+    const incr = await fetch(`${url}/incr/${encodeURIComponent(key)}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((r) => r.json() as Promise<{ result: number }>);
+    if (incr.result === 1) {
+      await fetch(`${url}/expire/${encodeURIComponent(key)}/${windowSec}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => undefined);
+    }
+    return incr.result <= limit;
+  } catch {
+    return rateLimit(req, scope, extra);
+  }
+}

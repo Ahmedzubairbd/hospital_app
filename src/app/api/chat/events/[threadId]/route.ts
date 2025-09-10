@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/nextauth";
 import { cookies } from "next/headers";
 import { verifyJwt } from "@/lib/auth";
 import { chatStore } from "@/lib/chat/store";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimitAsync } from "@/lib/rate-limit";
 
 // Keep SSE stable in serverless
 export const runtime = "nodejs";
@@ -25,7 +25,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ threadId: string }> },
 ) {
-  if (!rateLimit(req as unknown as Request, "chat:sse:thread")) {
+  if (!(await rateLimitAsync(req as unknown as Request, "chat:sse:thread"))) {
     return new Response("Too many requests", { status: 429 });
   }
   const { threadId } = await params;

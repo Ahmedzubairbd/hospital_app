@@ -42,15 +42,26 @@ function toCents(rate: string): number {
   return Math.round(num * 100);
 }
 
-export async function POST() {
+export async function POST(req: Request) {
   // Staff-only
   const session = await getServerSession(authOptions).catch(() => null);
   const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  const csvPath = path.join(process.cwd(), "public", "assets", "medical_test_prices", "Medical_Test_Price.csv");
-  const csv = await fs.readFile(csvPath, "utf8");
+  let csv: string | null = null;
+  const ct = req.headers.get("content-type") || "";
+  if (ct.includes("multipart/form-data")) {
+    const form = await req.formData();
+    const file = form.get("file");
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: "file field required" }, { status: 400 });
+    }
+    csv = await file.text();
+  } else {
+    const csvPath = path.join(process.cwd(), "public", "assets", "medical_test_prices", "Medical_Test_Price.csv");
+    csv = await fs.readFile(csvPath, "utf8");
+  }
   const rows = parseCsv(csv);
   if (rows.length === 0) return NextResponse.json({ imported: 0, updated: 0 });
   const header = rows[0].map((h) => h.trim());

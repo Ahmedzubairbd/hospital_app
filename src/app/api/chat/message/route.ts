@@ -3,10 +3,10 @@ import { chatStore } from "@/lib/chat/store";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextauth";
 import { verifyJwt } from "@/lib/auth";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimitAsync } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
-  if (!rateLimit(req as unknown as Request, "chat:message")) {
+  if (!(await rateLimitAsync(req as unknown as Request, "chat:message"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   const session = await getServerSession(authOptions).catch(() => null);

@@ -4,10 +4,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextauth";
 import { verifyJwt } from "@/lib/auth";
 import { chatStore } from "@/lib/chat/store";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimitAsync } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
-  if (!rateLimit(req as unknown as Request, "chat:session")) {
+  if (!(await rateLimitAsync(req as unknown as Request, "chat:session"))) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
   const cookieStore = await cookies();

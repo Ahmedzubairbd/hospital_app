@@ -66,6 +66,7 @@ export default function AdminTestPricesPage() {
   const [err, setErr] = React.useState<string | null>(null);
   const [msg, setMsg] = React.useState<string | null>(null);
   const [importing, setImporting] = React.useState(false);
+  const [csvFile, setCsvFile] = React.useState<File | null>(null);
 
   async function load() {
     const url = `/api/test-prices?${new URLSearchParams({
@@ -95,7 +96,8 @@ export default function AdminTestPricesPage() {
       code: p.code,
       name: p.name,
       description: p.description,
-      priceCents: p.priceCents,
+      // show in Taka for input
+      priceCents: Math.round((p.priceCents || 0) / 100),
       active: p.active,
       examType: p.examType ?? "",
       department: p.department ?? "",
@@ -110,7 +112,8 @@ export default function AdminTestPricesPage() {
   async function save() {
     setErr(null);
     setMsg(null);
-    const body = { ...form, priceCents: Number(form.priceCents), deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null } as any;
+    // form.priceCents holds Taka in UI; convert to cents for API
+    const body = { ...form, priceCents: Math.round(Number(form.priceCents) * 100), deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null } as any;
     const headers = { "Content-Type": "application/json" };
 
     let res: Response;
@@ -157,6 +160,28 @@ export default function AdminTestPricesPage() {
     }
   }
 
+  async function uploadCsv() {
+    if (!csvFile) return;
+    setErr(null);
+    setMsg(null);
+    setImporting(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", csvFile);
+      const r = await fetch("/api/test-prices/import", { method: "POST", body: fd });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || "upload failed");
+      setMsg(`Imported: ${j.imported}, Updated: ${j.updated}`);
+      await load();
+    } catch (e: unknown) {
+      const m = e instanceof Error ? e.message : "upload failed";
+      setErr(m);
+    } finally {
+      setImporting(false);
+      setCsvFile(null);
+    }
+  }
+
   async function softDelete(p: Price) {
     setErr(null);
     setMsg(null);
@@ -197,8 +222,12 @@ export default function AdminTestPricesPage() {
           label="Show inactive"
         />
         <Box sx={{ flexGrow: 1 }} />
-        <Button variant="outlined" onClick={importCsv} disabled={importing}>
-          {importing ? "Importing..." : "Import CSV"}
+        <input type="file" accept=".csv,text/csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
+        <Button variant="outlined" onClick={uploadCsv} disabled={importing || !csvFile}>
+          {importing ? "Importing..." : "Upload CSV"}
+        </Button>
+        <Button variant="text" onClick={importCsv} disabled={importing}>
+          {importing ? "Importing..." : "Import CSV (built-in)"}
         </Button>
         <Button
           startIcon={<AddIcon />}
