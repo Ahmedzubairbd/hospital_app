@@ -26,6 +26,8 @@ type Order = "asc" | "desc";
 type PriceTableProps = {
   rows: PriceRow[];
   currencySymbol?: string; // defaults to BDT "৳"
+  locale?: string; // e.g. "en-US" for US formatting
+  fractionDigits?: number; // e.g. 2 for USD, 0 for BDT
   onRowClick?: (row: PriceRow) => void;
   dense?: boolean;
 };
@@ -37,6 +39,8 @@ type PriceTableProps = {
 export default function PriceTable({
   rows,
   currencySymbol = "৳",
+  locale,
+  fractionDigits = 0,
   onRowClick,
   dense = false,
 }: PriceTableProps) {
@@ -108,7 +112,16 @@ export default function PriceTable({
       </TableHead>
       <TableBody>
         {sorted.map((r) => {
-          const price = (r.priceCents / 100).toLocaleString();
+          const priceNumber = r.priceCents / 100;
+          const price = locale
+            ? priceNumber.toLocaleString(locale, {
+                minimumFractionDigits: fractionDigits,
+                maximumFractionDigits: fractionDigits,
+              })
+            : priceNumber.toLocaleString(undefined, {
+                minimumFractionDigits: fractionDigits,
+                maximumFractionDigits: fractionDigits,
+              });
           const rowEl = (
             <>
               <TableCell>{r.code}</TableCell>

@@ -27,14 +27,14 @@ export async function GET(req: Request) {
   let where: any = {};
   
   if (q) {
+    // Important: filter only on columns that exist in the current DB
+    // to avoid Prisma P2022 (unknown column) errors in older databases.
     where = {
       OR: [
         { code: { contains: q, mode: "insensitive" } },
         { name: { contains: q, mode: "insensitive" } },
         { description: { contains: q, mode: "insensitive" } },
-        { department: { contains: q, mode: "insensitive" } },
-        { shortName: { contains: q, mode: "insensitive" } },
-      ]
+      ],
     };
   }
   
@@ -47,6 +47,16 @@ export async function GET(req: Request) {
 
   const data = await prisma.testPrice.findMany({
     where,
+    // Select only columns guaranteed to exist in current DB
+    select: {
+      id: true,
+      code: true,
+      name: true,
+      description: true,
+      priceCents: true,
+      active: true,
+      // Extended fields like examType/department may not exist yet
+    },
     orderBy: [{ code: "asc" }],
     take: 500,
   });
