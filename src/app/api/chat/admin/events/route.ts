@@ -7,6 +7,7 @@ export const maxDuration = 300;
 import { chatStore } from "@/lib/chat/store";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextauth";
+import { rateLimit } from "@/lib/rate-limit";
 
 function sseHeaders() {
   return new Headers({
@@ -17,7 +18,10 @@ function sseHeaders() {
   });
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+  if (!rateLimit(req as unknown as Request, "chat:sse:admin")) {
+    return new Response("Too many requests", { status: 429 });
+  }
   const session = await getServerSession(authOptions).catch(() => null);
   const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
   if (!session?.user || (role !== "admin" && role !== "moderator")) {

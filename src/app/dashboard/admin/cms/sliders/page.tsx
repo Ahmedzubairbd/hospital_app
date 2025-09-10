@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { Alert, Box, Button, Card, CardActions, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 
 type SliderItem = { imageUrl: string; title?: string; link?: string };
 
@@ -65,7 +65,7 @@ export default function CmsSlidersAdmin() {
       {err && <Alert severity="error" sx={{ mb: 2 }}>{err}</Alert>}
       <Grid container spacing={2}>
         {items.map((it, idx) => (
-          <Grid key={idx} xs={12} sm={6} md={4}>
+          <Grid key={idx} size={{ xs: 12, sm: 6, md: 4 }}>
             <Card>
               {it.imageUrl && <CardMedia component="img" height="160" image={it.imageUrl} alt={it.title || `Slide ${idx+1}`} />}
               <CardContent>

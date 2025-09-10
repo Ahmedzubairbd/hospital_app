@@ -1,11 +1,15 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/nextauth";
 import { verifyJwt } from "@/lib/auth";
 import { chatStore } from "@/lib/chat/store";
+import { rateLimit } from "@/lib/rate-limit";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!rateLimit(req as unknown as Request, "chat:session")) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   const cookieStore = await cookies();
   const session = await getServerSession(authOptions).catch(() => null);
 

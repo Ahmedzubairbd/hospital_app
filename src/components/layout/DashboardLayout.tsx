@@ -102,6 +102,8 @@ const navItems = [
   { title: "Test Prices", path: "/dashboard/moderator/test-prices", icon: <PriceChangeIcon />, roles: ["moderator"] },
   { title: "Patients", path: "/dashboard/moderator/patients", icon: <GroupsIcon />, roles: ["moderator"] },
   { title: "Media", path: "/dashboard/moderator/media", icon: <GroupsIcon />, roles: ["moderator"] },
+  // Patient files
+  { title: "My Files", path: "/dashboard/patient/files", icon: <GroupsIcon />, roles: ["patient"] },
   { title: "Profile", path: "/dashboard/profile", icon: <AccountCircleIcon />, roles: ["admin", "moderator", "patient"] },
   { title: "Settings", path: "/dashboard/settings", icon: <SettingsIcon />, roles: ["admin", "moderator", "patient"] },
 ];
