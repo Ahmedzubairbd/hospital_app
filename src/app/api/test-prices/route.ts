@@ -11,6 +11,12 @@ const createSchema = z.object({
   description: z.string().optional().nullable(),
   priceCents: z.number().int().nonnegative(),
   active: z.boolean().optional().default(true),
+  examType: z.string().optional().nullable(),
+  department: z.string().optional().nullable(),
+  serialNo: z.string().optional().nullable(),
+  shortName: z.string().optional().nullable(),
+  deliveryType: z.string().optional().nullable(),
+  deliveryHour: z.number().int().nonnegative().optional().nullable(),
 });
 
 export async function GET(req: Request) {
@@ -26,6 +32,8 @@ export async function GET(req: Request) {
         { code: { contains: q, mode: "insensitive" } },
         { name: { contains: q, mode: "insensitive" } },
         { description: { contains: q, mode: "insensitive" } },
+        { department: { contains: q, mode: "insensitive" } },
+        { shortName: { contains: q, mode: "insensitive" } },
       ]
     };
   }
@@ -74,6 +82,12 @@ export async function POST(req: Request) {
         description: input.description ?? null,
         priceCents: input.priceCents,
         active: input.active,
+        examType: input.examType ?? null,
+        department: input.department ?? null,
+        serialNo: input.serialNo ?? null,
+        shortName: input.shortName ?? null,
+        deliveryType: input.deliveryType ?? null,
+        deliveryHour: input.deliveryHour ?? null,
         createdByUserId: userId ?? "",
       },
     });

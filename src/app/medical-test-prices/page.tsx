@@ -19,6 +19,9 @@ type TestPrice = {
   description: string | null;
   priceCents: number;
   active: boolean;
+  department?: string | null;
+  deliveryType?: string | null;
+  deliveryHour?: number | null;
 };
 
 export default function MedicalTestPricesPage() {
@@ -57,8 +60,9 @@ export default function MedicalTestPricesPage() {
             <TableRow>
               <TableCell>Code</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
+              <TableCell>Department</TableCell>
               <TableCell align="right">Price (৳)</TableCell>
+              <TableCell>Delivery</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -66,15 +70,16 @@ export default function MedicalTestPricesPage() {
               <TableRow key={t.id} hover>
                 <TableCell>{t.code}</TableCell>
                 <TableCell>{t.name}</TableCell>
-                <TableCell>{t.description ?? "-"}</TableCell>
+                <TableCell>{t.department ?? "-"}</TableCell>
                 <TableCell align="right">
                   {(t.priceCents / 100).toLocaleString()}
                 </TableCell>
+                <TableCell>{[t.deliveryType, t.deliveryHour ? `${t.deliveryHour}h` : null].filter(Boolean).join(" / ") || "-"}</TableCell>
               </TableRow>
             ))}
             {items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   No results
                 </TableCell>
               </TableRow>

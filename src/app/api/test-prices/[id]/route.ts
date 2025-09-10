@@ -11,6 +11,12 @@ const patchSchema = z.object({
   description: z.string().nullable().optional(),
   priceCents: z.number().int().nonnegative().optional(),
   active: z.boolean().optional(),
+  examType: z.string().optional().nullable(),
+  department: z.string().optional().nullable(),
+  serialNo: z.string().optional().nullable(),
+  shortName: z.string().optional().nullable(),
+  deliveryType: z.string().optional().nullable(),
+  deliveryHour: z.number().int().nonnegative().optional().nullable(),
 });
 
 async function requireStaff(req: Request) {

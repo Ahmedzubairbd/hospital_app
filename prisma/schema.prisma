@@ -218,6 +218,14 @@ model TestPrice {
   createdByUserId String?
   createdBy       User?   @relation("PriceCreatedBy", fields: [createdByUserId], references: [id])
 
+  // Extended metadata for CSV import/display
+  examType       String?
+  department     String?
+  serialNo       String?
+  shortName      String?
+  deliveryType   String?
+  deliveryHour   Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
