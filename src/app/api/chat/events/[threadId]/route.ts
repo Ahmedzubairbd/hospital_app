@@ -1,11 +1,15 @@
 import { NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/nextauth";
+import { cookies } from "next/headers";
+import { verifyJwt } from "@/lib/auth";
+import { chatStore } from "@/lib/chat/store";
 
 // Keep SSE stable in serverless
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const maxDuration = 300;
-import { chatStore } from "@/lib/chat/store";
 
 function sseHeaders() {
   return new Headers({
@@ -21,6 +25,19 @@ export async function GET(
   { params }: { params: Promise<{ threadId: string }> },
 ) {
   const { threadId } = await params;
+  // AuthZ: admin/moderator via NextAuth OR patient token matching thread.userId
+  const session = await getServerSession(authOptions).catch(() => null);
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  const payload = token ? verifyJwt(token) : null;
+  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+
+  const thread = chatStore.listThreads().find((t) => t.id === threadId);
+  const isStaff = role === "admin" || role === "moderator";
+  const isPatientOwner = !!(payload?.sub && thread?.userId === payload.sub);
+  if (!isStaff && !isPatientOwner) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   // eslint-disable-next-line no-console
   console.log("[chat] SSE connect", threadId);
 

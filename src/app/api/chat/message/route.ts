@@ -23,6 +23,10 @@ export async function POST(req: NextRequest) {
     senderId = payload.sub;
   }
 
+  if (senderRole === "guest") {
+    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+  }
+
   const msg = chatStore.postMessage({ threadId: body.threadId, text: String(body.text).slice(0, 4000), senderRole, senderId });
 
   return NextResponse.json({ ok: true, message: msg });

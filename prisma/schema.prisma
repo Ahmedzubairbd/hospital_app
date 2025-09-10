@@ -367,3 +367,23 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+//////////////////////////////////////
+// CMS
+//////////////////////////////////////
+
+model CmsPage {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  slug      String   @unique
+  title     String
+  body      String   // markdown or html
+  excerpt   String?
+  published Boolean  @default(false)
+
+  authorId String
+  author   User  @relation(fields: [authorId], references: [id])
+
+  @@index([published])
+}
