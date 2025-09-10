@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Paper, Stack, Switch, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -32,6 +32,10 @@ export default function CmsPagesAdmin() {
     setEditing(p);
     setSlug(p.slug); setTitle(p.title); setBody(""); setExcerpt(p.excerpt ?? "");
     setOpen(true);
+  }
+  async function togglePublish(p: Page) {
+    const r = await fetch(`/api/cms/pages/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ published: !p.published }) });
+    if (r.ok) void load();
   }
   async function save() {
     setErr(null);
@@ -66,7 +70,7 @@ export default function CmsPagesAdmin() {
               <TableRow key={r.id}>
                 <TableCell>{r.slug}</TableCell>
                 <TableCell>{r.title}</TableCell>
-                <TableCell>{r.published ? "Yes" : "No"}</TableCell>
+                <TableCell><Switch checked={r.published} onChange={() => togglePublish(r)} /></TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => startEdit(r)}><EditIcon /></IconButton>
                 </TableCell>
@@ -97,4 +101,3 @@ export default function CmsPagesAdmin() {
     </Box>
   );
 }
-

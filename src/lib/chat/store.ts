@@ -100,7 +100,9 @@ function createStore(): ChatStore {
       return () => adminSubs.delete(cb);
     },
     listThreads() {
-      return Array.from(threads.values()).sort((a, b) => b.lastActivityAt - a.lastActivityAt);
+      return Array.from(threads.values())
+        .filter((t) => !t.archivedAt)
+        .sort((a, b) => b.lastActivityAt - a.lastActivityAt);
     },
     listMessages(threadId, limit = 50) {
       const arr = messages.get(threadId) ?? [];
@@ -113,3 +115,17 @@ function createStore(): ChatStore {
 
 export const chatStore: ChatStore = globalThis.__chatStore ?? (globalThis.__chatStore = createStore());
 
+// Auto-archive inactive threads to keep memory small
+if (!(globalThis as any).__chatArchiveTimer) {
+  (globalThis as any).__chatArchiveTimer = setInterval(() => {
+    try {
+      const now = Date.now();
+      const cutoff = now - 1000 * 60 * 60 * 24 * 7; // 7 days
+      for (const t of chatStore.threads.values()) {
+        if (!t.archivedAt && t.lastActivityAt < cutoff) t.archivedAt = now;
+      }
+    } catch {
+      // ignore
+    }
+  }, 1000 * 60 * 10); // check every 10 minutes
+}

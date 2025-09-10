@@ -90,14 +90,18 @@ const navItems = [
   { title: "Support Chat", path: "/dashboard/moderator/support-chat", icon: <GroupsIcon />, roles: ["moderator"] },
   { title: "CMS Pages", path: "/dashboard/admin/cms/pages", icon: <GroupsIcon />, roles: ["admin"] },
   { title: "CMS Pages", path: "/dashboard/moderator/cms/pages", icon: <GroupsIcon />, roles: ["moderator"] },
+  { title: "CMS Sliders", path: "/dashboard/admin/cms/sliders", icon: <GroupsIcon />, roles: ["admin"] },
+  { title: "CMS Sliders", path: "/dashboard/moderator/cms/sliders", icon: <GroupsIcon />, roles: ["moderator"] },
   // Admin-only doctor & pricing pages under admin namespace
   { title: "Doctors", path: "/dashboard/admin/doctors", icon: <GroupsIcon />, roles: ["admin"] },
   { title: "Test Prices", path: "/dashboard/admin/test-prices", icon: <PriceChangeIcon />, roles: ["admin"] },
   { title: "Patients", path: "/dashboard/admin/patients", icon: <GroupsIcon />, roles: ["admin"] },
+  { title: "Media", path: "/dashboard/admin/media", icon: <GroupsIcon />, roles: ["admin"] },
   // Moderator mirrors to moderator namespace (re-exported pages)
   { title: "Doctors", path: "/dashboard/moderator/doctors", icon: <GroupsIcon />, roles: ["moderator"] },
   { title: "Test Prices", path: "/dashboard/moderator/test-prices", icon: <PriceChangeIcon />, roles: ["moderator"] },
   { title: "Patients", path: "/dashboard/moderator/patients", icon: <GroupsIcon />, roles: ["moderator"] },
+  { title: "Media", path: "/dashboard/moderator/media", icon: <GroupsIcon />, roles: ["moderator"] },
   { title: "Profile", path: "/dashboard/profile", icon: <AccountCircleIcon />, roles: ["admin", "moderator", "patient"] },
   { title: "Settings", path: "/dashboard/settings", icon: <SettingsIcon />, roles: ["admin", "moderator", "patient"] },
 ];

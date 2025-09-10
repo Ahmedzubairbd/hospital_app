@@ -88,6 +88,8 @@ model User {
   authTokens      AuthToken[]
   accounts        Account[]
   sessions        Session[]
+  // CMS authored pages
+  cmsPages       CmsPage[]
 
   @@index([role])
 }

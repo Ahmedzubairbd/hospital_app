@@ -16,9 +16,9 @@ export type ChatThread = {
   // Optional association to a logged in user
   userId?: string;
   userName?: string;
+  archivedAt?: number;
 };
 
 export type AdminEvent =
   | { type: "thread:new"; thread: ChatThread }
   | { type: "message:new"; message: ChatMessage; thread: ChatThread };
-
