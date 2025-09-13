@@ -21,7 +21,7 @@ export default function BackgroundFX() {
         reduce
           ? { opacity: 0.6 }
           : {
-              x: [0, 40, -20, 0],
+              x: [0, 20, -20, 0],
               y: [0, -25, 30, 0],
               scale: [1, 1.08, 0.96, 1],
               opacity: [0.6, 0.75, 0.6, 0.6],
