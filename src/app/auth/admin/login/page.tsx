@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
               color: "#ecfeff",
             }}
           >
-            Use email: admin@example.com | password: Admin123
+            {/* Use email: admin@example.com | password: Admin123 */}
           </Alert>
           <TextField
             label="Email address"

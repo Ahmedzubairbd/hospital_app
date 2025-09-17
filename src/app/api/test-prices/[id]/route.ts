@@ -72,7 +72,17 @@ export async function PATCH(
       deliveryHour,
       ...base
     } = input;
-    const data = supportsExtended ? input : base;
+    const data = supportsExtended
+      ? {
+          ...base,
+          examType,
+          department,
+          serialNo,
+          shortName,
+          deliveryType,
+          deliveryHour,
+        }
+      : base;
 
     const { id } = await params;
 

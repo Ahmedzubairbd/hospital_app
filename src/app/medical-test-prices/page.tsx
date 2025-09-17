@@ -1,7 +1,9 @@
 "use client";
 import {
   Box,
+  Button,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +12,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
+import Image from "next/image";
 import * as React from "react";
 
 type TestPrice = {
@@ -45,19 +49,94 @@ export default function MedicalTestPricesPage() {
     void load("");
   }, []);
 
+  function handleSearch() {
+    void load(q.trim());
+  }
+
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Medical Test Prices
-      </Typography>
-      <TextField
-        label="Search"
-        size="small"
-        value={q}
-        onChange={(e) => setQ(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && load(q)}
-        sx={{ mb: 2 }}
-      />
+      <Paper
+        variant="outlined"
+        sx={(theme) => ({
+          mb: 3,
+          px: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          borderRadius: 3,
+          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)}, ${alpha(theme.palette.background.paper, 0.95)})`,
+        })}
+      >
+        <Stack spacing={2.5}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            alignItems={{ xs: "flex-start", sm: "center" }}
+          >
+            <Box
+              sx={(theme) => ({
+                p: 1.5,
+                borderRadius: 2,
+                bgcolor: alpha(theme.palette.primary.main, 0.12),
+                boxShadow: `0 12px 24px ${alpha(theme.palette.primary.main, 0.18)}`,
+                display: "inline-flex",
+              })}
+            >
+              <Image
+                src="/assets/icons/faqs/ic_payment.svg"
+                alt="Pricing icon"
+                width={64}
+                height={64}
+                priority
+              />
+            </Box>
+            <Box>
+              <Typography
+                variant="overline"
+                color="primary"
+                sx={{ fontWeight: 800, letterSpacing: 2 }}
+              >
+                Transparent Pricing
+              </Typography>
+              <Typography variant="h4" sx={{ fontWeight: 900 }} gutterBottom>
+                Medical Test Prices
+              </Typography>
+              <Typography color="text.secondary">
+                Search our most up-to-date laboratory and imaging fees for Amin
+                Diagnostic.
+              </Typography>
+            </Box>
+          </Stack>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1.5}
+            sx={{ width: "100%" }}
+          >
+            <TextField
+              label="Search"
+              size="small"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSearch();
+                }
+              }}
+              sx={{ flex: 1, minWidth: 0 }}
+            />
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={handleSearch}
+              sx={{
+                alignSelf: { xs: "stretch", sm: "center" },
+                px: { xs: 2, sm: 4 },
+              }}
+            >
+              Search
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
       <Paper variant="outlined">
         <Table>
           <TableHead>
