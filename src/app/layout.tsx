@@ -20,9 +20,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}`}>
       <body>
         <Providers>
-          <AppShell>
-            {children}
-          </AppShell>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

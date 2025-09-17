@@ -236,7 +236,12 @@ export default function AdminDoctorsPage() {
         </Table>
       </Paper>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>{editing ? "Edit Doctor" : "Add Doctor"}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
@@ -276,7 +281,9 @@ export default function AdminDoctorsPage() {
               value={form.branchId}
               onChange={(e) => setForm({ ...form, branchId: e.target.value })}
             >
-              <MenuItem value=""><em>None</em></MenuItem>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
               {branches.map((b) => (
                 <MenuItem key={b.id} value={b.id}>
                   {b.name}
@@ -307,7 +314,11 @@ export default function AdminDoctorsPage() {
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    const dataUrl = await compressImageFile(file, { maxWidth: 1600, maxHeight: 900, quality: 0.8 });
+                    const dataUrl = await compressImageFile(file, {
+                      maxWidth: 1600,
+                      maxHeight: 900,
+                      quality: 0.8,
+                    });
                     setForm({ ...form, sliderPictureUrl: dataUrl });
                   }}
                 />

@@ -113,7 +113,11 @@ export default function AdminTestPricesPage() {
     setErr(null);
     setMsg(null);
     // form.priceCents holds Taka in UI; convert to cents for API
-    const body = { ...form, priceCents: Math.round(Number(form.priceCents) * 100), deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null } as any;
+    const body = {
+      ...form,
+      priceCents: Math.round(Number(form.priceCents) * 100),
+      deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null,
+    } as any;
     const headers = { "Content-Type": "application/json" };
 
     let res: Response;
@@ -168,7 +172,10 @@ export default function AdminTestPricesPage() {
     try {
       const fd = new FormData();
       fd.append("file", csvFile);
-      const r = await fetch("/api/test-prices/import", { method: "POST", body: fd });
+      const r = await fetch("/api/test-prices/import", {
+        method: "POST",
+        body: fd,
+      });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "upload failed");
       setMsg(`Imported: ${j.imported}, Updated: ${j.updated}`);
@@ -222,8 +229,16 @@ export default function AdminTestPricesPage() {
           label="Show inactive"
         />
         <Box sx={{ flexGrow: 1 }} />
-        <input type="file" accept=".csv,text/csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
-        <Button variant="outlined" onClick={uploadCsv} disabled={importing || !csvFile}>
+        <input
+          type="file"
+          accept=".csv,text/csv"
+          onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+        />
+        <Button
+          variant="outlined"
+          onClick={uploadCsv}
+          disabled={importing || !csvFile}
+        >
           {importing ? "Importing..." : "Upload CSV"}
         </Button>
         <Button variant="text" onClick={importCsv} disabled={importing}>
@@ -274,7 +289,14 @@ export default function AdminTestPricesPage() {
                   {(r.priceCents / 100).toLocaleString()}
                 </TableCell>
                 <TableCell align="center">{r.active ? "Yes" : "No"}</TableCell>
-                <TableCell>{[r.deliveryType, r.deliveryHour ? `${r.deliveryHour}h` : null].filter(Boolean).join(" / ") || "-"}</TableCell>
+                <TableCell>
+                  {[
+                    r.deliveryType,
+                    r.deliveryHour ? `${r.deliveryHour}h` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" / ") || "-"}
+                </TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => startEdit(r)} aria-label="Edit">
                     <EditIcon />
@@ -323,8 +345,16 @@ export default function AdminTestPricesPage() {
               value={form.department ?? ""}
               onChange={(e) => setForm({ ...form, department: e.target.value })}
             />
-            <TextField label="Exam Type" value={form.examType ?? ""} onChange={(e) => setForm({ ...form, examType: e.target.value })} />
-            <TextField label="Serial No" value={form.serialNo ?? ""} onChange={(e) => setForm({ ...form, serialNo: e.target.value })} />
+            <TextField
+              label="Exam Type"
+              value={form.examType ?? ""}
+              onChange={(e) => setForm({ ...form, examType: e.target.value })}
+            />
+            <TextField
+              label="Serial No"
+              value={form.serialNo ?? ""}
+              onChange={(e) => setForm({ ...form, serialNo: e.target.value })}
+            />
             <TextField
               label="Price (৳)"
               type="number"
@@ -334,8 +364,21 @@ export default function AdminTestPricesPage() {
               }
               helperText="Stored as cents (৳ -> ×100 handled by you)"
             />
-            <TextField label="Delivery Type" value={form.deliveryType ?? ""} onChange={(e) => setForm({ ...form, deliveryType: e.target.value })} />
-            <TextField label="Delivery Hour" type="number" value={form.deliveryHour ?? 0} onChange={(e) => setForm({ ...form, deliveryHour: Number(e.target.value) })} />
+            <TextField
+              label="Delivery Type"
+              value={form.deliveryType ?? ""}
+              onChange={(e) =>
+                setForm({ ...form, deliveryType: e.target.value })
+              }
+            />
+            <TextField
+              label="Delivery Hour"
+              type="number"
+              value={form.deliveryHour ?? 0}
+              onChange={(e) =>
+                setForm({ ...form, deliveryHour: Number(e.target.value) })
+              }
+            />
             <FormControlLabel
               control={
                 <Switch

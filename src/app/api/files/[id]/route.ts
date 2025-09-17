@@ -6,9 +6,14 @@ import { del } from "@vercel/blob";
 
 export const runtime = "nodejs";
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const session = await getServerSession(authOptions).catch(() => null);
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
@@ -18,7 +23,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   try {
     // Only attempt remote delete for HTTPS Blob URLs
-    if (/^https:/.test(asset.url) && asset.url.includes(".public.blob.vercel-storage.com")) {
+    if (
+      /^https:/.test(asset.url) &&
+      asset.url.includes(".public.blob.vercel-storage.com")
+    ) {
       await del(asset.url);
     }
   } catch {
@@ -27,4 +35,3 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   await prisma.fileAsset.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
-

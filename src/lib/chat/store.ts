@@ -8,8 +8,14 @@ type ChatStore = {
   messages: Map<string, ChatMessage[]>;
   subs: Map<string, Set<Subscriber>>; // per threadId
   adminSubs: Set<AdminSubscriber>;
-  getOrCreateThread: (opts?: { userId?: string; userName?: string; preferredId?: string }) => ChatThread;
-  postMessage: (msg: Omit<ChatMessage, "id" | "createdAt"> & { id?: string }) => ChatMessage;
+  getOrCreateThread: (opts?: {
+    userId?: string;
+    userName?: string;
+    preferredId?: string;
+  }) => ChatThread;
+  postMessage: (
+    msg: Omit<ChatMessage, "id" | "createdAt"> & { id?: string },
+  ) => ChatMessage;
   subscribe: (threadId: string, cb: Subscriber) => () => void;
   subscribeAdmin: (cb: AdminSubscriber) => () => void;
   listThreads: () => ChatThread[];
@@ -51,10 +57,14 @@ function createStore(): ChatStore {
       }
       // Reuse by userId when present
       if (opts?.userId) {
-        const existing = Array.from(threads.values()).find((t) => t.userId === opts.userId);
+        const existing = Array.from(threads.values()).find(
+          (t) => t.userId === opts.userId,
+        );
         if (existing) return existing;
       }
-      const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const id =
+        globalThis.crypto?.randomUUID?.() ??
+        `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const now = Date.now();
       const thread: ChatThread = {
         id,
@@ -68,7 +78,10 @@ function createStore(): ChatStore {
       return thread;
     },
     postMessage(msgIn) {
-      const id = msgIn.id ?? (globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      const id =
+        msgIn.id ??
+        globalThis.crypto?.randomUUID?.() ??
+        `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       const createdAt = Date.now();
       ensureThread(msgIn.threadId);
       const t = threads.get(msgIn.threadId)!;
@@ -81,7 +94,9 @@ function createStore(): ChatStore {
       const s = subs.get(msg.threadId);
       if (s) s.forEach((cb) => cb({ type: "message", data: msg }));
       // Notify admins
-      adminSubs.forEach((cb) => cb({ type: "message:new", message: msg, thread: t }));
+      adminSubs.forEach((cb) =>
+        cb({ type: "message:new", message: msg, thread: t }),
+      );
       return msg;
     },
     subscribe(threadId, cb) {
@@ -113,19 +128,23 @@ function createStore(): ChatStore {
   return store;
 }
 
-export const chatStore: ChatStore = globalThis.__chatStore ?? (globalThis.__chatStore = createStore());
+export const chatStore: ChatStore =
+  globalThis.__chatStore ?? (globalThis.__chatStore = createStore());
 
 // Auto-archive inactive threads to keep memory small
 if (!(globalThis as any).__chatArchiveTimer) {
-  (globalThis as any).__chatArchiveTimer = setInterval(() => {
-    try {
-      const now = Date.now();
-      const cutoff = now - 1000 * 60 * 60 * 24 * 7; // 7 days
-      for (const t of chatStore.threads.values()) {
-        if (!t.archivedAt && t.lastActivityAt < cutoff) t.archivedAt = now;
+  (globalThis as any).__chatArchiveTimer = setInterval(
+    () => {
+      try {
+        const now = Date.now();
+        const cutoff = now - 1000 * 60 * 60 * 24 * 7; // 7 days
+        for (const t of chatStore.threads.values()) {
+          if (!t.archivedAt && t.lastActivityAt < cutoff) t.archivedAt = now;
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  }, 1000 * 60 * 10); // check every 10 minutes
+    },
+    1000 * 60 * 10,
+  ); // check every 10 minutes
 }

@@ -11,14 +11,27 @@ export async function POST(req: NextRequest) {
   }
   const session = await getServerSession(authOptions).catch(() => null);
   const cookieHeader = req.headers.get("cookie") ?? undefined;
-  const payload = cookieHeader ? verifyJwt(cookieHeader.split(";").find((c) => c.trim().startsWith("token="))?.split("=")[1] ?? "") : null;
+  const payload = cookieHeader
+    ? verifyJwt(
+        cookieHeader
+          .split(";")
+          .find((c) => c.trim().startsWith("token="))
+          ?.split("=")[1] ?? "",
+      )
+    : null;
 
-  const body = (await req.json().catch(() => null)) as { threadId?: string; text?: string } | null;
-  if (!body?.threadId || !body?.text) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  const body = (await req.json().catch(() => null)) as {
+    threadId?: string;
+    text?: string;
+  } | null;
+  if (!body?.threadId || !body?.text)
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
 
   let senderRole: "guest" | "patient" | "moderator" | "admin" = "guest";
   let senderId: string | undefined;
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
   if (role === "admin" || role === "moderator") {
     senderRole = role;
     senderId = (session?.user as any)?.id as string | undefined;
@@ -28,10 +41,18 @@ export async function POST(req: NextRequest) {
   }
 
   if (senderRole === "guest") {
-    return NextResponse.json({ error: "authentication required" }, { status: 401 });
+    return NextResponse.json(
+      { error: "authentication required" },
+      { status: 401 },
+    );
   }
 
-  const msg = chatStore.postMessage({ threadId: body.threadId, text: String(body.text).slice(0, 4000), senderRole, senderId });
+  const msg = chatStore.postMessage({
+    threadId: body.threadId,
+    text: String(body.text).slice(0, 4000),
+    senderRole,
+    senderId,
+  });
 
   return NextResponse.json({ ok: true, message: msg });
 }

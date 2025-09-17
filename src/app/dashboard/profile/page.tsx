@@ -117,7 +117,7 @@ export default function ProfilePage() {
                 label="Full Name"
                 value={profile.name}
                 onChange={(e) =>
-                  setProfile(p => p ? { ...p, name: e.target.value } : null)
+                  setProfile((p) => (p ? { ...p, name: e.target.value } : null))
                 }
                 disabled={!isEditing}
                 fullWidth
@@ -132,17 +132,27 @@ export default function ProfilePage() {
                 label="Phone Number"
                 value={profile.phone ?? "N/A"}
                 onChange={(e) =>
-                  setProfile(p => p ? { ...p, phone: e.target.value } : null)
+                  setProfile((p) =>
+                    p ? { ...p, phone: e.target.value } : null,
+                  )
                 }
                 disabled={!isEditing}
                 fullWidth
               />
               {isEditing && (
-                <Button type="submit" variant="contained" sx={{ alignSelf: "flex-start" }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ alignSelf: "flex-start" }}
+                >
                   Save Changes
                 </Button>
               )}
-              {msg && <Alert severity="success" onClose={() => setMsg(null)}>{msg}</Alert>}
+              {msg && (
+                <Alert severity="success" onClose={() => setMsg(null)}>
+                  {msg}
+                </Alert>
+              )}
             </Stack>
           </form>
         </CardContent>

@@ -22,15 +22,23 @@ function requirePatient(req: Request) {
 
 export async function GET(req: Request) {
   const userId = requirePatient(req);
-  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, phone: true } });
-  const patient = await prisma.patient.findUnique({ where: { userId }, select: { dateOfBirth: true, gender: true, insuranceNo: true } });
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true, email: true, phone: true },
+  });
+  const patient = await prisma.patient.findUnique({
+    where: { userId },
+    select: { dateOfBirth: true, gender: true, insuranceNo: true },
+  });
   return NextResponse.json({ user, patient });
 }
 
 export async function PATCH(req: Request) {
   const userId = requirePatient(req);
-  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   try {
     const body = await req.json();
     const input = patchSchema.parse(body);
@@ -42,7 +50,9 @@ export async function PATCH(req: Request) {
           where: { id: userId },
           data: {
             ...(input.name ? { name: input.name } : {}),
-            ...(input.password ? { passwordHash: await hashPassword(input.password) } : {}),
+            ...(input.password
+              ? { passwordHash: await hashPassword(input.password) }
+              : {}),
           },
         }),
       );
@@ -52,7 +62,9 @@ export async function PATCH(req: Request) {
         prisma.patient.update({
           where: { userId },
           data: {
-            ...(input.dateOfBirth ? { dateOfBirth: new Date(input.dateOfBirth) } : {}),
+            ...(input.dateOfBirth
+              ? { dateOfBirth: new Date(input.dateOfBirth) }
+              : {}),
             ...(input.gender ? { gender: input.gender as any } : {}),
             ...(input.insuranceNo ? { insuranceNo: input.insuranceNo } : {}),
           },
@@ -68,4 +80,3 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
-

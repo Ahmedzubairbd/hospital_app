@@ -40,8 +40,7 @@ function resolveDatabaseUrl(): string {
 
 const resolvedConnectionString = resolveDatabaseUrl();
 
-const connectionString =
-  process.env.DATABASE_URL ?? resolvedConnectionString;
+const connectionString = process.env.DATABASE_URL ?? resolvedConnectionString;
 
 if (!process.env.DATABASE_URL && process.env.NODE_ENV === "production") {
   // eslint-disable-next-line no-console

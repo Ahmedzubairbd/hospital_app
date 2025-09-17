@@ -49,7 +49,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { mode, toggle } = useColorMode();
   const { lang, setLang } = useI18n();
 
-  const [currentUser, setCurrentUser] = React.useState<{ name: string; role: string } | null>(null);
+  const [currentUser, setCurrentUser] = React.useState<{
+    name: string;
+    role: string;
+  } | null>(null);
   const [authLoading, setAuthLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -73,7 +76,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const toggleMobile = (open: boolean) => () => setMobileOpen(open);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleNavigate = (path: string) => {
@@ -114,19 +118,35 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Container maxWidth="lg">
           <Toolbar disableGutters sx={{ gap: 1, minHeight: 64 }}>
             <Logo />
-            <Box sx={{ display: { xs: "none", md: "flex" }, gap: 0.5, flexGrow: 1 }}>
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 0.5,
+                flexGrow: 1,
+              }}
+            >
               <LayoutGroup id="topnav">
                 {getNavItems(lang).map((it) => {
                   const active = pathname === it.href;
                   return (
                     <Box key={it.href} sx={{ position: "relative" }}>
-                      <Button component={Link} href={it.href} color={active ? "primary" : "inherit"}>
+                      <Button
+                        component={Link}
+                        href={it.href}
+                        color={active ? "primary" : "inherit"}
+                      >
                         {it.label}
                       </Button>
                       {active && (
                         <motion.div
                           layoutId="nav-underline"
-                          style={{ height: 2, position: "absolute", left: 12, right: 12, bottom: -2 }}
+                          style={{
+                            height: 2,
+                            position: "absolute",
+                            left: 12,
+                            right: 12,
+                            bottom: -2,
+                          }}
                         />
                       )}
                     </Box>
@@ -136,14 +156,31 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </Box>
             <Box sx={{ flexGrow: { xs: 1, md: 0 } }} />
 
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: "none", md: "flex" } }}>
-              <Tooltip title={mode === "dark" ? "Switch to light" : "Switch to dark"}>
-                <IconButton color="inherit" onClick={toggle} aria-label="Toggle color mode">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ display: { xs: "none", md: "flex" } }}
+            >
+              <Tooltip
+                title={mode === "dark" ? "Switch to light" : "Switch to dark"}
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={toggle}
+                  aria-label="Toggle color mode"
+                >
                   {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
                 </IconButton>
               </Tooltip>
-              <Tooltip title={lang === "en" ? "Switch to বাংলা" : "Switch to English"}>
-                <IconButton color="inherit" onClick={() => setLang(lang === "en" ? "bn" : "en")} aria-label="Toggle language">
+              <Tooltip
+                title={lang === "en" ? "Switch to বাংলা" : "Switch to English"}
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={() => setLang(lang === "en" ? "bn" : "en")}
+                  aria-label="Toggle language"
+                >
                   <TranslateIcon />
                 </IconButton>
               </Tooltip>
@@ -164,19 +201,38 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem onClick={() => handleNavigate(dashboardHref)}>Dashboard</MenuItem>
-                    <MenuItem onClick={() => handleNavigate("/dashboard/profile")}>Profile</MenuItem>
-                    <MenuItem onClick={() => handleNavigate("/dashboard/settings")}>Settings</MenuItem>
+                    <MenuItem onClick={() => handleNavigate(dashboardHref)}>
+                      Dashboard
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => handleNavigate("/dashboard/profile")}
+                    >
+                      Profile
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => handleNavigate("/dashboard/settings")}
+                    >
+                      Settings
+                    </MenuItem>
                     <Divider />
                     <MenuItem onClick={logout}>Logout</MenuItem>
                   </Menu>
                 </>
               ) : (
                 <>
-                  <Button component={Link} href="/auth/portal/login" color="inherit" startIcon={<LoginIcon />}>
+                  <Button
+                    component={Link}
+                    href="/auth/portal/login"
+                    color="inherit"
+                    startIcon={<LoginIcon />}
+                  >
                     Portal
                   </Button>
-                  <Button component={Link} href="/auth/admin/login" variant="contained">
+                  <Button
+                    component={Link}
+                    href="/auth/admin/login"
+                    variant="contained"
+                  >
                     Admin Login
                   </Button>
                 </>
@@ -204,7 +260,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {getNavItems(lang).map((it) => {
               const active = pathname === it.href;
               return (
-                <ListItemButton key={it.href} selected={active} onClick={handleMobileNavigate(it.href)}>
+                <ListItemButton
+                  key={it.href}
+                  selected={active}
+                  onClick={handleMobileNavigate(it.href)}
+                >
                   {it.icon ? <ListItemIcon>{it.icon}</ListItemIcon> : null}
                   <ListItemText primary={it.label} />
                 </ListItemButton>
@@ -223,13 +283,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItemButton>
-              <ListItemButton onClick={handleMobileNavigate("/dashboard/profile")}>
+              <ListItemButton
+                onClick={handleMobileNavigate("/dashboard/profile")}
+              >
                 <ListItemIcon>
                   <AccountCircleIcon />
                 </ListItemIcon>
                 <ListItemText primary="Profile" />
               </ListItemButton>
-              <ListItemButton onClick={handleMobileNavigate("/dashboard/settings")}>
+              <ListItemButton
+                onClick={handleMobileNavigate("/dashboard/settings")}
+              >
                 <ListItemIcon>
                   <SettingsIcon />
                 </ListItemIcon>
@@ -248,25 +312,49 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </ListItemButton>
             </List>
           ) : (
-            <List sx={{ py: 0 }} subheader={<ListSubheader disableSticky>Sign in</ListSubheader>}>
-              <ListItemButton onClick={handleMobileNavigate("/auth/portal/login")}> 
+            <List
+              sx={{ py: 0 }}
+              subheader={<ListSubheader disableSticky>Sign in</ListSubheader>}
+            >
+              <ListItemButton
+                onClick={handleMobileNavigate("/auth/portal/login")}
+              >
                 <ListItemIcon>
                   <LoginIcon />
                 </ListItemIcon>
                 <ListItemText primary="Portal" />
               </ListItemButton>
-              <ListItemButton onClick={handleMobileNavigate("/auth/admin/login")}> 
+              <ListItemButton
+                onClick={handleMobileNavigate("/auth/admin/login")}
+              >
                 <ListItemText primary="Admin Login" />
               </ListItemButton>
             </List>
           )}
           <Divider />
-          <List sx={{ py: 0 }} subheader={<ListSubheader disableSticky>Preferences</ListSubheader>}>
-            <ListItemButton onClick={() => { toggle(); setMobileOpen(false); }}>
-              <ListItemIcon>{mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-              <ListItemText primary={mode === "dark" ? "Light Mode" : "Dark Mode"} />
+          <List
+            sx={{ py: 0 }}
+            subheader={<ListSubheader disableSticky>Preferences</ListSubheader>}
+          >
+            <ListItemButton
+              onClick={() => {
+                toggle();
+                setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon>
+                {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </ListItemIcon>
+              <ListItemText
+                primary={mode === "dark" ? "Light Mode" : "Dark Mode"}
+              />
             </ListItemButton>
-            <ListItemButton onClick={() => { setLang(lang === "en" ? "bn" : "en"); setMobileOpen(false); }}>
+            <ListItemButton
+              onClick={() => {
+                setLang(lang === "en" ? "bn" : "en");
+                setMobileOpen(false);
+              }}
+            >
               <ListItemIcon>
                 <TranslateIcon />
               </ListItemIcon>
@@ -276,11 +364,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </Box>
       </Drawer>
 
-      <Container component="main" maxWidth="lg" sx={{ flex: "1 0 auto", py: 3, position: "relative", zIndex: 2 }}>
+      <Container
+        component="main"
+        maxWidth="lg"
+        sx={{ flex: "1 0 auto", py: 3, position: "relative", zIndex: 2 }}
+      >
         {children}
       </Container>
 
-      <Box component="footer" sx={{ borderTop: (t) => `1px solid ${t.palette.divider}`, py: 3, zIndex: 1 }}>
+      <Box
+        component="footer"
+        sx={{
+          borderTop: (t) => `1px solid ${t.palette.divider}`,
+          py: 3,
+          zIndex: 1,
+        }}
+      >
         <Container maxWidth="lg">
           <Typography variant="body2" color="text.secondary">
             © {new Date().getFullYear()} Amin Diagnostics • All rights reserved.

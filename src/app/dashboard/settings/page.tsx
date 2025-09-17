@@ -29,10 +29,7 @@ export default function SettingsPage() {
           <Stack spacing={2} sx={{ maxWidth: 400 }}>
             <FormControlLabel
               control={
-                <Switch
-                  checked={mode === "dark"}
-                  onChange={toggleColorMode}
-                />
+                <Switch checked={mode === "dark"} onChange={toggleColorMode} />
               }
               label={`Theme: ${mode === "dark" ? "Dark" : "Light"}`}
             />

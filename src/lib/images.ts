@@ -26,4 +26,3 @@ export async function compressImageFile(
   ctx.drawImage(img, 0, 0, width, height);
   return canvas.toDataURL("image/jpeg", quality);
 }
-

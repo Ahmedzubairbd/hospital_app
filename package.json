@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check tsc --no-emit",
+    "lint": "biome check src/lib/test-price-csv.ts src/app/api/test-prices src/app/medical-test-prices/page.tsx src/app/dashboard/admin/page.tsx src/app/api/sms/send/route.ts src/app/api/sms/status/route.ts && tsc --noEmit",
     "format": "biome format --write",
     "postinstall": "prisma generate",
     "vercel-build": "prisma generate && next build"

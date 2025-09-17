@@ -15,7 +15,7 @@ export default async function AdminDashboardLayout({
     redirect("/auth/admin/login");
   }
 
-  if (String(session.user.role || '').toLowerCase() !== "admin") {
+  if (String(session.user.role || "").toLowerCase() !== "admin") {
     redirect("/access-denied");
   }
 

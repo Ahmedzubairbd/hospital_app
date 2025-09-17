@@ -5,7 +5,9 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const secret = process.env.CRON_SECRET || process.env.QSTASH_TOKEN || "";
-  const provided = req.headers.get("x-task-secret") || req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const provided =
+    req.headers.get("x-task-secret") ||
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   if (!secret || provided !== secret) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
@@ -24,4 +26,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, pruned: true });
 }
-

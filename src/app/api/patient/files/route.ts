@@ -17,14 +17,20 @@ async function getPatientUserId() {
 
 export async function GET() {
   const userId = await getPatientUserId();
-  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const items = await prisma.fileAsset.findMany({ where: { ownerUserId: userId }, orderBy: { createdAt: "desc" }, take: 100 });
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const items = await prisma.fileAsset.findMany({
+    where: { ownerUserId: userId },
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  });
   return NextResponse.json(items);
 }
 
 export async function POST(req: NextRequest) {
   const userId = await getPatientUserId();
-  if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const ct = req.headers.get("content-type") || "";
   if (ct.includes("application/json")) {
@@ -33,13 +39,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid request" }, { status: 400 });
     }
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json({ error: "blob token missing on server" }, { status: 500 });
+      return NextResponse.json(
+        { error: "blob token missing on server" },
+        { status: 500 },
+      );
     }
     return handleUpload({
       request: req,
       body: json,
       async onBeforeGenerateToken() {
-        const imageTypes = ["image/avif", "image/webp", "image/png", "image/jpeg", "image/gif"];
+        const imageTypes = [
+          "image/avif",
+          "image/webp",
+          "image/png",
+          "image/jpeg",
+          "image/gif",
+        ];
         return {
           allowedContentTypes: imageTypes,
           maximumSizeInBytes: 10 * 1024 * 1024,
@@ -72,14 +87,19 @@ export async function POST(req: NextRequest) {
   // multipart fallback
   const form = await req.formData();
   const file = form.get("file");
-  if (!(file instanceof File)) return NextResponse.json({ error: "file field required" }, { status: 400 });
+  if (!(file instanceof File))
+    return NextResponse.json({ error: "file field required" }, { status: 400 });
   try {
-    const blob = await put(`user/${userId}/${Date.now()}-${(file as any).name}`.replace(/\s+/g, "_"), file as unknown as Blob, {
-      access: "public",
-      contentType: (file as any).type || "application/octet-stream",
-      addRandomSuffix: true,
-      cacheControlMaxAge: 60 * 60 * 24 * 365,
-    });
+    const blob = await put(
+      `user/${userId}/${Date.now()}-${(file as any).name}`.replace(/\s+/g, "_"),
+      file as unknown as Blob,
+      {
+        access: "public",
+        contentType: (file as any).type || "application/octet-stream",
+        addRandomSuffix: true,
+        cacheControlMaxAge: 60 * 60 * 24 * 365,
+      },
+    );
     let size: number | null = null;
     let contentType: string | null = (file as any).type || null;
     try {
@@ -88,7 +108,13 @@ export async function POST(req: NextRequest) {
       contentType = meta.contentType ?? contentType;
     } catch {}
     const uploaded = await prisma.fileAsset.create({
-      data: { bucketKey: blob.pathname, url: blob.url, contentType, sizeBytes: size, ownerUserId: userId },
+      data: {
+        bucketKey: blob.pathname,
+        url: blob.url,
+        contentType,
+        sizeBytes: size,
+        ownerUserId: userId,
+      },
     });
     return NextResponse.json(uploaded, { status: 201 });
   } catch (e) {
@@ -96,9 +122,14 @@ export async function POST(req: NextRequest) {
     const base64 = Buffer.from(arrayBuffer).toString("base64");
     const dataUrl = `data:${(file as any).type || "application/octet-stream"};base64,${base64}`;
     const uploaded = await prisma.fileAsset.create({
-      data: { bucketKey: `inline:${Date.now()}`, url: dataUrl, contentType: (file as any).type || null, sizeBytes: (file as any).size || null, ownerUserId: userId },
+      data: {
+        bucketKey: `inline:${Date.now()}`,
+        url: dataUrl,
+        contentType: (file as any).type || null,
+        sizeBytes: (file as any).size || null,
+        ownerUserId: userId,
+      },
     });
     return NextResponse.json(uploaded, { status: 201 });
   }
 }
-

@@ -157,12 +157,21 @@ export default function PortalRegisterPage() {
             label="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            helperText={normalized && normalized !== phone ? `Normalized: ${normalized}` : " "}
+            helperText={
+              normalized && normalized !== phone
+                ? `Normalized: ${normalized}`
+                : " "
+            }
             fullWidth
           />
 
           <FormControlLabel
-            control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
+            control={
+              <Checkbox
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+              />
+            }
             label={
               <Typography variant="body2" color="text.secondary">
                 I agree to the Terms & Privacy Policy
@@ -176,7 +185,11 @@ export default function PortalRegisterPage() {
               onClick={send}
               disabled={sending || cooldown > 0}
             >
-              {sending ? "Sending…" : cooldown > 0 ? `Resend in ${cooldown}s` : "Send OTP"}
+              {sending
+                ? "Sending…"
+                : cooldown > 0
+                  ? `Resend in ${cooldown}s`
+                  : "Send OTP"}
             </Button>
 
             <TextField
@@ -201,8 +214,7 @@ export default function PortalRegisterPage() {
           {msg && <Alert severity="success">{msg}</Alert>}
 
           <Typography variant="body2" color="text.secondary">
-            Already have an account?{" "}
-            <a href="/auth/portal/login">Log in</a>
+            Already have an account? <a href="/auth/portal/login">Log in</a>
           </Typography>
         </Stack>
       </Box>

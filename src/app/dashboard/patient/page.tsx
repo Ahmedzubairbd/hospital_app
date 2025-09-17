@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-
 type Doctor = {
   id: string;
   specialization: string;
@@ -55,12 +54,12 @@ export default function PatientDashboard() {
 
       // --- doctors ---
       let j1: unknown = await r1.json().catch(() => []);
-      const docsArr = Array.isArray(j1) ? j1 : (j1 as any)?.data ?? [];
+      const docsArr = Array.isArray(j1) ? j1 : ((j1 as any)?.data ?? []);
       setDocs(docsArr);
 
       // --- appointments ---
       let j2: unknown = await r2.json().catch(() => []);
-      const apptsArr = Array.isArray(j2) ? j2 : (j2 as any)?.data ?? [];
+      const apptsArr = Array.isArray(j2) ? j2 : ((j2 as any)?.data ?? []);
       if (!Array.isArray(apptsArr)) throw new Error("Bad appointments payload");
       setAppts(apptsArr);
     } catch (e: any) {

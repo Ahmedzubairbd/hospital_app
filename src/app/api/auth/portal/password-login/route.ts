@@ -5,7 +5,10 @@ import { verifyPassword } from "@/lib/password";
 import { normalizePhoneBD } from "@/lib/sms";
 import { signJwt } from "@/lib/auth";
 
-const schema = z.object({ phone: z.string().min(8), password: z.string().min(8) });
+const schema = z.object({
+  phone: z.string().min(8),
+  password: z.string().min(8),
+});
 
 export async function POST(req: Request) {
   try {
@@ -13,12 +16,24 @@ export async function POST(req: Request) {
     const { phone, password } = schema.parse(body);
     const normalized = normalizePhoneBD(phone);
     const user = await prisma.user.findFirst({ where: { phone: normalized } });
-    if (!user || !user.passwordHash) return NextResponse.json({ error: "invalid credentials" }, { status: 401 });
-    if (user.role !== "PATIENT") return NextResponse.json({ error: "unauthorized" }, { status: 403 });
+    if (!user || !user.passwordHash)
+      return NextResponse.json(
+        { error: "invalid credentials" },
+        { status: 401 },
+      );
+    if (user.role !== "PATIENT")
+      return NextResponse.json({ error: "unauthorized" }, { status: 403 });
     const ok = await verifyPassword(password, user.passwordHash);
-    if (!ok) return NextResponse.json({ error: "invalid credentials" }, { status: 401 });
+    if (!ok)
+      return NextResponse.json(
+        { error: "invalid credentials" },
+        { status: 401 },
+      );
 
-    const token = signJwt({ sub: user.id, role: "patient", phone: normalized }, "7d");
+    const token = signJwt(
+      { sub: user.id, role: "patient", phone: normalized },
+      "7d",
+    );
     const res = NextResponse.json({ ok: true });
     res.cookies.set("token", token, {
       httpOnly: true,
@@ -33,4 +48,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
-

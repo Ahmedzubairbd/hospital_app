@@ -3,9 +3,15 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function CmsPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CmsPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
-  const page = await (prisma as any).cmsPage.findFirst({ where: { slug, published: true } });
+  const page = await (prisma as any).cmsPage.findFirst({
+    where: { slug, published: true },
+  });
   if (!page) return notFound();
   return (
     <main style={{ maxWidth: 860, margin: "0 auto", padding: 16 }}>
@@ -15,4 +21,3 @@ export default async function CmsPage({ params }: { params: Promise<{ slug: stri
     </main>
   );
 }
-

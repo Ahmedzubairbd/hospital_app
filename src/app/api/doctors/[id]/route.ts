@@ -18,10 +18,10 @@ const patchSchema = z.object({
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
-  const role = String(session?.user?.role || '').toLowerCase();
+  const role = String(session?.user?.role || "").toLowerCase();
   if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
@@ -37,9 +37,14 @@ export async function PATCH(
     }
 
     if (input.email) {
-      const existing = await prisma.user.findUnique({ where: { email: input.email } });
+      const existing = await prisma.user.findUnique({
+        where: { email: input.email },
+      });
       if (existing && existing.id !== doctor.userId) {
-        return NextResponse.json({ error: "Email already in use" }, { status: 409 });
+        return NextResponse.json(
+          { error: "Email already in use" },
+          { status: 409 },
+        );
       }
     }
 
@@ -49,10 +54,12 @@ export async function PATCH(
     if (input.phone) userUpdateData.phone = input.phone;
 
     const doctorUpdateData: Record<string, unknown> = {};
-    if (input.specialization) doctorUpdateData.specialization = input.specialization;
+    if (input.specialization)
+      doctorUpdateData.specialization = input.specialization;
     if (input.bio) doctorUpdateData.bio = input.bio;
     if (input.schedule) doctorUpdateData.schedule = input.schedule;
-    if (input.sliderPictureUrl) doctorUpdateData.sliderPictureUrl = input.sliderPictureUrl;
+    if (input.sliderPictureUrl)
+      doctorUpdateData.sliderPictureUrl = input.sliderPictureUrl;
     if (input.branchId) doctorUpdateData.branchId = input.branchId;
 
     const [, updatedDoctor] = await prisma.$transaction([
@@ -82,10 +89,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
-  const role = String(session?.user?.role || '').toLowerCase();
+  const role = String(session?.user?.role || "").toLowerCase();
   if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
@@ -102,8 +109,17 @@ export async function DELETE(
 
     return NextResponse.json({ ok: true });
   } catch (e: unknown) {
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2003') {
-        return NextResponse.json({ error: "Cannot delete doctor with existing appointments. Please reassign or delete them first." }, { status: 409 });
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2003"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Cannot delete doctor with existing appointments. Please reassign or delete them first.",
+        },
+        { status: 409 },
+      );
     }
     const message = e instanceof Error ? e.message : "failed";
     return NextResponse.json({ error: message }, { status: 500 });

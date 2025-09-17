@@ -21,7 +21,12 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { styled, useTheme, type Theme, type CSSObject } from "@mui/material/styles";
+import {
+  styled,
+  useTheme,
+  type Theme,
+  type CSSObject,
+} from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -42,7 +47,10 @@ const MINI_DRAWER_WIDTH = 90; // collapsed width
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
-  transition: theme.transitions.create("width", { easing: theme.transitions.easing.sharp, duration: theme.transitions.duration.enteringScreen }),
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
   overflowX: "hidden",
 });
 
@@ -63,13 +71,21 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(({ theme, open }) => ({
+const DesktopDrawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
   width: DRAWER_WIDTH,
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
-  ...(open && { ...openedMixin(theme), "& .MuiDrawer-paper": openedMixin(theme) }),
-  ...(!open && { ...closedMixin(theme), "& .MuiDrawer-paper": closedMixin(theme) }),
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
 }));
 
 // Styled AppBar to mirror template: no shadow, bottom border, above drawer
@@ -83,32 +99,140 @@ const HeaderAppBar = styled(MuiAppBar)(({ theme }) => ({
 }));
 
 const navItems = [
-  { title: "Dashboard", path: "/dashboard/admin", icon: <DashboardIcon />, roles: ["admin"] },
-  { title: "Dashboard", path: "/dashboard/moderator", icon: <DashboardIcon />, roles: ["moderator"] },
-  { title: "Dashboard", path: "/dashboard/patient", icon: <DashboardIcon />, roles: ["patient"] },
-  { title: "Support Chat", path: "/dashboard/admin/support-chat", icon: <GroupsIcon />, roles: ["admin"] },
-  { title: "Support Chat", path: "/dashboard/moderator/support-chat", icon: <GroupsIcon />, roles: ["moderator"] },
-  { title: "CMS Pages", path: "/dashboard/admin/cms/pages", icon: <GroupsIcon />, roles: ["admin"] },
-  { title: "CMS Pages", path: "/dashboard/moderator/cms/pages", icon: <GroupsIcon />, roles: ["moderator"] },
-  { title: "CMS Sliders", path: "/dashboard/admin/cms/sliders", icon: <GroupsIcon />, roles: ["admin"] },
-  { title: "CMS Sliders", path: "/dashboard/moderator/cms/sliders", icon: <GroupsIcon />, roles: ["moderator"] },
+  {
+    title: "Dashboard",
+    path: "/dashboard/admin",
+    icon: <DashboardIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "Dashboard",
+    path: "/dashboard/moderator",
+    icon: <DashboardIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "Dashboard",
+    path: "/dashboard/patient",
+    icon: <DashboardIcon />,
+    roles: ["patient"],
+  },
+  {
+    title: "Support Chat",
+    path: "/dashboard/admin/support-chat",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "Support Chat",
+    path: "/dashboard/moderator/support-chat",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "CMS Pages",
+    path: "/dashboard/admin/cms/pages",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "CMS Pages",
+    path: "/dashboard/moderator/cms/pages",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "CMS Sliders",
+    path: "/dashboard/admin/cms/sliders",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "CMS Sliders",
+    path: "/dashboard/moderator/cms/sliders",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
   // Admin-only doctor & pricing pages under admin namespace
-  { title: "Doctors", path: "/dashboard/admin/doctors", icon: <GroupsIcon />, roles: ["admin"] },
-  { title: "Test Prices", path: "/dashboard/admin/test-prices", icon: <PriceChangeIcon />, roles: ["admin"] },
-  { title: "Patients", path: "/dashboard/admin/patients", icon: <GroupsIcon />, roles: ["admin"] },
-  { title: "Media", path: "/dashboard/admin/media", icon: <GroupsIcon />, roles: ["admin"] },
+  {
+    title: "Doctors",
+    path: "/dashboard/admin/doctors",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "Test Prices",
+    path: "/dashboard/admin/test-prices",
+    icon: <PriceChangeIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "Patients",
+    path: "/dashboard/admin/patients",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
+  {
+    title: "Media",
+    path: "/dashboard/admin/media",
+    icon: <GroupsIcon />,
+    roles: ["admin"],
+  },
   // Moderator mirrors to moderator namespace (re-exported pages)
-  { title: "Doctors", path: "/dashboard/moderator/doctors", icon: <GroupsIcon />, roles: ["moderator"] },
-  { title: "Test Prices", path: "/dashboard/moderator/test-prices", icon: <PriceChangeIcon />, roles: ["moderator"] },
-  { title: "Patients", path: "/dashboard/moderator/patients", icon: <GroupsIcon />, roles: ["moderator"] },
-  { title: "Media", path: "/dashboard/moderator/media", icon: <GroupsIcon />, roles: ["moderator"] },
+  {
+    title: "Doctors",
+    path: "/dashboard/moderator/doctors",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "Test Prices",
+    path: "/dashboard/moderator/test-prices",
+    icon: <PriceChangeIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "Patients",
+    path: "/dashboard/moderator/patients",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
+  {
+    title: "Media",
+    path: "/dashboard/moderator/media",
+    icon: <GroupsIcon />,
+    roles: ["moderator"],
+  },
   // Patient files
-  { title: "My Files", path: "/dashboard/patient/files", icon: <GroupsIcon />, roles: ["patient"] },
-  { title: "Profile", path: "/dashboard/profile", icon: <AccountCircleIcon />, roles: ["admin", "moderator", "patient"] },
-  { title: "Settings", path: "/dashboard/settings", icon: <SettingsIcon />, roles: ["admin", "moderator", "patient"] },
+  {
+    title: "My Files",
+    path: "/dashboard/patient/files",
+    icon: <GroupsIcon />,
+    roles: ["patient"],
+  },
+  {
+    title: "Profile",
+    path: "/dashboard/profile",
+    icon: <AccountCircleIcon />,
+    roles: ["admin", "moderator", "patient"],
+  },
+  {
+    title: "Settings",
+    path: "/dashboard/settings",
+    icon: <SettingsIcon />,
+    roles: ["admin", "moderator", "patient"],
+  },
 ];
 
-export default function DashboardLayout({ children, role, userName = "User" }: { children: React.ReactNode; role: AppRole; userName?: string }) {
+export default function DashboardLayout({
+  children,
+  role,
+  userName = "User",
+}: {
+  children: React.ReactNode;
+  role: AppRole;
+  userName?: string;
+}) {
   const theme = useTheme();
   const router = useRouter();
   const pathname = usePathname();
@@ -126,7 +250,8 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
   const closeMobileDrawer = () => setMobileOpen(false);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const handleProfileMenuOpen = (e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget);
+  const handleProfileMenuOpen = (e: React.MouseEvent<HTMLElement>) =>
+    setAnchorEl(e.currentTarget);
   const handleProfileMenuClose = () => setAnchorEl(null);
 
   const handleNavigate = (path: string) => {
@@ -141,7 +266,10 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
     if (res.ok) router.push("/");
   };
 
-  const filteredNavItems = React.useMemo(() => navItems.filter((item) => item.roles.includes(role)), [role]);
+  const filteredNavItems = React.useMemo(
+    () => navItems.filter((item) => item.roles.includes(role)),
+    [role],
+  );
 
   const DrawerContent = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
@@ -158,7 +286,12 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
       <List sx={{ flexGrow: 1, overflowY: "auto" }}>
         {filteredNavItems.map((item) => (
           <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
-            <Tooltip title={item.title} placement="right" arrow disableHoverListener={open}>
+            <Tooltip
+              title={item.title}
+              placement="right"
+              arrow
+              disableHoverListener={open}
+            >
               <ListItemButton
                 selected={pathname === item.path}
                 onClick={() => {
@@ -168,11 +301,24 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
                 sx={{
                   minHeight: 48,
                   px: 2,
-                  ...(open ? { pl: 2.5 } : { pl: 1.5, justifyContent: "center" }),
+                  ...(open
+                    ? { pl: 2.5 }
+                    : { pl: 1.5, justifyContent: "center" }),
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 2 : 0, justifyContent: "center" }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.title} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 2 : 0,
+                    justifyContent: "center",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.title}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </Tooltip>
           </ListItem>
@@ -192,7 +338,11 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
       }}
     >
       <CssBaseline />
-      <HeaderAppBar color="inherit" position="absolute" sx={{ displayPrint: "none" }}>
+      <HeaderAppBar
+        color="inherit"
+        position="absolute"
+        sx={{ displayPrint: "none" }}
+      >
         <Toolbar sx={{ backgroundColor: "inherit", mx: { xs: -0.75, sm: -1 } }}>
           <IconButton
             color="inherit"
@@ -208,7 +358,9 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
           </Typography>
           <Tooltip title="Account settings">
             <IconButton onClick={handleProfileMenuOpen} size="small">
-              <Avatar sx={{ width: 32, height: 32 }}>{userName.charAt(0).toUpperCase()}</Avatar>
+              <Avatar sx={{ width: 32, height: 32 }}>
+                {userName.charAt(0).toUpperCase()}
+              </Avatar>
             </IconButton>
           </Tooltip>
         </Toolbar>
@@ -226,7 +378,12 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
           onClose={closeMobileDrawer}
           // Unmount when closed to remove focusable content from DOM for a11y
           ModalProps={{ keepMounted: false }}
-          sx={{ "& .MuiDrawer-paper": { boxSizing: "border-box", width: DRAWER_WIDTH } }}
+          sx={{
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: DRAWER_WIDTH,
+            },
+          }}
         >
           {DrawerContent}
         </SwipeableDrawer>
@@ -251,9 +408,18 @@ export default function DashboardLayout({ children, role, userName = "User" }: {
         </Box>
       </Box>
 
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose} sx={{ mt: 1 }}>
-        <MenuItem onClick={() => handleNavigate("/dashboard/profile")}>Profile</MenuItem>
-        <MenuItem onClick={() => handleNavigate("/dashboard/settings")}>Settings</MenuItem>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleProfileMenuClose}
+        sx={{ mt: 1 }}
+      >
+        <MenuItem onClick={() => handleNavigate("/dashboard/profile")}>
+          Profile
+        </MenuItem>
+        <MenuItem onClick={() => handleNavigate("/dashboard/settings")}>
+          Settings
+        </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>

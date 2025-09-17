@@ -23,7 +23,9 @@ export async function GET(req: NextRequest) {
     return new Response("Too many requests", { status: 429 });
   }
   const session = await getServerSession(authOptions).catch(() => null);
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
   if (!session?.user || (role !== "admin" && role !== "moderator")) {
     return new Response("Unauthorized", { status: 401 });
   }

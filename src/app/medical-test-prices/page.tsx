@@ -1,16 +1,16 @@
 "use client";
-import * as React from "react";
 import {
   Box,
   Paper,
-  TextField,
-  Typography,
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
+  TextField,
+  Typography,
 } from "@mui/material";
+import * as React from "react";
 
 type TestPrice = {
   id: string;
@@ -20,6 +20,9 @@ type TestPrice = {
   priceCents: number;
   active: boolean;
   department?: string | null;
+  examType?: string | null;
+  shortName?: string | null;
+  serialNo?: string | null;
   deliveryType?: string | null;
   deliveryHour?: number | null;
 };
@@ -37,6 +40,7 @@ export default function MedicalTestPricesPage() {
     setItems(data);
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial load only
   React.useEffect(() => {
     void load("");
   }, []);
@@ -60,9 +64,12 @@ export default function MedicalTestPricesPage() {
             <TableRow>
               <TableCell>Code</TableCell>
               <TableCell>Name</TableCell>
+              <TableCell>Short Name</TableCell>
               <TableCell>Department</TableCell>
+              <TableCell>Exam Type</TableCell>
               <TableCell align="right">Price (৳)</TableCell>
               <TableCell>Delivery</TableCell>
+              <TableCell align="center">Active</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -70,16 +77,26 @@ export default function MedicalTestPricesPage() {
               <TableRow key={t.id} hover>
                 <TableCell>{t.code}</TableCell>
                 <TableCell>{t.name}</TableCell>
+                <TableCell>{t.shortName ?? "-"}</TableCell>
                 <TableCell>{t.department ?? "-"}</TableCell>
+                <TableCell>{t.examType ?? "-"}</TableCell>
                 <TableCell align="right">
                   {(t.priceCents / 100).toLocaleString()}
                 </TableCell>
-                <TableCell>{[t.deliveryType, t.deliveryHour ? `${t.deliveryHour}h` : null].filter(Boolean).join(" / ") || "-"}</TableCell>
+                <TableCell>
+                  {[
+                    t.deliveryType,
+                    t.deliveryHour ? `${t.deliveryHour}h` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" / ") || "-"}
+                </TableCell>
+                <TableCell align="center">{t.active ? "Yes" : "No"}</TableCell>
               </TableRow>
             ))}
             {items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={8} align="center">
                   No results
                 </TableCell>
               </TableRow>

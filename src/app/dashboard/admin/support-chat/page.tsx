@@ -28,7 +28,9 @@ export default function SupportChatAdminPage() {
       setThreads((prev) => {
         const map = new Map(prev.map((i) => [i.id, i]));
         map.set(t.id, t);
-        return Array.from(map.values()).sort((a, b) => b.lastActivityAt - a.lastActivityAt);
+        return Array.from(map.values()).sort(
+          (a, b) => b.lastActivityAt - a.lastActivityAt,
+        );
       });
     });
     es.addEventListener("message", (ev) => {
@@ -36,7 +38,9 @@ export default function SupportChatAdminPage() {
       // Update thread activity; do not push into messages here to avoid duplicates
       setThreads((prev) =>
         prev
-          .map((t) => (t.id === m.threadId ? { ...t, lastActivityAt: m.createdAt } : t))
+          .map((t) =>
+            t.id === m.threadId ? { ...t, lastActivityAt: m.createdAt } : t,
+          )
           .sort((a, b) => b.lastActivityAt - a.lastActivityAt),
       );
     });
@@ -74,45 +78,99 @@ export default function SupportChatAdminPage() {
 
   return (
     <Box sx={{ display: "flex", gap: 2, height: "calc(100dvh - 120px)" }}>
-      <Paper sx={{ width: 320, height: "100%", display: "flex", flexDirection: "column" }}>
-        <Typography variant="subtitle2" sx={{ px: 2, py: 1.5, fontWeight: 700 }}>
+      <Paper
+        sx={{
+          width: 320,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ px: 2, py: 1.5, fontWeight: 700 }}
+        >
           Conversations
         </Typography>
         <Divider />
         <List dense sx={{ overflowY: "auto" }}>
           {threads.map((t) => (
-            <ListItemButton key={t.id} selected={t.id === selected?.id} onClick={() => setSelected(t)}>
+            <ListItemButton
+              key={t.id}
+              selected={t.id === selected?.id}
+              onClick={() => setSelected(t)}
+            >
               <ListItemText
-                primary={t.userName ? t.userName : t.userId ? `User ${t.userId.slice(0, 6)}` : `Guest ${t.id.slice(0, 6)}`}
+                primary={
+                  t.userName
+                    ? t.userName
+                    : t.userId
+                      ? `User ${t.userId.slice(0, 6)}`
+                      : `Guest ${t.id.slice(0, 6)}`
+                }
                 secondary={new Date(t.lastActivityAt).toLocaleString()}
               />
             </ListItemButton>
           ))}
         </List>
       </Paper>
-      <Paper sx={{ flex: 1, height: "100%", display: "flex", flexDirection: "column" }}>
-        <Typography variant="subtitle2" sx={{ px: 2, py: 1.5, fontWeight: 700 }}>
-          {selected ? `Thread ${selected.id.slice(0, 8)}` : "Select a conversation"}
+      <Paper
+        sx={{
+          flex: 1,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ px: 2, py: 1.5, fontWeight: 700 }}
+        >
+          {selected
+            ? `Thread ${selected.id.slice(0, 8)}`
+            : "Select a conversation"}
         </Typography>
         <Divider />
         <Box sx={{ flex: 1, overflowY: "auto", p: 2 }}>
           {selected ? (
             messages.map((m) => (
-              <Box key={m.id} sx={{ display: "flex", justifyContent: m.senderRole === "admin" || m.senderRole === "moderator" ? "flex-end" : "flex-start", my: 0.5 }}>
-                <Box sx={{
-                  maxWidth: 640,
-                  px: 1.25,
-                  py: 0.75,
-                  borderRadius: 2,
-                  bgcolor: m.senderRole === "admin" || m.senderRole === "moderator" ? "primary.main" : "action.hover",
-                  color: m.senderRole === "admin" || m.senderRole === "moderator" ? "primary.contrastText" : "text.primary",
-                }}>
-                  <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>{m.text}</Typography>
+              <Box
+                key={m.id}
+                sx={{
+                  display: "flex",
+                  justifyContent:
+                    m.senderRole === "admin" || m.senderRole === "moderator"
+                      ? "flex-end"
+                      : "flex-start",
+                  my: 0.5,
+                }}
+              >
+                <Box
+                  sx={{
+                    maxWidth: 640,
+                    px: 1.25,
+                    py: 0.75,
+                    borderRadius: 2,
+                    bgcolor:
+                      m.senderRole === "admin" || m.senderRole === "moderator"
+                        ? "primary.main"
+                        : "action.hover",
+                    color:
+                      m.senderRole === "admin" || m.senderRole === "moderator"
+                        ? "primary.contrastText"
+                        : "text.primary",
+                  }}
+                >
+                  <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                    {m.text}
+                  </Typography>
                 </Box>
               </Box>
             ))
           ) : (
-            <Typography variant="body2" color="text.secondary">No conversation selected.</Typography>
+            <Typography variant="body2" color="text.secondary">
+              No conversation selected.
+            </Typography>
           )}
         </Box>
         <Divider />
@@ -128,10 +186,16 @@ export default function SupportChatAdminPage() {
             }}
             size="small"
             fullWidth
-            placeholder={selected ? "Type a reply" : "Select a conversation to reply"}
+            placeholder={
+              selected ? "Type a reply" : "Select a conversation to reply"
+            }
             disabled={!selected}
           />
-          <Button variant="contained" onClick={send} disabled={!selected || !text.trim()}>
+          <Button
+            variant="contained"
+            onClick={send}
+            disabled={!selected || !text.trim()}
+          >
             Send
           </Button>
         </Stack>

@@ -1,7 +1,8 @@
 type Bucket = { tokens: number; last: number };
 
 const globalAny = globalThis as any;
-if (!globalAny.__rateBuckets) globalAny.__rateBuckets = new Map<string, Bucket>();
+if (!globalAny.__rateBuckets)
+  globalAny.__rateBuckets = new Map<string, Bucket>();
 const buckets: Map<string, Bucket> = globalAny.__rateBuckets;
 
 export type RateLimitOptions = {
@@ -12,7 +13,8 @@ export type RateLimitOptions = {
 const DEFAULTS: RateLimitOptions = { capacity: 10, refillPerSec: 5 };
 
 function keyFrom(req: Request, scope: string, extra?: string) {
-  const ipHeader = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
+  const ipHeader =
+    req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
   const ip = ipHeader.split(",")[0].trim() || "unknown";
   return `${scope}:${ip}${extra ? ":" + extra : ""}`;
 }
@@ -33,7 +35,12 @@ export function takeToken(key: string, opts: RateLimitOptions = DEFAULTS) {
   return false;
 }
 
-export function rateLimit(req: Request, scope: string, extra?: string, opts?: RateLimitOptions) {
+export function rateLimit(
+  req: Request,
+  scope: string,
+  extra?: string,
+  opts?: RateLimitOptions,
+) {
   const key = keyFrom(req, scope, extra);
   return takeToken(key, opts);
 }

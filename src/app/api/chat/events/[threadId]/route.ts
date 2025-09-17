@@ -34,7 +34,9 @@ export async function GET(
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
   const payload = token ? verifyJwt(token) : null;
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
 
   const thread = chatStore.listThreads().find((t) => t.id === threadId);
   const isStaff = role === "admin" || role === "moderator";

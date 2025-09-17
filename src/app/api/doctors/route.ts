@@ -7,7 +7,7 @@ import { hashPassword } from "@/lib/password";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  const role = String(session?.user?.role || '').toLowerCase();
+  const role = String(session?.user?.role || "").toLowerCase();
 
   if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -38,7 +38,7 @@ const createSchema = z.object({
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  const role = String(session?.user?.role || '').toLowerCase();
+  const role = String(session?.user?.role || "").toLowerCase();
 
   if (role !== "admin" && role !== "moderator") {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -49,9 +49,14 @@ export async function POST(req: Request) {
     const input = createSchema.parse(body);
 
     if (input.email) {
-      const existing = await prisma.user.findUnique({ where: { email: input.email } });
+      const existing = await prisma.user.findUnique({
+        where: { email: input.email },
+      });
       if (existing) {
-        return NextResponse.json({ error: "Email already in use" }, { status: 409 });
+        return NextResponse.json(
+          { error: "Email already in use" },
+          { status: 409 },
+        );
       }
     }
 

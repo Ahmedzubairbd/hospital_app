@@ -10,7 +10,9 @@ export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   // Staff-only uploads for now
   const session = await getServerSession(authOptions).catch(() => null);
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
@@ -24,7 +26,10 @@ export async function POST(req: NextRequest) {
     // Ensure server has RW token to generate client tokens
     const hasToken = !!process.env.BLOB_READ_WRITE_TOKEN;
     if (!hasToken) {
-      return NextResponse.json({ error: "blob token missing on server" }, { status: 500 });
+      return NextResponse.json(
+        { error: "blob token missing on server" },
+        { status: 500 },
+      );
     }
 
     return handleUpload({
@@ -38,25 +43,40 @@ export async function POST(req: NextRequest) {
           try {
             const cfg = JSON.parse(clientPayload);
             if (cfg.allow === "images") allow = "images";
-            if (typeof cfg.maxMB === "number" && cfg.maxMB > 0 && cfg.maxMB <= 100) maxMB = cfg.maxMB;
+            if (
+              typeof cfg.maxMB === "number" &&
+              cfg.maxMB > 0 &&
+              cfg.maxMB <= 100
+            )
+              maxMB = cfg.maxMB;
           } catch {
             if (clientPayload === "images") allow = "images";
           }
         }
-        const imageTypes = ["image/avif", "image/webp", "image/png", "image/jpeg", "image/gif"];
-        const allowedContentTypes = allow === "images" ? imageTypes : [...imageTypes, "application/pdf"];
+        const imageTypes = [
+          "image/avif",
+          "image/webp",
+          "image/png",
+          "image/jpeg",
+          "image/gif",
+        ];
+        const allowedContentTypes =
+          allow === "images" ? imageTypes : [...imageTypes, "application/pdf"];
         return {
           allowedContentTypes,
           maximumSizeInBytes: maxMB * 1024 * 1024,
           addRandomSuffix: true,
-          tokenPayload: JSON.stringify({ ownerUserId: (session?.user as any)?.id ?? null }),
+          tokenPayload: JSON.stringify({
+            ownerUserId: (session?.user as any)?.id ?? null,
+          }),
           cacheControlMaxAge: 60 * 60 * 24 * 365,
         };
       },
       async onUploadCompleted({ blob, tokenPayload }) {
         let ownerUserId: string | null = null;
         try {
-          if (tokenPayload) ownerUserId = JSON.parse(tokenPayload).ownerUserId ?? null;
+          if (tokenPayload)
+            ownerUserId = JSON.parse(tokenPayload).ownerUserId ?? null;
         } catch {}
         // Enrich with HEAD to get size/contentType
         let size: number | null = null;
@@ -88,12 +108,16 @@ export async function POST(req: NextRequest) {
   }
   try {
     // Prefer Vercel Blob if configured
-    const blob = await put(`uploads/${Date.now()}-${(file as any).name}`.replace(/\s+/g, "_"), file as unknown as Blob, {
-      access: "public",
-      contentType: (file as any).type || "application/octet-stream",
-      addRandomSuffix: true,
-      cacheControlMaxAge: 60 * 60 * 24 * 365,
-    });
+    const blob = await put(
+      `uploads/${Date.now()}-${(file as any).name}`.replace(/\s+/g, "_"),
+      file as unknown as Blob,
+      {
+        access: "public",
+        contentType: (file as any).type || "application/octet-stream",
+        addRandomSuffix: true,
+        cacheControlMaxAge: 60 * 60 * 24 * 365,
+      },
+    );
     // Enrich with HEAD to get size/contentType
     let size: number | null = null;
     let contentType: string | null = (file as any).type || null;
@@ -133,9 +157,14 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   // Staff-only list
   const session = await getServerSession(authOptions).catch(() => null);
-  const role = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
+  const role = String(
+    ((session?.user as any)?.role as string | undefined) || "",
+  ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  const items = await prisma.fileAsset.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
+  const items = await prisma.fileAsset.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+  });
   return NextResponse.json(items);
 }

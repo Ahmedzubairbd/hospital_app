@@ -27,9 +27,22 @@ export default function ServicesPage() {
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
-  const section = (titleBn: string, titleEn: string, children: React.ReactNode, defaultExpanded = false) => (
-    <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={fadeIn}>
-      <Accordion defaultExpanded={defaultExpanded} sx={{ borderRadius: 2, overflow: "hidden", mb: 2 }}>
+  const section = (
+    titleBn: string,
+    titleEn: string,
+    children: React.ReactNode,
+    defaultExpanded = false,
+  ) => (
+    <motion.div
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={fadeIn}
+    >
+      <Accordion
+        defaultExpanded={defaultExpanded}
+        sx={{ borderRadius: 2, overflow: "hidden", mb: 2 }}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6" fontWeight={700}>
             {tx(titleBn, titleEn)}
@@ -42,8 +55,27 @@ export default function ServicesPage() {
     </motion.div>
   );
 
-  const Card = ({ titleBn, titleEn, itemsBn, itemsEn }: { titleBn: string; titleEn: string; itemsBn: string[]; itemsEn: string[] }) => (
-    <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}`, background: alpha(t.palette.background.paper, 0.7), })}>
+  const Card = ({
+    titleBn,
+    titleEn,
+    itemsBn,
+    itemsEn,
+  }: {
+    titleBn: string;
+    titleEn: string;
+    itemsBn: string[];
+    itemsEn: string[];
+  }) => (
+    <Paper
+      elevation={0}
+      sx={(t) => ({
+        p: 2,
+        height: "100%",
+        borderRadius: 2,
+        border: `1px solid ${t.palette.divider}`,
+        background: alpha(t.palette.background.paper, 0.7),
+      })}
+    >
       <Typography variant="subtitle1" fontWeight={700} gutterBottom>
         {tx(titleBn, titleEn)}
       </Typography>
@@ -78,20 +110,41 @@ export default function ServicesPage() {
           {tx("আমাদের সেবাসমূহ", "Our Services")}
         </Typography>
         <Typography variant="h4" fontWeight={800} gutterBottom>
-          {tx("সেরা সেবা, উন্নত প্রযুক্তি, বিশ্বস্ত যত্ন", "Quality Care, Advanced Technology, Trusted Service")}
+          {tx(
+            "সেরা সেবা, উন্নত প্রযুক্তি, বিশ্বস্ত যত্ন",
+            "Quality Care, Advanced Technology, Trusted Service",
+          )}
         </Typography>
         <Typography color="text.secondary">
           {tx(
             "আমিন ডায়াগনস্টিকে আমরা বিশ্বমানের প্রযুক্তি ও অভিজ্ঞ বিশেষজ্ঞদের সমন্বয়ে বিস্তৃত ডায়াগনস্টিক, ইমেজিং ও ক্লিনিকাল সেবা প্রদান করি।",
-            "At Amin Diagnostic, we combine world‑class technology with experienced specialists to deliver comprehensive diagnostic, imaging, and clinical services."
+            "At Amin Diagnostic, we combine world‑class technology with experienced specialists to deliver comprehensive diagnostic, imaging, and clinical services.",
           )}
         </Typography>
         <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: "wrap" }}>
-          <Chip label={tx("ডায়াগনস্টিক", "Diagnostics")} color="primary" variant="outlined" />
-          <Chip label={tx("ইমেজিং", "Imaging")} color="primary" variant="outlined" />
-          <Chip label={tx("ক্লিনিকাল", "Clinical")} color="primary" variant="outlined" />
-          <Chip label={tx("অনলাইন রিপোর্ট", "Online Reports")} variant="outlined" />
-          <Chip label={tx("স্যাম্পল কালেকশন", "Home Sample Collection")} variant="outlined" />
+          <Chip
+            label={tx("ডায়াগনস্টিক", "Diagnostics")}
+            color="primary"
+            variant="outlined"
+          />
+          <Chip
+            label={tx("ইমেজিং", "Imaging")}
+            color="primary"
+            variant="outlined"
+          />
+          <Chip
+            label={tx("ক্লিনিকাল", "Clinical")}
+            color="primary"
+            variant="outlined"
+          />
+          <Chip
+            label={tx("অনলাইন রিপোর্ট", "Online Reports")}
+            variant="outlined"
+          />
+          <Chip
+            label={tx("স্যাম্পল কালেকশন", "Home Sample Collection")}
+            variant="outlined"
+          />
         </Stack>
       </Box>
 
@@ -102,29 +155,29 @@ export default function ServicesPage() {
           <Typography>
             {tx(
               "২০০৩ সালে আমিন ডায়াগনস্টিক তার যাত্রা শুরু করে বাংলাদেশের সাংস্কৃতিক রাজধানী কুষ্টিয়ার প্রাণকেন্দ্রে কোর্টপাড়ায়। 'কম খরচে, সেরা সেবা' সুনিশ্চিত করা এবং বৃহত্তর কুষ্টিয়ার মানুষের জন্য স্বাস্থ্যসেবা খাতের বৈপ্লবিক পরিবর্তনের লক্ষ্যে কিছু উদ্যমী মানুষ শুরু করে পরাজিত না হতে চাওয়া এক সংগ্রাম। সেই সময়ে যোগাযোগ ব্যবস্থা বর্তমানের মতো এত উন্নত ছিল না। কুষ্টিয়া থেকে রাজধানী ঢাকা আসা-যাওয়া তখন ছিল অচিন্তনীয়।",
-              "Amin Diagnostic began its journey in 2003 at Courtpara, the heart of Kushtia — the cultural capital of Bangladesh. With the vision of ‘best service at affordable cost’ and a mission to transform healthcare in greater Kushtia, a group of determined pioneers set out on a path that refused to accept defeat. At that time, transport infrastructure was far from today’s standards; traveling between Kushtia and the capital Dhaka felt almost unthinkable."
+              "Amin Diagnostic began its journey in 2003 at Courtpara, the heart of Kushtia — the cultural capital of Bangladesh. With the vision of ‘best service at affordable cost’ and a mission to transform healthcare in greater Kushtia, a group of determined pioneers set out on a path that refused to accept defeat. At that time, transport infrastructure was far from today’s standards; traveling between Kushtia and the capital Dhaka felt almost unthinkable.",
             )}
           </Typography>
           <Typography>
             {tx(
               "বিশ্ববিখ্যাত ব্র্যান্ডের বিশ্বসেরা প্রযুক্তির সকল মেশিনারিজ, সেরা ও অভিজ্ঞ টেকনিশিয়ান এবং সকল বিভাগে বিশেষজ্ঞ পর্যায়ের চিকিৎসকবৃন্দকে সাথে নিয়ে বিগত ২২ বছর ধরে আমিন ডায়াগনস্টিক বৃহত্তর কুষ্টিয়ায় শীর্ষ পর্যায়ে থেকে স্বাস্থ্যসেবা নিয়ে কাজ করে যাচ্ছে।",
-              "Equipped with world‑renowned brands, state‑of‑the‑art technologies, skilled technologists, and specialist physicians across departments, Amin Diagnostic has led healthcare services in greater Kushtia for the past 22 years."
+              "Equipped with world‑renowned brands, state‑of‑the‑art technologies, skilled technologists, and specialist physicians across departments, Amin Diagnostic has led healthcare services in greater Kushtia for the past 22 years.",
             )}
           </Typography>
           <Typography>
             {tx(
               "মানসম্মত এবং উন্নতমানের স্বাস্থ্যসেবা দেওয়ার জন্য আমিন ডায়াগনস্টিক কুষ্টিয়ার পার্শ্ববর্তী জেলা ঝিনাইদহের প্রাণকেন্দ্রে বনানীপাড়াতে তার দ্বিতীয় শাখা চালু করার সিদ্ধান্ত নেয়। এই প্রতিষ্ঠান সকলের ঐকান্তিক প্রচেষ্টা ও সকলের আন্তরিক সমর্থনে ১ জানুয়ারি ২০২৫ আমিন ডায়াগনস্টিক সেন্টার - ঝিনাইদহ শাখা এর কার্যক্রম সফলভাবে শুরু হয়।",
-              "To deliver quality care even more widely, Amin Diagnostic decided to open its second branch at Bonanipara in the heart of Jhenaidah. With sincere effort and support from all, the Jhenaidah branch successfully commenced operations on January 1, 2025."
+              "To deliver quality care even more widely, Amin Diagnostic decided to open its second branch at Bonanipara in the heart of Jhenaidah. With sincere effort and support from all, the Jhenaidah branch successfully commenced operations on January 1, 2025.",
             )}
           </Typography>
           <Typography>
             {tx(
               "চিকিকৎসা সেবার লক্ষ্য অর্জনে ঝিনাইদহবাসীর আন্তরিক সমর্থন, স্বাস্থ্যসেবা সেক্টরে কর্মরত প্রত্যেকটি ব্র্যক্তিবর্গ ও বিশেষভাবে সকল বিশেষজ্ঞ এবং চিকিৎসকবৃন্দের আন্তরিক সহযোগিতা প্রয়োজন। আমিন ডায়াগনস্টিক কর্তৃপক্ষ সকলের দোয়া ও সমর্থন প্রত্যাশী।",
-              "To achieve our healthcare goals, we seek the wholehearted support of the people of Jhenaidah, every professional working in the health sector, and especially the cooperation of all specialists and physicians. The Amin Diagnostic team humbly requests your prayers and support."
+              "To achieve our healthcare goals, we seek the wholehearted support of the people of Jhenaidah, every professional working in the health sector, and especially the cooperation of all specialists and physicians. The Amin Diagnostic team humbly requests your prayers and support.",
             )}
           </Typography>
         </>,
-        true
+        true,
       )}
       <br />
       {section(
@@ -134,7 +187,7 @@ export default function ServicesPage() {
           <Typography>
             {tx(
               "অত্যাধুনিক প্রযুক্তি ও অভিজ্ঞ চিকিৎসকদের সহায়তায় আমরা নিম্নলিখিত সেবা প্রদান করি:",
-              "With advanced technology and experienced physicians, we provide the following diagnostic services:"
+              "With advanced technology and experienced physicians, we provide the following diagnostic services:",
             )}
           </Typography>
           <Grid container spacing={2}>
@@ -176,8 +229,16 @@ export default function ServicesPage() {
               <Card
                 titleBn="ক্যান্সার/টিউমার মার্কার"
                 titleEn="Cancer/Tumor Markers"
-                itemsBn={["আলফা ফেটো প্রোটিন", "পিএসএ (PSA), ফ্রি পিএসএ", "CA‑125, CEA, CA15‑3, CA19‑9"]}
-                itemsEn={["Alpha‑Fetoprotein (AFP)", "PSA, Free PSA", "CA‑125, CEA, CA15‑3, CA19‑9"]}
+                itemsBn={[
+                  "আলফা ফেটো প্রোটিন",
+                  "পিএসএ (PSA), ফ্রি পিএসএ",
+                  "CA‑125, CEA, CA15‑3, CA19‑9",
+                ]}
+                itemsEn={[
+                  "Alpha‑Fetoprotein (AFP)",
+                  "PSA, Free PSA",
+                  "CA‑125, CEA, CA15‑3, CA19‑9",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -252,8 +313,14 @@ export default function ServicesPage() {
               <Card
                 titleBn="কিডনি প্রোফাইল"
                 titleEn="Kidney Profile"
-                itemsBn={["BUN, ইউরিয়া, মাইক্রো অ্যালবুমিন", "ক্রিয়েটিনিন, ইউরিক অ্যাসিড, EGFR, UPCR"]}
-                itemsEn={["BUN, Urea, Micro‑albumin", "Creatinine, Uric Acid, eGFR, UPCR"]}
+                itemsBn={[
+                  "BUN, ইউরিয়া, মাইক্রো অ্যালবুমিন",
+                  "ক্রিয়েটিনিন, ইউরিক অ্যাসিড, EGFR, UPCR",
+                ]}
+                itemsEn={[
+                  "BUN, Urea, Micro‑albumin",
+                  "Creatinine, Uric Acid, eGFR, UPCR",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -294,8 +361,12 @@ export default function ServicesPage() {
               <Card
                 titleBn="ইলেক্ট্রোলাইটস‑মিনারেলস"
                 titleEn="Electrolytes & Minerals"
-                itemsBn={["Na+, K+, KCl, CoP, HCC, pH, ক্যালসিয়াম, ম্যাগনেসিয়াম, ফসফেট (PO4)"]}
-                itemsEn={["Na+, K+, KCl, CoP, HCC, pH, Calcium, Magnesium, Phosphate (PO4)"]}
+                itemsBn={[
+                  "Na+, K+, KCl, CoP, HCC, pH, ক্যালসিয়াম, ম্যাগনেসিয়াম, ফসফেট (PO4)",
+                ]}
+                itemsEn={[
+                  "Na+, K+, KCl, CoP, HCC, pH, Calcium, Magnesium, Phosphate (PO4)",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -356,8 +427,12 @@ export default function ServicesPage() {
               <Card
                 titleBn="কার্ডিয়াক এনজাইম"
                 titleEn="Cardiac Enzymes"
-                itemsBn={["CK‑MB, CPK, LDH, Troponin‑I, NT‑proBNP, VIP Cardiac Profile"]}
-                itemsEn={["CK‑MB, CPK, LDH, Troponin‑I, NT‑proBNP, VIP Cardiac Profile"]}
+                itemsBn={[
+                  "CK‑MB, CPK, LDH, Troponin‑I, NT‑proBNP, VIP Cardiac Profile",
+                ]}
+                itemsEn={[
+                  "CK‑MB, CPK, LDH, Troponin‑I, NT‑proBNP, VIP Cardiac Profile",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -395,7 +470,7 @@ export default function ServicesPage() {
               />
             </Grid>
           </Grid>
-        </>
+        </>,
       )}
       <br />
       {section(
@@ -477,8 +552,14 @@ export default function ServicesPage() {
               <Card
                 titleBn="কার্ডিয়াক ইমেজিং"
                 titleEn="Cardiac Imaging"
-                itemsBn={["ETT, ECG, ইকোকার্ডিওগ্রাম (2D/M‑Mode/Color Doppler)", "EEG, Arrhythmia Analysis"]}
-                itemsEn={["ETT, ECG, Echocardiogram (2D/M‑Mode/Color Doppler)", "EEG, Arrhythmia Analysis"]}
+                itemsBn={[
+                  "ETT, ECG, ইকোকার্ডিওগ্রাম (2D/M‑Mode/Color Doppler)",
+                  "EEG, Arrhythmia Analysis",
+                ]}
+                itemsEn={[
+                  "ETT, ECG, Echocardiogram (2D/M‑Mode/Color Doppler)",
+                  "EEG, Arrhythmia Analysis",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -527,12 +608,20 @@ export default function ServicesPage() {
               <Card
                 titleBn="বিশেষ পরীক্ষা"
                 titleEn="Special Procedures"
-                itemsBn={["FNAC, বায়োপসি ও হিস্টোপ্যাথলজি", "CT/USG‑Guided FNAC", "পাপ’স স্মিয়ার, স্পাইরোমেট্রি, LFT"]}
-                itemsEn={["FNAC, Biopsy & Histopathology", "CT/USG‑Guided FNAC", "Pap’s Smear, Spirometry, LFT"]}
+                itemsBn={[
+                  "FNAC, বায়োপসি ও হিস্টোপ্যাথলজি",
+                  "CT/USG‑Guided FNAC",
+                  "পাপ’স স্মিয়ার, স্পাইরোমেট্রি, LFT",
+                ]}
+                itemsEn={[
+                  "FNAC, Biopsy & Histopathology",
+                  "CT/USG‑Guided FNAC",
+                  "Pap’s Smear, Spirometry, LFT",
+                ]}
               />
             </Grid>
           </Grid>
-        </>
+        </>,
       )}
       <br />
       {section(
@@ -544,47 +633,100 @@ export default function ServicesPage() {
               <Card
                 titleBn="মেডিসিন"
                 titleEn="Medicine"
-                itemsBn={["কাশি, জ্বর, হাইপারটেনশন, ডায়াবেটিস ইত্যাদি সাধারণ রোগের চিকিৎসা"]}
-                itemsEn={["Treatment for common conditions: cough, fever, hypertension, diabetes, etc."]}
+                itemsBn={[
+                  "কাশি, জ্বর, হাইপারটেনশন, ডায়াবেটিস ইত্যাদি সাধারণ রোগের চিকিৎসা",
+                ]}
+                itemsEn={[
+                  "Treatment for common conditions: cough, fever, hypertension, diabetes, etc.",
+                ]}
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="শিশু" titleEn="Pediatrics" itemsBn={["শিশুদের বিভিন্ন স্বাস্থ্য সমস্যা ও প্রাথমিক চিকিৎসা"]} itemsEn={["Children’s health issues and primary care"]} />
+              <Card
+                titleBn="শিশু"
+                titleEn="Pediatrics"
+                itemsBn={["শিশুদের বিভিন্ন স্বাস্থ্য সমস্যা ও প্রাথমিক চিকিৎসা"]}
+                itemsEn={["Children’s health issues and primary care"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="গাইনি" titleEn="Gynecology" itemsBn={["গাইনোকলজিক্যাল সমস্যা ও প্রসূতি পরামর্শ"]} itemsEn={["Gynecological issues and obstetric counseling"]} />
+              <Card
+                titleBn="গাইনি"
+                titleEn="Gynecology"
+                itemsBn={["গাইনোকলজিক্যাল সমস্যা ও প্রসূতি পরামর্শ"]}
+                itemsEn={["Gynecological issues and obstetric counseling"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="ইএনটি" titleEn="ENT" itemsBn={["কান, নাক ও গলার রোগের চিকিৎসা"]} itemsEn={["Ear, nose, and throat treatment"]} />
+              <Card
+                titleBn="ইএনটি"
+                titleEn="ENT"
+                itemsBn={["কান, নাক ও গলার রোগের চিকিৎসা"]}
+                itemsEn={["Ear, nose, and throat treatment"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="হৃদরোগ" titleEn="Cardiology" itemsBn={["হার্টের রোগের চিকিৎসা, ইকো ও ইসিজি"]} itemsEn={["Cardiac care, ECHO and ECG"]} />
+              <Card
+                titleBn="হৃদরোগ"
+                titleEn="Cardiology"
+                itemsBn={["হার্টের রোগের চিকিৎসা, ইকো ও ইসিজি"]}
+                itemsEn={["Cardiac care, ECHO and ECG"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="অর্থোপেডিক" titleEn="Orthopedics" itemsBn={["হাড় ও জয়েন্টের সমস্যা, ফিজিওথেরাপি"]} itemsEn={["Bone and joint problems, physiotherapy"]} />
+              <Card
+                titleBn="অর্থোপেডিক"
+                titleEn="Orthopedics"
+                itemsBn={["হাড় ও জয়েন্টের সমস্যা, ফিজিওথেরাপি"]}
+                itemsEn={["Bone and joint problems, physiotherapy"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="ইউরোলজি" titleEn="Urology" itemsBn={["মূত্রাশয় ও প্রজনন স্বাস্থ্য সমস্যা"]} itemsEn={["Urinary and reproductive health issues"]} />
+              <Card
+                titleBn="ইউরোলজি"
+                titleEn="Urology"
+                itemsBn={["মূত্রাশয় ও প্রজনন স্বাস্থ্য সমস্যা"]}
+                itemsEn={["Urinary and reproductive health issues"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="চর্ম রোগ" titleEn="Dermatology" itemsBn={["একজিমা, ফাঙ্গাল ইনফেকশন ও অ্যালার্জি"]} itemsEn={["Eczema, fungal infections, allergies"]} />
+              <Card
+                titleBn="চর্ম রোগ"
+                titleEn="Dermatology"
+                itemsBn={["একজিমা, ফাঙ্গাল ইনফেকশন ও অ্যালার্জি"]}
+                itemsEn={["Eczema, fungal infections, allergies"]}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Card titleBn="মানসিক স্বাস্থ্য" titleEn="Mental Health" itemsBn={["বিষণ্ণতা, উদ্বেগ ও মানসিক চাপ ব্যবস্থাপনা"]} itemsEn={["Depression, anxiety, stress management"]} />
+              <Card
+                titleBn="মানসিক স্বাস্থ্য"
+                titleEn="Mental Health"
+                itemsBn={["বিষণ্ণতা, উদ্বেগ ও মানসিক চাপ ব্যবস্থাপনা"]}
+                itemsEn={["Depression, anxiety, stress management"]}
+              />
             </Grid>
           </Grid>
-          <Paper elevation={0} sx={(t) => ({ mt: 2, p: 2, borderRadius: 2, border: `1px solid ${t.palette.divider}`, background: alpha(t.palette.background.paper, 0.7) })}>
+          <Paper
+            elevation={0}
+            sx={(t) => ({
+              mt: 2,
+              p: 2,
+              borderRadius: 2,
+              border: `1px solid ${t.palette.divider}`,
+              background: alpha(t.palette.background.paper, 0.7),
+            })}
+          >
             <Typography variant="subtitle1" fontWeight={700} gutterBottom>
               {tx("সহযোগী সেবা", "Supportive Services")}
             </Typography>
             <Typography variant="body2">
               {tx(
                 "হোম/অফিস স্যাম্পল কালেকশন: আপনার সুবিধামতো স্থান থেকে স্যাম্পল সংগ্রহের ব্যবস্থা।",
-                "Home/Office Sample Collection: We collect samples from your preferred location."
+                "Home/Office Sample Collection: We collect samples from your preferred location.",
               )}
             </Typography>
           </Paper>
-        </>
+        </>,
       )}
       <br />
       {section(
@@ -594,10 +736,10 @@ export default function ServicesPage() {
           <Typography>
             {tx(
               "আমিন ডায়াগনস্টিক এর লক্ষ্য কম খরচে, সেরা স্বাস্থ্যসেবা সকল মানুষের দ্বারপ্রান্তে পৌঁছে দেওয়া। সময়ের সাথে তালমিলিয়ে বিশ্বসেরা ও সর্বাধুনিক প্রযুক্তির মেশিনারিজ ও সর্বোচ্চ আধুনিক দক্ষতার মিলবন্ধনে উন্নতমানের আধুনিক সেবা প্রদান আমাদের প্রধান উদ্দেশ্য।",
-              "Our goal is to deliver the best healthcare at an affordable cost to everyone. By staying in step with time, we aim to provide modern, high‑quality services through world‑class technologies and top‑tier clinical expertise."
+              "Our goal is to deliver the best healthcare at an affordable cost to everyone. By staying in step with time, we aim to provide modern, high‑quality services through world‑class technologies and top‑tier clinical expertise.",
             )}
           </Typography>
-        </>
+        </>,
       )}
       <br />
       {section(
@@ -606,7 +748,10 @@ export default function ServicesPage() {
         <>
           <Grid container spacing={2}>
             {[
-              ["ওয়ান‑স্টপ মানসম্মত ডায়াগনস্টিক সেবা", "One‑stop quality diagnostic services"],
+              [
+                "ওয়ান‑স্টপ মানসম্মত ডায়াগনস্টিক সেবা",
+                "One‑stop quality diagnostic services",
+              ],
               ["স্বল্পমূল্য পরীক্ষা নিরীক্ষা", "Affordable test pricing"],
               ["বিশিষ্ট যোগ্যতা সম্পূর্ণ ডাক্তার", "Highly qualified doctors"],
               ["বিশেষজ্ঞ ডাক্তার চেম্বার", "Specialist consultation chambers"],
@@ -619,13 +764,21 @@ export default function ServicesPage() {
               ["অন্যান্য সুবিধা", "Other facilities"],
             ].map(([bn, en], i) => (
               <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
-                <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+                <Paper
+                  elevation={0}
+                  sx={(t) => ({
+                    p: 2,
+                    height: "100%",
+                    borderRadius: 2,
+                    border: `1px solid ${t.palette.divider}`,
+                  })}
+                >
                   <Typography variant="body1">{tx(bn, en)}</Typography>
                 </Paper>
               </Grid>
             ))}
           </Grid>
-        </>
+        </>,
       )}
       <br />
       {section(
@@ -634,98 +787,157 @@ export default function ServicesPage() {
         <>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("সর্বাধুনিক ল্যাব সুবিধা", "State‑of‑the‑art Lab")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "আন্তর্জাতিক মানসম্পন্ন ল্যাবরেটরি যেখানে প্রতিটি পরীক্ষার সর্বোচ্চ নির্ভুলতা নিশ্চিত করা হয়।",
-                    "International‑standard laboratory ensuring maximum accuracy in every test."
+                    "International‑standard laboratory ensuring maximum accuracy in every test.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("উন্নত ইমেজিং সুবিধা", "Advanced Imaging")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "ডিজিটাল এক্স‑রে, আল্ট্রাসনোগ্রাফি, ইকোকার্ডিওগ্রাফি, সিটি স্ক্যান ও এমআরআই সুবিধা।",
-                    "Advanced digital X‑ray, ultrasonography, echocardiography, CT scan, and MRI facilities."
+                    "Advanced digital X‑ray, ultrasonography, echocardiography, CT scan, and MRI facilities.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("বিশেষজ্ঞ চিকিৎসকের পরামর্শ", "Specialist Consultation")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "নেফ্রোলজি, গাইনি, মেডিসিন, শিশু, হৃদরোগসহ বিভিন্ন বিভাগের বিশেষজ্ঞ সেবা।",
-                    "Specialist care across nephrology, gynecology, medicine, pediatrics, cardiology, and more."
+                    "Specialist care across nephrology, gynecology, medicine, pediatrics, cardiology, and more.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("অনলাইন রিপোর্ট সুবিধা", "Online Reports")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "রোগীরা ঘরে বসেই আমাদের ওয়েবসাইট থেকে রিপোর্ট ডাউনলোড করতে পারবেন।",
-                    "Patients can download their reports securely from home."
+                    "Patients can download their reports securely from home.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                  {tx("বাসা/অফিসে ল্যাব টেস্ট সংগ্রহ", "Home/Office Sample Collection")}
+                  {tx(
+                    "বাসা/অফিসে ল্যাব টেস্ট সংগ্রহ",
+                    "Home/Office Sample Collection",
+                  )}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "আমরা বাসা বা অফিস থেকে ব্লাড ও অন্যান্য স্যাম্পল সংগ্রহ করে দ্রুত রিপোর্ট প্রদান করি।",
-                    "We collect blood and other samples from your home or office and deliver reports quickly."
+                    "We collect blood and other samples from your home or office and deliver reports quickly.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("সপ্তাহে ৭ দিন জরুরি সেবা", "24/7 Emergency Support")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "জরুরি প্রয়োজনে ২৪ ঘণ্টা এবং সপ্তাহে ৭ দিন সেবা।",
-                    "Emergency support available 24 hours a day, 7 days a week."
+                    "Emergency support available 24 hours a day, 7 days a week.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Paper elevation={0} sx={(t) => ({ p: 2, height: "100%", borderRadius: 2, border: `1px solid ${t.palette.divider}` })}>
+              <Paper
+                elevation={0}
+                sx={(t) => ({
+                  p: 2,
+                  height: "100%",
+                  borderRadius: 2,
+                  border: `1px solid ${t.palette.divider}`,
+                })}
+              >
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   {tx("অভিজ্ঞ ও দক্ষ টেকনোলজিস্ট", "Experienced Technologists")}
                 </Typography>
                 <Typography variant="body2">
                   {tx(
                     "প্রতিটি পরীক্ষায় নির্ভুলতা বজায় রাখতে দক্ষ টেকনোলজিস্টদের টিম।",
-                    "Skilled technologists ensure accuracy and reliability in every test."
+                    "Skilled technologists ensure accuracy and reliability in every test.",
                   )}
                 </Typography>
               </Paper>
             </Grid>
           </Grid>
-        </>
+        </>,
       )}
     </Box>
   );

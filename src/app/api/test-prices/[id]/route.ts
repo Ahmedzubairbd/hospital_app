@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { getServerSession } from "next-auth/next";
 import { z } from "zod";
 import { verifyJwt } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
+import { prisma } from "@/lib/db";
 import { authOptions } from "@/lib/nextauth";
+import { supportsTestPriceExtendedColumns } from "@/lib/test-price-csv";
 
 const patchSchema = z.object({
   code: z.string().min(1).optional(),
@@ -21,8 +22,11 @@ const patchSchema = z.object({
 
 async function requireStaff(req: Request) {
   const session = await getServerSession(authOptions).catch(() => null);
-  const sessionRole = String(((session?.user as any)?.role as string | undefined) || '').toLowerCase();
-  const sessionUserId = (session?.user as any)?.id as string | undefined;
+  const sessionUser = session?.user as
+    | { role?: string | null; id?: string | null }
+    | undefined;
+  const sessionRole = String(sessionUser?.role ?? "").toLowerCase();
+  const sessionUserId = sessionUser?.id ?? undefined;
   let ok = sessionRole === "admin" || sessionRole === "moderator";
   let userId: string | null = sessionUserId ?? null;
   if (!ok) {
@@ -36,7 +40,10 @@ async function requireStaff(req: Request) {
   return { ok, userId };
 }
 
-export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const { id } = await params;
   const item = await prisma.testPrice.findUnique({ where: { id } });
   if (!item) return NextResponse.json({ error: "not found" }, { status: 404 });
@@ -54,12 +61,24 @@ export async function PATCH(
   try {
     const body = await req.json();
     const input = patchSchema.parse(body);
-    
+
+    const supportsExtended = await supportsTestPriceExtendedColumns(prisma);
+    const {
+      examType,
+      department,
+      serialNo,
+      shortName,
+      deliveryType,
+      deliveryHour,
+      ...base
+    } = input;
+    const data = supportsExtended ? input : base;
+
     const { id } = await params;
 
     const updated = await prisma.testPrice.update({
       where: { id },
-      data: { ...input },
+      data,
     });
     return NextResponse.json(updated);
   } catch (e: unknown) {
@@ -76,7 +95,7 @@ export async function DELETE(
   const guard = await requireStaff(req);
   if (!guard.ok)
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    
+
   const { id } = await params;
 
   await prisma.testPrice.update({

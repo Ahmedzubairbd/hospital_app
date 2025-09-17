@@ -1,15 +1,21 @@
 "use client";
-import * as React from "react";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
 import {
+  Alert,
   Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   Paper,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -17,13 +23,8 @@ import {
   TableRow,
   TextField,
   Typography,
-  Switch,
-  FormControlLabel,
-  Alert,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import * as React from "react";
 
 type Price = {
   id: string;
@@ -68,7 +69,7 @@ export default function AdminTestPricesPage() {
   const [importing, setImporting] = React.useState(false);
   const [csvFile, setCsvFile] = React.useState<File | null>(null);
 
-  async function load() {
+  const load = React.useCallback(async () => {
     const url = `/api/test-prices?${new URLSearchParams({
       q: q.trim(),
       includeInactive: includeInactive ? "1" : "0",
@@ -76,14 +77,15 @@ export default function AdminTestPricesPage() {
     const res = await fetch(url, { cache: "no-store" });
     const data = (await res.json()) as Price[];
     setRows(data);
-  }
+  }, [includeInactive, q]);
 
   React.useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: load already reflects includeInactive & q
   React.useEffect(() => {
     void load();
-  }, [includeInactive]); // toggle refresh
+  }, [includeInactive, load]);
 
   function startCreate() {
     setEditing(null);
@@ -103,7 +105,7 @@ export default function AdminTestPricesPage() {
       serialNo: p.serialNo ?? "",
       shortName: p.shortName ?? "",
       deliveryType: p.deliveryType ?? "",
-      deliveryHour: (p.deliveryHour ?? 0) as any,
+      deliveryHour: p.deliveryHour ?? 0,
     });
     setOpen(true);
   }
@@ -111,7 +113,11 @@ export default function AdminTestPricesPage() {
   async function save() {
     setErr(null);
     setMsg(null);
-    const body = { ...form, priceCents: Math.round(Number(form.priceCents) * 100), deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null } as any;
+    const body = {
+      ...form,
+      priceCents: Math.round(Number(form.priceCents) * 100),
+      deliveryHour: form.deliveryHour ? Number(form.deliveryHour) : null,
+    };
     const headers = { "Content-Type": "application/json" };
 
     let res: Response;
@@ -166,7 +172,10 @@ export default function AdminTestPricesPage() {
     try {
       const fd = new FormData();
       fd.append("file", csvFile);
-      const r = await fetch("/api/test-prices/import", { method: "POST", body: fd });
+      const r = await fetch("/api/test-prices/import", {
+        method: "POST",
+        body: fd,
+      });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error || "upload failed");
       setMsg(`Imported: ${j.imported}, Updated: ${j.updated}`);
@@ -194,163 +203,225 @@ export default function AdminTestPricesPage() {
   }
 
   return (
-    
-    <Box sx={{ p: 1 }}>
-      <Typography variant="h4" gutterBottom>
-        Manage Test Prices
-      </Typography>
+    <div className="overflow-auto">
+      <Box sx={{ p: 1 }}>
+        <Typography variant="h4" gutterBottom>
+          Manage Test Prices
+        </Typography>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-        <TextField
-          size="small"
-          label="Search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && load()}
-        />
-        <Button variant="outlined" onClick={load}>
+        <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+          <TextField
+            size="small"
+            label="Search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && load()}
+          />
+          <IconButton onClick={load}>
+            <SearchIcon />
+          </IconButton>
+          {/* <Button variant="outlined" onClick={load}>
           Search
-        </Button>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={includeInactive}
-              onChange={(e) => setIncludeInactive(e.target.checked)}
-            />
-          }
-          label="Show inactive"
-        />
-        <Box sx={{ flexGrow: 1 }} />
-        <input type="file" accept=".csv,text/csv" onChange={(e) => setCsvFile(e.target.files?.[0] || null)} />
-        <Button variant="outlined" onClick={uploadCsv} disabled={importing || !csvFile}>
-          {importing ? "Importing..." : "Upload CSV"}
-        </Button>
-        <Button variant="text" onClick={importCsv} disabled={importing}>
-          {importing ? "Importing..." : "Import CSV (built-in)"}
-        </Button>
-        <Button
-          startIcon={<AddIcon />}
-          variant="contained"
-          onClick={startCreate}
-        >
-          Add Price
-        </Button>
-      </Stack>
+        </Button> */}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={includeInactive}
+                onChange={(e) => setIncludeInactive(e.target.checked)}
+              />
+            }
+            label="Show inactive"
+          />
+          <Box sx={{ flexGrow: 1 }} />
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+          />
+          <Button
+            variant="outlined"
+            onClick={uploadCsv}
+            disabled={importing || !csvFile}
+          >
+            {importing ? "Importing..." : "Upload CSV"}
+          </Button>
+          <Button variant="text" onClick={importCsv} disabled={importing}>
+            {importing ? "Importing..." : "Import CSV (built-in)"}
+          </Button>
+          <Button
+            startIcon={<AddIcon />}
+            variant="contained"
+            onClick={startCreate}
+          >
+            Add Price
+          </Button>
+        </Stack>
 
-      {err && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {err}
-        </Alert>
-      )}
-      {msg && (
-        <Alert severity="success" sx={{ mb: 2 }}>
-          {msg}
-        </Alert>
-      )}
+        {err && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {err}
+          </Alert>
+        )}
+        {msg && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {msg}
+          </Alert>
+        )}
+        <Box sx={{ mt: 2 }}>
+          <Paper variant="outlined">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Department</TableCell>
+                  <TableCell>Exam Type</TableCell>
+                  <TableCell>Serial No</TableCell>
+                  <TableCell>Short Name</TableCell>
+                  <TableCell align="right">Price (৳)</TableCell>
+                  <TableCell align="center">Active</TableCell>
+                  <TableCell>Delivery</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((r) => (
+                  <TableRow key={r.id} hover>
+                    <TableCell>{r.code}</TableCell>
+                    <TableCell>{r.name}</TableCell>
+                    <TableCell>{r.department ?? "-"}</TableCell>
+                    <TableCell>{r.examType ?? "-"}</TableCell>
+                    <TableCell>{r.serialNo ?? "-"}</TableCell>
+                    <TableCell>{r.shortName ?? "-"}</TableCell>
+                    <TableCell align="right">
+                      {(r.priceCents / 100).toLocaleString()}
+                    </TableCell>
+                    <TableCell align="center">
+                      {r.active ? "Yes" : "No"}
+                    </TableCell>
+                    <TableCell>
+                      {[
+                        r.deliveryType,
+                        r.deliveryHour ? `${r.deliveryHour}h` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" / ") || "-"}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => startEdit(r)}
+                        aria-label="Edit"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => softDelete(r)}
+                        aria-label="Deactivate"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {rows.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center">
+                      No data
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Paper>
 
-      <Paper variant="outlined">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell>Short Name</TableCell>
-              <TableCell align="right">Price (৳)</TableCell>
-              <TableCell align="center">Active</TableCell>
-              <TableCell>Delivery</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((r) => (
-              <TableRow key={r.id} hover>
-                <TableCell>{r.code}</TableCell>
-                <TableCell>{r.name}</TableCell>
-                <TableCell>{r.department ?? "-"}</TableCell>
-                <TableCell>{r.shortName ?? "-"}</TableCell>
-                <TableCell align="right">
-                  {(r.priceCents / 100).toLocaleString()}
-                </TableCell>
-                <TableCell align="center">{r.active ? "Yes" : "No"}</TableCell>
-                <TableCell>{[r.deliveryType, r.deliveryHour ? `${r.deliveryHour}h` : null].filter(Boolean).join(" / ") || "-"}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => startEdit(r)} aria-label="Edit">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => softDelete(r)}
-                    aria-label="Deactivate"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No data
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Paper>
-
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>{editing ? "Edit price" : "Add price"}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ pt: 1, minWidth: 420 }}>
-            <TextField
-              label="Code"
-              value={form.code}
-              onChange={(e) => setForm({ ...form, code: e.target.value })}
-            />
-            <TextField label="Short Name" value={form.shortName ?? ""} onChange={(e) => setForm({ ...form, shortName: e.target.value })} />
-            <TextField
-              label="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <TextField
-              label="Department"
-              value={form.department ?? ""}
-              onChange={(e) => setForm({ ...form, department: e.target.value })}
-            />
-            <TextField label="Exam Type" value={form.examType ?? ""} onChange={(e) => setForm({ ...form, examType: e.target.value })} />
-            <TextField label="Serial No" value={form.serialNo ?? ""} onChange={(e) => setForm({ ...form, serialNo: e.target.value })} />
-            <TextField
-              label="Price (৳)"
-              type="number"
-              value={form.priceCents}
-              onChange={(e) =>
-                setForm({ ...form, priceCents: Number(e.target.value) })
-              }
-              helperText="Stored as cents (৳ -> ×100 handled by you)"
-            />
-            <TextField label="Delivery Type" value={form.deliveryType ?? ""} onChange={(e) => setForm({ ...form, deliveryType: e.target.value })} />
-            <TextField label="Delivery Hour" type="number" value={form.deliveryHour ?? 0} onChange={(e) => setForm({ ...form, deliveryHour: Number(e.target.value) })} />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={form.active}
+          <Dialog open={open} onClose={() => setOpen(false)}>
+            <DialogTitle>{editing ? "Edit price" : "Add price"}</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ pt: 1, minWidth: 420 }}>
+                <TextField
+                  label="Code"
+                  value={form.code}
+                  onChange={(e) => setForm({ ...form, code: e.target.value })}
+                />
+                <TextField
+                  label="Short Name"
+                  value={form.shortName ?? ""}
                   onChange={(e) =>
-                    setForm({ ...form, active: e.target.checked })
+                    setForm({ ...form, shortName: e.target.value })
                   }
                 />
-              }
-              label="Active"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={save}>
-            {editing ? "Save" : "Create"}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+                <TextField
+                  label="Name"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                />
+                <TextField
+                  label="Department"
+                  value={form.department ?? ""}
+                  onChange={(e) =>
+                    setForm({ ...form, department: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Exam Type"
+                  value={form.examType ?? ""}
+                  onChange={(e) =>
+                    setForm({ ...form, examType: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Serial No"
+                  value={form.serialNo ?? ""}
+                  onChange={(e) =>
+                    setForm({ ...form, serialNo: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Price (৳)"
+                  type="number"
+                  value={form.priceCents}
+                  onChange={(e) =>
+                    setForm({ ...form, priceCents: Number(e.target.value) })
+                  }
+                  helperText="Stored as cents (৳ -> ×100 handled by you)"
+                />
+                <TextField
+                  label="Delivery Type"
+                  value={form.deliveryType ?? ""}
+                  onChange={(e) =>
+                    setForm({ ...form, deliveryType: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Delivery Hour"
+                  type="number"
+                  value={form.deliveryHour ?? 0}
+                  onChange={(e) =>
+                    setForm({ ...form, deliveryHour: Number(e.target.value) })
+                  }
+                />
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={form.active}
+                      onChange={(e) =>
+                        setForm({ ...form, active: e.target.checked })
+                      }
+                    />
+                  }
+                  label="Active"
+                />
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpen(false)}>Cancel</Button>
+              <Button variant="contained" onClick={save}>
+                {editing ? "Save" : "Create"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      </Box>
+    </div>
   );
 }

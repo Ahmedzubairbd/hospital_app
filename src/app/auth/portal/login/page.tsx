@@ -102,18 +102,42 @@ export default function PortalLoginPage() {
       >
         <Stack spacing={2}>
           <Typography variant="h6">Patient Portal Login (SMS OTP)</Typography>
-          <TextField label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} fullWidth />
-          <Button variant="text" onClick={() => setUsePassword((v) => !v)}>{usePassword ? "Use SMS OTP instead" : "Use Password instead"}</Button>
+          <TextField
+            label="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            fullWidth
+          />
+          <Button variant="text" onClick={() => setUsePassword((v) => !v)}>
+            {usePassword ? "Use SMS OTP instead" : "Use Password instead"}
+          </Button>
           {usePassword ? (
             <>
-              <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} fullWidth />
-              <Button variant="contained" onClick={loginWithPassword}>Login</Button>
+              <TextField
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                fullWidth
+              />
+              <Button variant="contained" onClick={loginWithPassword}>
+                Login
+              </Button>
             </>
           ) : (
             <>
-              <Button variant="contained" onClick={send}>Send OTP</Button>
-              <TextField label="OTP" value={code} onChange={(e) => setCode(e.target.value)} fullWidth />
-              <Button variant="contained" onClick={verify}>Verify & Login</Button>
+              <Button variant="contained" onClick={send}>
+                Send OTP
+              </Button>
+              <TextField
+                label="OTP"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                fullWidth
+              />
+              <Button variant="contained" onClick={verify}>
+                Verify & Login
+              </Button>
             </>
           )}
           {devOtp && process.env.NODE_ENV !== "production" && (
@@ -124,8 +148,7 @@ export default function PortalLoginPage() {
         </Stack>
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" color="text.secondary">
-            Don't have an account?{" "}
-            <a href="/auth/portal/register">Register</a>
+            Don't have an account? <a href="/auth/portal/register">Register</a>
           </Typography>
         </Box>
       </Box>

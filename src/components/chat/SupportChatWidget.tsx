@@ -17,7 +17,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 import { ChatMessage } from "@/lib/chat/types";
 
-type SessionInfo = { auth?: boolean; threadId: string | null; userId?: string | null; userName?: string };
+type SessionInfo = {
+  auth?: boolean;
+  threadId: string | null;
+  userId?: string | null;
+  userName?: string;
+};
 
 export default function SupportChatWidget() {
   const [open, setOpen] = React.useState(false);
@@ -59,9 +64,13 @@ export default function SupportChatWidget() {
     es.addEventListener("message", (ev) => {
       try {
         const m = JSON.parse((ev as MessageEvent).data) as ChatMessage;
-        setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+        setMessages((prev) =>
+          prev.some((x) => x.id === m.id) ? prev : [...prev, m],
+        );
         if (!openRef.current) setUnread((u) => u + 1);
-        queueMicrotask(() => listRef.current?.scrollTo({ top: listRef.current.scrollHeight }));
+        queueMicrotask(() =>
+          listRef.current?.scrollTo({ top: listRef.current.scrollHeight }),
+        );
       } catch {}
     });
     es.addEventListener("hello", () => {
@@ -87,49 +96,100 @@ export default function SupportChatWidget() {
   const toggleOpen = () => {
     setOpen((o) => !o);
     setUnread(0);
-    queueMicrotask(() => listRef.current?.scrollTo({ top: listRef.current.scrollHeight }));
+    queueMicrotask(() =>
+      listRef.current?.scrollTo({ top: listRef.current.scrollHeight }),
+    );
   };
 
   return (
     <Box sx={{ position: "fixed", right: 16, bottom: 16, zIndex: 1300 }}>
-      <IconButton color="primary" onClick={toggleOpen} size="large" aria-label="Open support chat">
+      <IconButton
+        color="primary"
+        onClick={toggleOpen}
+        size="large"
+        aria-label="Open support chat"
+      >
         <Badge color="error" badgeContent={unread} invisible={unread === 0}>
           <ChatBubbleIcon />
         </Badge>
       </IconButton>
       {open ? (
-        <Paper elevation={8} role="dialog" aria-modal="true" sx={{ width: 360, height: 480, p: 1.5, mt: 1 }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-            <Typography variant="subtitle1" fontWeight={700}>Support</Typography>
+        <Paper
+          elevation={8}
+          role="dialog"
+          aria-modal="true"
+          sx={{ width: 360, height: 480, p: 1.5, mt: 1 }}
+        >
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 1 }}
+          >
+            <Typography variant="subtitle1" fontWeight={700}>
+              Support
+            </Typography>
             <IconButton onClick={() => setOpen(false)} size="small">
               <CloseIcon />
             </IconButton>
           </Stack>
           {loading ? (
-            <Stack alignItems="center" justifyContent="center" sx={{ flex: 1, minHeight: 240 }}>
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ flex: 1, minHeight: 240 }}
+            >
               <CircularProgress size={24} />
             </Stack>
           ) : !authed ? (
             <Stack spacing={1.5} sx={{ p: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                Log in to chat with us. Or reach us via WhatsApp / Facebook Messenger.
+                Log in to chat with us. Or reach us via WhatsApp / Facebook
+                Messenger.
               </Typography>
               <Stack direction="row" spacing={1}>
-                <Button href="/auth/portal/login" variant="contained" size="small">Patient Login</Button>
-                <Button href="/auth/admin/login" size="small">Staff Login</Button>
+                <Button
+                  href="/auth/portal/login"
+                  variant="contained"
+                  size="small"
+                >
+                  Patient Login
+                </Button>
+                <Button href="/auth/admin/login" size="small">
+                  Staff Login
+                </Button>
               </Stack>
               <Stack direction="row" spacing={1}>
-                <Button size="small" href={`https://wa.me/${(process.env.NEXT_PUBLIC_APP_PHONE||'').replace(/\D/g,'').replace(/^0/, '880')}`} target="_blank">WhatsApp</Button>
-                <Button size="small" href={`https://m.me/`} target="_blank">Messenger</Button>
+                <Button
+                  size="small"
+                  href={`https://wa.me/${(process.env.NEXT_PUBLIC_APP_PHONE || "").replace(/\D/g, "").replace(/^0/, "880")}`}
+                  target="_blank"
+                >
+                  WhatsApp
+                </Button>
+                <Button size="small" href={`https://m.me/`} target="_blank">
+                  Messenger
+                </Button>
               </Stack>
             </Stack>
           ) : (
             <>
-              <Box ref={listRef} sx={{ flex: 1, overflowY: "auto", height: 320, px: 0.5 }}>
+              <Box
+                ref={listRef}
+                sx={{ flex: 1, overflowY: "auto", height: 320, px: 0.5 }}
+              >
                 {messages.map((m) => {
-                  const mine = m.senderRole === "guest" || m.senderRole === "patient";
+                  const mine =
+                    m.senderRole === "guest" || m.senderRole === "patient";
                   return (
-                    <Box key={m.id} sx={{ display: "flex", justifyContent: mine ? "flex-end" : "flex-start", my: 0.5 }}>
+                    <Box
+                      key={m.id}
+                      sx={{
+                        display: "flex",
+                        justifyContent: mine ? "flex-end" : "flex-start",
+                        my: 0.5,
+                      }}
+                    >
                       <Box
                         sx={{
                           maxWidth: "80%",
@@ -140,7 +200,12 @@ export default function SupportChatWidget() {
                           color: mine ? "primary.contrastText" : "text.primary",
                         }}
                       >
-                        <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>{m.text}</Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{ whiteSpace: "pre-wrap" }}
+                        >
+                          {m.text}
+                        </Typography>
                       </Box>
                     </Box>
                   );
@@ -160,7 +225,12 @@ export default function SupportChatWidget() {
                   fullWidth
                   placeholder="Type a message"
                 />
-                <Button variant="contained" endIcon={<SendIcon />} onClick={send} disabled={!threadId || !text.trim()}>
+                <Button
+                  variant="contained"
+                  endIcon={<SendIcon />}
+                  onClick={send}
+                  disabled={!threadId || !text.trim()}
+                >
                   Send
                 </Button>
               </Stack>

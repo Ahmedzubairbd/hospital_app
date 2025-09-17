@@ -29,7 +29,7 @@ export async function PATCH(
   try {
     const body = await req.json();
     const input = patchSchema.parse(body);
-    
+
     const { id } = await params;
 
     const appt = await prisma.appointment.findUnique({

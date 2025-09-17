@@ -24,19 +24,19 @@ export async function POST(req: Request) {
 
     // Find existing OTP for this phone number
     const existingOtp = await prisma.otpCode.findFirst({
-      where: { phone: normalizedPhone }
+      where: { phone: normalizedPhone },
     });
-    
+
     if (existingOtp) {
       // Update existing OTP
       await prisma.otpCode.update({
         where: { id: existingOtp.id },
-        data: { codeHash: otp, expiresAt }
+        data: { codeHash: otp, expiresAt },
       });
     } else {
       // Create new OTP
       await prisma.otpCode.create({
-        data: { phone: normalizedPhone, codeHash: otp, expiresAt }
+        data: { phone: normalizedPhone, codeHash: otp, expiresAt },
       });
     }
 

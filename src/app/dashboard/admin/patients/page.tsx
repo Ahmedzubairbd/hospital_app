@@ -1,9 +1,29 @@
 "use client";
 import * as React from "react";
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-type Patient = { id: string; user: { name: string | null; email: string | null; phone: string | null } };
+type Patient = {
+  id: string;
+  user: { name: string | null; email: string | null; phone: string | null };
+};
 
 export default function PatientsAdminPage() {
   const [rows, setRows] = React.useState<Patient[]>([]);
@@ -19,23 +39,45 @@ export default function PatientsAdminPage() {
     const j = await r.json();
     setRows(Array.isArray(j) ? j : []);
   }
-  React.useEffect(() => { void load(); }, []);
+  React.useEffect(() => {
+    void load();
+  }, []);
 
   async function create() {
     setErr(null);
-    const r = await fetch("/api/patients", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, phone, password: password || undefined }) });
+    const r = await fetch("/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        password: password || undefined,
+      }),
+    });
     const j = await r.json();
     if (!r.ok) return setErr(j.error || "failed");
     setOpen(false);
-    setName(""); setEmail(""); setPhone(""); setPassword("");
+    setName("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
     await load();
   }
 
   return (
     <Box sx={{ p: 1 }}>
       <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>
-        <Typography variant="h4" sx={{ flexGrow: 1 }}>Patients</Typography>
-        <Button startIcon={<AddIcon />} variant="contained" onClick={() => setOpen(true)}>Add Patient</Button>
+        <Typography variant="h4" sx={{ flexGrow: 1 }}>
+          Patients
+        </Typography>
+        <Button
+          startIcon={<AddIcon />}
+          variant="contained"
+          onClick={() => setOpen(true)}
+        >
+          Add Patient
+        </Button>
       </Stack>
       <Paper variant="outlined">
         <Table>
@@ -49,9 +91,9 @@ export default function PatientsAdminPage() {
           <TableBody>
             {rows.map((r) => (
               <TableRow key={r.id}>
-                <TableCell>{r.user.name ?? '-'}</TableCell>
-                <TableCell>{r.user.email ?? '-'}</TableCell>
-                <TableCell>{r.user.phone ?? '-'}</TableCell>
+                <TableCell>{r.user.name ?? "-"}</TableCell>
+                <TableCell>{r.user.email ?? "-"}</TableCell>
+                <TableCell>{r.user.phone ?? "-"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -62,19 +104,37 @@ export default function PatientsAdminPage() {
         <DialogTitle>New Patient</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1, minWidth: 420 }}>
-            <TextField label="Full name" value={name} onChange={(e) => setName(e.target.value)} />
-            <TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <TextField label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <TextField label="Password (optional)" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <TextField
+              label="Full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <TextField
+              label="Password (optional)"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             {err && <Alert severity="error">{err}</Alert>}
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={create}>Create</Button>
+          <Button variant="contained" onClick={create}>
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 }
-
