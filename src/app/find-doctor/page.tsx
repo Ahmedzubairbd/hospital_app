@@ -420,22 +420,17 @@ export default function FindDoctorPage() {
                           />
                         ) : (
                           <Box
+                            component="img"
+                            src="/assets/icons/components/ic_avatar.svg"
+                            alt="Doctor avatar placeholder"
                             sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "100%",
-                              height: "100%",
-                              background: (theme) =>
-                                `linear-gradient(135deg, ${theme.palette.primary.light}, ${theme.palette.primary.main})`,
-                              color: "common.white",
-                              fontSize: 32,
-                              fontWeight: 600,
-                              textTransform: "uppercase",
+                              width: "60%",
+                              height: "60%",
+                              margin: "20% auto",
+                              display: "block",
+                              opacity: 0.65,
                             }}
-                          >
-                            {getText(profile.name, lang).charAt(0)}
-                          </Box>
+                          />
                         )}
                       </Box>
                       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1 }}>
