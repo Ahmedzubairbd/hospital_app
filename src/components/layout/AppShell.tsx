@@ -49,6 +49,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { mode, toggle } = useColorMode();
   const { lang, setLang } = useI18n();
 
+  const isDashboard = pathname.startsWith("/dashboard");
+
   const [currentUser, setCurrentUser] = React.useState<{
     name: string;
     role: string;
@@ -100,6 +102,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const dashboardHref = `/dashboard/${currentUser?.role}`;
+
+  if (isDashboard) {
+    return <>{children}</>;
+  }
 
   return (
     <Box sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>

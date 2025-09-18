@@ -89,13 +89,29 @@ const DesktopDrawer = styled(MuiDrawer, {
 }));
 
 // Styled AppBar to mirror template: no shadow, bottom border, above drawer
-const HeaderAppBar = styled(MuiAppBar)(({ theme }) => ({
+const HeaderAppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "desktopOpen",
+})<{ desktopOpen: boolean }>(({ theme, desktopOpen }) => ({
   borderWidth: 0,
   borderBottomWidth: 1,
   borderStyle: "solid",
   borderColor: (theme.vars ?? theme).palette.divider,
   boxShadow: "none",
   zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(desktopOpen && {
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+  [theme.breakpoints.up("md")]: {
+    marginLeft: desktopOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH,
+    width: `calc(100% - ${desktopOpen ? DRAWER_WIDTH : MINI_DRAWER_WIDTH}px)`,
+  },
 }));
 
 const navItems = [
@@ -104,6 +120,7 @@ const navItems = [
     path: "/dashboard/admin",
     icon: <DashboardIcon />,
     roles: ["admin"],
+    
   },
   {
     title: "Dashboard",
@@ -327,6 +344,8 @@ export default function DashboardLayout({
     </Box>
   );
 
+  const desktopOpen = isMdUp ? open : false;
+
   return (
     <Box
       sx={{
@@ -340,7 +359,8 @@ export default function DashboardLayout({
       <CssBaseline />
       <HeaderAppBar
         color="inherit"
-        position="absolute"
+        position="fixed"
+        desktopOpen={desktopOpen}
         sx={{ displayPrint: "none" }}
       >
         <Toolbar sx={{ backgroundColor: "inherit", mx: { xs: -0.75, sm: -1 } }}>

@@ -172,7 +172,7 @@ export default function FindDoctorPage() {
         sx={{
           flexWrap: "wrap",
           alignItems: "stretch",
-          mb: 3,
+          mb: { xs: 3, md: 3 },
         }}
       >
         <TextField
@@ -190,7 +190,7 @@ export default function FindDoctorPage() {
           }}
           sx={{ minWidth: { xs: "100%", md: 280 } }}
         />
-
+        <br />
         <Autocomplete
           options={departmentOptions}
           value={selectedDepartment}
@@ -256,7 +256,7 @@ export default function FindDoctorPage() {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: 3,
+                    borderRadius: 1,
                     overflow: "hidden",
                     boxShadow: "none",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -368,7 +368,7 @@ export default function FindDoctorPage() {
               sx={{
                 border: "1px dashed",
                 borderColor: "divider",
-                borderRadius: 3,
+                borderRadius: 1,
                 p: 4,
                 textAlign: "center",
               }}

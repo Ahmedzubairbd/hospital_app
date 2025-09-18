@@ -48,33 +48,66 @@ export async function GET(
   console.log("[chat] SSE connect", threadId);
 
   const te = new TextEncoder();
+  let cleanup: (() => void) | undefined;
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
-      const send = (event: string, data: unknown) => {
-        controller.enqueue(te.encode(`event: ${event}\n`));
-        controller.enqueue(te.encode(`data: ${JSON.stringify(data)}\n\n`));
+      let active = true;
+      let unsubscribe: (() => void) | undefined;
+      let ping: NodeJS.Timeout | undefined;
+
+      const cleanupResources = () => {
+        if (!active) {
+          return;
+        }
+        active = false;
+        if (ping) {
+          clearInterval(ping);
+        }
+        if (unsubscribe) {
+          unsubscribe();
+        }
+        req.signal.removeEventListener("abort", cleanupResources);
       };
+
+      const safeEnqueue = (chunk: Uint8Array) => {
+        if (!active) {
+          return;
+        }
+        try {
+          controller.enqueue(chunk);
+        } catch (err) {
+          cleanupResources();
+        }
+      };
+
+      const send = (event: string, data: unknown) => {
+        safeEnqueue(te.encode(`event: ${event}\n`));
+        safeEnqueue(te.encode(`data: ${JSON.stringify(data)}\n\n`));
+      };
+
+      cleanup = cleanupResources;
+      if (req.signal.aborted) {
+        cleanupResources();
+        return;
+      }
+      req.signal.addEventListener("abort", cleanupResources);
+
       // initial hello
       send("hello", { threadId });
       // recent messages snapshot
       const recent = chatStore.listMessages(threadId, 50);
       recent.forEach((m) => send("message", m));
 
-      const unsubscribe = chatStore.subscribe(threadId, (ev) => {
+      unsubscribe = chatStore.subscribe(threadId, (ev) => {
         send(ev.type, ev.data);
       });
 
-      const ping = setInterval(() => {
-        controller.enqueue(te.encode(": ping\n\n"));
+      ping = setInterval(() => {
+        safeEnqueue(te.encode(": ping\n\n"));
       }, 20000);
-
-      return () => {
-        clearInterval(ping);
-        unsubscribe();
-      };
     },
     cancel() {
-      // noop
+      cleanup?.();
     },
   });
 

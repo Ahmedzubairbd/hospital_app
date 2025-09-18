@@ -85,10 +85,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        My Profile
-      </Typography>
+    <Box sx={{ p: 1 }}>
+      <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+          My Profile
+        </Typography>
+      </Stack> 
       <Card>
         <CardHeader
           title="Profile Details"

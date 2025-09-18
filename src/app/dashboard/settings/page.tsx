@@ -18,7 +18,7 @@ export default function SettingsPage() {
   const { lang, setLang } = useI18n();
 
   return (
-    <Box>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h4" gutterBottom>
         Settings
       </Typography>
