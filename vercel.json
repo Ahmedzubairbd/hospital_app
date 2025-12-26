@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm run vercel-build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "env": {
+    "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app",
+
+    "NEXT_PUBLIC_APP_URL": "https://demo.amindiagnostic.net",
+    "NEXT_PUBLIC_API_URL": "https://demo.amindiagnostic.net/api",
+    "NEXTAUTH_URL": "https://demo.amindiagnostic.net",
+    "NEXTAUTH_SECRET": "WzP9AtnbkVG3NK1Hy8YFEwxsexLe6leShfk+LBGyZu8="
+  },
+  "build": {
+    "env": {
+      "DATABASE_URL": "postgresql://neondb_owner:npg_bDRjvdlByp86@ep-small-butterfly-a1aics9k-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&schema=app",
+      "NEXTAUTH_URL": "https://demo.amindiagnostic.net",
+      "NEXTAUTH_SECRET": "WzP9AtnbkVG3NK1Hy8YFEwxsexLe6leShfk+LBGyZu8=",
+      "NEXT_PUBLIC_API_URL": "https://demo.amindiagnostic.net/api",
+      "NEXT_PUBLIC_APP_URL": "https://demo.amindiagnostic.net"
+    }
+  }
+}
