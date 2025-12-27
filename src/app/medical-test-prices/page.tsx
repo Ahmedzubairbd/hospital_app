@@ -19,17 +19,17 @@ import * as React from "react";
 
 type TestPrice = {
   id: string;
-  code: string;
+  // code: string;
   name: string;
   description: string | null;
   priceCents: number;
-  active: boolean;
+  // active: boolean;
   department?: string | null;
-  examType?: string | null;
-  shortName?: string | null;
+  // examType?: string | null;
+  // shortName?: string | null;
   serialNo?: string | null;
-  deliveryType?: string | null;
-  deliveryHour?: number | null;
+  // deliveryType?: string | null;
+  // deliveryHour?: number | null;
 };
 
 export default function MedicalTestPricesPage() {
@@ -93,123 +93,148 @@ export default function MedicalTestPricesPage() {
           px: { xs: 2, sm: 3 },
           py: { xs: 2, sm: 3 },
           borderRadius: 3,
-          background: `linear-gradient(135deg, ${alpha(
+          position: "relative",
+          overflow: "hidden",
+          borderColor: alpha(theme.palette.primary.main, 0.2),
+          backgroundColor: alpha(theme.palette.background.paper, 0.7),
+          backgroundImage: `linear-gradient(135deg, ${alpha(
             theme.palette.primary.main,
-            0.18,
-          )}, ${alpha(theme.palette.background.paper, 0.95)})`,
+            0.18
+          )} 0%, ${alpha(theme.palette.background.paper, 0.65)} 45%, ${alpha(
+            theme.palette.background.default,
+            0.92
+          )} 100%), url("/assets/clinical.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "soft-light",
+          boxShadow: `0 20px 42px ${alpha(theme.palette.primary.main, 0.12)}`,
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(180deg, ${alpha(
+              theme.palette.background.default,
+              0.08
+            )} 0%, ${alpha(theme.palette.background.default, 0.55)} 60%, ${
+              theme.palette.background.default
+            } 100%)`,
+            zIndex: 0,
+          },
         })}
       >
-        <Stack spacing={2.5}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            alignItems={{ xs: "flex-start", sm: "center" }}
-          >
-            <Box
-              sx={(theme) => ({
-                p: 1.5,
-                borderRadius: 2,
-                bgcolor: alpha(theme.palette.primary.main, 0.12),
-                boxShadow: `0 12px 24px ${alpha(
-                  theme.palette.primary.main,
-                  0.18,
-                )}`,
-                display: "inline-flex",
-              })}
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <Stack spacing={2.5}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              alignItems={{ xs: "flex-start", sm: "center" }}
             >
-              <Image
-                src="/assets/icons/faqs/ic_payment.svg"
-                alt="Pricing icon"
-                width={64}
-                height={64}
-                priority
-              />
-            </Box>
-            <Box>
-              <Typography
-                variant="overline"
-                color="primary"
-                sx={{ fontWeight: 800, letterSpacing: 2 }}
+              <Box
+                sx={(theme) => ({
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  boxShadow: `0 12px 24px ${alpha(
+                    theme.palette.primary.main,
+                    0.18
+                  )}`,
+                  display: "inline-flex",
+                })}
               >
-                Transparent Pricing
-              </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 900 }} gutterBottom>
-                Medical Test Prices
-              </Typography>
-              <Typography color="text.secondary">
-                Search our most up-to-date laboratory and imaging fees for Amin
-                Diagnostic.
-              </Typography>
-            </Box>
-          </Stack>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={1.5}
-            sx={{ width: "100%" }}
-          >
-            <TextField
-              label="Search"
-              size="small"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleSearch();
-                }
-              }}
-              sx={{ flex: 1, minWidth: 0 }}
-            />
-            <Button
-              variant="contained"
-              size="medium"
-              onClick={handleSearch}
-              disabled={loading}
-              sx={{
-                alignSelf: { xs: "stretch", sm: "center" },
-                px: { xs: 2, sm: 4 },
-              }}
+                <Image
+                  src="/assets/icons/faqs/ic_payment.svg"
+                  alt="Pricing icon"
+                  width={64}
+                  height={64}
+                  priority
+                />
+              </Box>
+              <Box>
+                <Typography
+                  variant="overline"
+                  color="primary"
+                  sx={{ fontWeight: 800, letterSpacing: 2 }}
+                >
+                  Transparent Pricing
+                </Typography>
+                <Typography variant="h4" sx={{ fontWeight: 900 }} gutterBottom>
+                  Medical Test Prices
+                </Typography>
+                <Typography color="text.secondary">
+                  Search our most up-to-date laboratory and imaging fees for
+                  Amin Diagnostic.
+                </Typography>
+              </Box>
+            </Stack>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1.5}
+              sx={{ width: "100%" }}
             >
-              Search
-            </Button>
+              <TextField
+                label="Search"
+                size="small"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSearch();
+                  }
+                }}
+                sx={{ flex: 1, minWidth: 0 }}
+              />
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={handleSearch}
+                disabled={loading}
+                sx={{
+                  alignSelf: { xs: "stretch", sm: "center" },
+                  px: { xs: 2, sm: 4 },
+                }}
+              >
+                Search
+              </Button>
+            </Stack>
+            {error && <Alert severity="error">{error}</Alert>}
           </Stack>
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
+        </Box>
       </Paper>
       <Paper style={{ width: "100%" }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Code</TableCell>
+              {/* <TableCell>Code</TableCell> */}
               <TableCell>Name</TableCell>
-              <TableCell>Short Name</TableCell>
+              {/* <TableCell>Short Name</TableCell> */}
               <TableCell>Department</TableCell>
-              <TableCell>Exam Type</TableCell>
+              {/* <TableCell>Exam Type</TableCell> */}
               <TableCell align="right">Price (৳)</TableCell>
-              <TableCell>Delivery</TableCell>
-              <TableCell align="center">Active</TableCell>
+              {/* <TableCell>Delivery</TableCell> */}
+              {/* <TableCell align="center">Active</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
             {items.map((t) => (
               <TableRow key={t.id} hover>
-                <TableCell>{t.code}</TableCell>
+                {/* <TableCell>{t.code}</TableCell> */}
                 <TableCell>{t.name}</TableCell>
-                <TableCell>{t.shortName ?? "-"}</TableCell>
+                {/* <TableCell>{t.shortName ?? "-"}</TableCell> */}
                 <TableCell>{t.department ?? "-"}</TableCell>
-                <TableCell>{t.examType ?? "-"}</TableCell>
+                {/* <TableCell>{t.examType ?? "-"}</TableCell> */}
                 <TableCell align="right">
                   {(t.priceCents / 100).toLocaleString()}
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {[
                     t.deliveryType,
                     t.deliveryHour ? `${t.deliveryHour}h` : null,
                   ]
                     .filter(Boolean)
                     .join(" / ") || "-"}
-                </TableCell>
-                <TableCell align="center">{t.active ? "Yes" : "No"}</TableCell>
+                </TableCell> */}
+                {/* <TableCell align="center">{t.active ? "Yes" : "No"}</TableCell> */}
               </TableRow>
             ))}
             {loading && (
