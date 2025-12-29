@@ -15,6 +15,7 @@ import {
   Grid,
   InputAdornment,
   Stack,
+  Paper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -280,7 +281,7 @@ export default function FindDoctorPage() {
     }));
   }, []);
 
-  const heading = lang === "bn" ? "ডাক্তার খুঁজুন" : "Find a Doctor";
+  const heading = lang === "bn" ? "বিশেষজ্ঞ চিকিৎসক" : "Specialist Doctors";
   const subheading =
     lang === "bn"
       ? "আমাদের বিশেষজ্ঞ প্যানেলের তথ্য, ছবি ও সাক্ষাৎ সময় দেখে আপনার প্রয়োজনীয় চিকিৎসক নির্বাচন করুন।"
@@ -305,12 +306,168 @@ export default function FindDoctorPage() {
 
   return (
     <Box sx={{ py: { xs: 2, md: 4 } }}>
-      <Typography variant="h4" gutterBottom>
-        {heading}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        {subheading}
-      </Typography>
+      <Paper
+        variant="outlined"
+        sx={(theme) => ({
+          mb: 3,
+          px: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 3 },
+          borderRadius: 3,
+          position: "relative",
+          overflow: "hidden",
+          borderColor: alpha(theme.palette.primary.main, 0.9),
+          backgroundColor: alpha(theme.palette.background.paper, 0.67),
+          backgroundImage: `linear-gradient(135deg, ${alpha(
+            theme.palette.primary.main,
+            0.78
+          )} 0%, ${alpha(theme.palette.background.paper, 0.56)} 45%, ${alpha(
+            theme.palette.background.default,
+            0.72
+          )} 100%), url("/assets/clinical.jpg")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "soft-light",
+          boxShadow: `0 20px 42px ${alpha(theme.palette.primary.main, 0.32)}`,
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(180deg, ${alpha(
+              theme.palette.background.default,
+              0.08
+            )} 0%, ${alpha(theme.palette.background.default, 0.55)} 60%, ${
+              theme.palette.background.default
+            } 100%)`,
+            zIndex: 0,
+          },
+        })}
+      >
+        <Box sx={{ position: "relative", zIndex: 1 }}>
+          <Stack spacing={2.5}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              alignItems={{ xs: "flex-start", sm: "center" }}
+            >
+              <Box
+                sx={(theme) => ({
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  boxShadow: `0 12px 24px ${alpha(
+                    theme.palette.primary.main,
+                    0.28
+                  )}`,
+                  display: "inline-flex",
+                })}
+              >
+                <Image
+                  src="/assets/icons/faqs/ic_account.svg"
+                  alt="Pricing icon"
+                  width={64}
+                  height={64}
+                  priority
+                />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 900, justifySelf: "center" }}
+                  gutterBottom
+                >
+                  {heading}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  color="text.secondary"
+                  sx={{ mb: 3 }}
+                >
+                  {subheading}
+                </Typography>
+              </Box>
+            </Stack>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1.5}
+              alignItems={{ xs: "flex-start", sm: "center" }}
+            >
+              <TextField
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                size="small"
+                placeholder={searchPlaceholder}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Autocomplete
+                options={departmentOptions}
+                value={selectedDepartment}
+                onChange={(_, value) => setSelectedDepartment(value)}
+                getOptionLabel={(option) => getText(option.label, lang)}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                clearOnEscape
+                renderInput={(params) => (
+                  <TextField {...params} size="small" label={departmentLabel} />
+                )}
+              />
+              <Typography variant="h5">
+                <Autocomplete
+                  multiple
+                  disableCloseOnSelect
+                  options={specializationOptions}
+                  value={selectedSpecializations}
+                  onChange={(_, value) => setSelectedSpecializations(value)}
+                  getOptionLabel={(option) => getText(option.label, lang)}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  sx={{ minWidth: { xs: "100%", md: 240 } }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      label={specializationLabel}
+                    />
+                  )}
+                />
+              </Typography>
+              <Typography variant="h5">
+                <Autocomplete
+                  multiple
+                  disableCloseOnSelect
+                  options={focusAreaOptions}
+                  value={selectedFocusAreas}
+                  onChange={(_, value) => setSelectedFocusAreas(value)}
+                  getOptionLabel={(option) => getText(option.label, lang)}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  sx={{ minWidth: { xs: "100%", md: 240 } }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      label={focusAreaLabel}
+                    />
+                  )}
+                />
+              </Typography>
+            </Stack>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1.5}
+              sx={{ width: "100%" }}
+            >
+              {error && <Alert severity="error">{error}</Alert>}
+            </Stack>
+          </Stack>
+        </Box>
+      </Paper>
 
       <Stack
         direction={{ xs: "column", md: "row" }}
@@ -321,185 +478,117 @@ export default function FindDoctorPage() {
           mb: { xs: 3, md: 3 },
         }}
       >
-        <TextField
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          fullWidth
-          size="small"
-          placeholder={searchPlaceholder}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon fontSize="small" />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ minWidth: { xs: "100%", md: 280 } }}
-        />
         <br />
-        <Autocomplete
-          options={departmentOptions}
-          value={selectedDepartment}
-          onChange={(_, value) => setSelectedDepartment(value)}
-          getOptionLabel={(option) => getText(option.label, lang)}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          clearOnEscape
-          sx={{ minWidth: { xs: "100%", md: 220 } }}
-          renderInput={(params) => (
-            <TextField {...params} size="small" label={departmentLabel} />
-          )}
-        />
-
-        <Autocomplete
-          multiple
-          disableCloseOnSelect
-          options={specializationOptions}
-          value={selectedSpecializations}
-          onChange={(_, value) => setSelectedSpecializations(value)}
-          getOptionLabel={(option) => getText(option.label, lang)}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          sx={{ minWidth: { xs: "100%", md: 240 } }}
-          renderInput={(params) => (
-            <TextField {...params} size="small" label={specializationLabel} />
-          )}
-        />
-
-        <Autocomplete
-          multiple
-          disableCloseOnSelect
-          options={focusAreaOptions}
-          value={selectedFocusAreas}
-          onChange={(_, value) => setSelectedFocusAreas(value)}
-          getOptionLabel={(option) => getText(option.label, lang)}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          sx={{ minWidth: { xs: "100%", md: 240 } }}
-          renderInput={(params) => (
-            <TextField {...params} size="small" label={focusAreaLabel} />
-          )}
-        />
       </Stack>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {resultLabel}
-      </Typography>
+      <Box sx={{ py: { xs: 2, md: 4 } }}>
+        <Alert sx={{ mb: 2, justifySelf: "center" }}>{resultLabel}</Alert>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
 
-      <Grid container spacing={2}>
-        {busy ? (
-          <Grid size={12}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                p: 6,
-                gap: 2,
-              }}
-            >
-              <CircularProgress />
-              <Typography variant="body2" color="text.secondary">
-                {lang === "bn" ? "দয়া করে অপেক্ষা করুন..." : "Please wait..."}
-              </Typography>
-            </Box>
-          </Grid>
-        ) : (
-          <>
-            <AnimatePresence>
-              {filteredProfiles.map((profile, index) => {
-                const isExpanded = expandedCards[profile.id] ?? false;
-                const descriptionText = profile.description
-                  ? getText(profile.description, lang)
-                  : null;
-                const summaryWorkplaces = profile.workplaces.slice(0, 1);
-                const extraWorkplaces = profile.workplaces.slice(
-                  summaryWorkplaces.length
-                );
-                const branchLabel =
-                  resolveBranchLabel(profile.branch) ??
-                  resolveBranchLabel(profile.availableTo);
-                const hasExpandableContent =
-                  profile.qualifications.length > 0 ||
-                  extraWorkplaces.length > 0 ||
-                  profile.focusAreas.length > 0 ||
-                  Boolean(descriptionText);
+        <Grid container spacing={2}>
+          {busy ? (
+            <Grid size={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: 6,
+                  gap: 2,
+                }}
+              >
+                <CircularProgress />
+                <Typography variant="body2" color="text.secondary">
+                  {lang === "bn"
+                    ? "দয়া করে অপেক্ষা করুন..."
+                    : "Please wait..."}
+                </Typography>
+              </Box>
+            </Grid>
+          ) : (
+            <>
+              <AnimatePresence>
+                {filteredProfiles.map((profile, index) => {
+                  const isExpanded = expandedCards[profile.id] ?? false;
+                  const descriptionText = profile.description
+                    ? getText(profile.description, lang)
+                    : null;
+                  const summaryWorkplaces = profile.workplaces.slice(0, 1);
+                  const extraWorkplaces = profile.workplaces.slice(
+                    summaryWorkplaces.length
+                  );
+                  const branchLabel =
+                    resolveBranchLabel(profile.branch) ??
+                    resolveBranchLabel(profile.availableTo);
+                  const hasExpandableContent =
+                    profile.qualifications.length > 0 ||
+                    extraWorkplaces.length > 0 ||
+                    profile.focusAreas.length > 0 ||
+                    Boolean(descriptionText);
 
-                return (
-                  <Grid key={profile.id} size={{ xs: 12, md: 6, lg: 4 }}>
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0, y: 24 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -16 }}
-                      transition={{ duration: 0.35, delay: index * 0.03 }}
-                    >
-                      <Card
-                        sx={(theme) => {
-                          const isDark = theme.palette.mode === "dark";
-                          const borderColor = alpha(
-                            theme.palette.primary.main,
-                            isDark ? 0.4 : 0.25
-                          );
-                          return {
-                            height: "100%",
-                            minHeight: { xs: 460, md: 520 },
-                            display: "flex",
-                            flexDirection: "column",
-                            borderRadius: 5,
-                            overflow: "hidden",
-                            position: "relative",
-                            border: `1px solid ${borderColor}`,
-                            background: isDark
-                              ? "linear-gradient(180deg, rgba(8, 14, 16, 0.98) 0%, rgba(6, 10, 12, 0.94) 100%)"
-                              : "linear-gradient(180deg, rgba(235, 252, 248, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%)",
-                            boxShadow: isDark
-                              ? "0 22px 50px rgba(0, 0, 0, 0.55)"
-                              : "0 18px 40px rgba(0, 105, 92, 0.14)",
-                            backdropFilter: "blur(10px)",
-                            transition:
-                              "transform 0.3s ease, box-shadow 0.3s ease",
-                            "&:hover": {
-                              transform: "translateY(-6px)",
-                              boxShadow: isDark
-                                ? "0 28px 70px rgba(0, 0, 0, 0.6)"
-                                : "0 22px 50px rgba(0, 105, 92, 0.18)",
-                            },
-                            "&:hover img": {
-                              transform: profile.image ? "scale(1.05)" : "none",
-                            },
-                            "&::before": {
-                              content: '""',
-                              position: "absolute",
-                              inset: 0,
-                              borderRadius: "inherit",
-                              pointerEvents: "none",
-                              boxShadow: `inset 0 0 0 1px ${alpha(
-                                theme.palette.primary.main,
-                                isDark ? 0.28 : 0.18
-                              )}`,
-                              opacity: 0.8,
-                            },
-                          };
-                        }}
+                  return (
+                    <Grid key={profile.id} size={{ xs: 12, md: 6, lg: 4 }}>
+                      <motion.div
+                        layout
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -16 }}
+                        transition={{ duration: 0.35, delay: index * 0.03 }}
                       >
-                        <Box
+                        <Card
                           sx={(theme) => {
                             const isDark = theme.palette.mode === "dark";
+                            const borderColor = alpha(
+                              theme.palette.primary.main,
+                              isDark ? 0.4 : 0.25
+                            );
                             return {
-                              position: "relative",
+                              height: "100%",
+                              minHeight: { xs: 460, md: 520 },
                               display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              pt: { xs: 3, md: 3.5 },
-                              pb: { xs: 1.5, md: 2 },
+                              flexDirection: "column",
+                              borderRadius: 5,
+                              overflow: "hidden",
+                              position: "relative",
+                              border: `1px solid ${borderColor}`,
                               background: isDark
-                                ? "linear-gradient(180deg, rgba(0, 191, 165, 0.08), rgba(0, 0, 0, 0))"
-                                : "linear-gradient(180deg, rgba(0, 150, 136, 0.08), rgba(255, 255, 255, 0))",
+                                ? "linear-gradient(180deg, rgba(8, 14, 16, 0.98) 0%, rgba(6, 10, 12, 0.94) 100%)"
+                                : "linear-gradient(180deg, rgba(235, 252, 248, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%)",
+                              boxShadow: isDark
+                                ? "0 22px 50px rgba(0, 0, 0, 0.55)"
+                                : "0 18px 40px rgba(0, 105, 92, 0.14)",
+                              backdropFilter: "blur(10px)",
+                              transition:
+                                "transform 0.3s ease, box-shadow 0.3s ease",
+                              "&:hover": {
+                                transform: "translateY(-6px)",
+                                boxShadow: isDark
+                                  ? "0 28px 70px rgba(0, 0, 0, 0.6)"
+                                  : "0 22px 50px rgba(0, 105, 92, 0.18)",
+                              },
+                              "&:hover img": {
+                                transform: profile.image
+                                  ? "scale(1.05)"
+                                  : "none",
+                              },
+                              "&::before": {
+                                content: '""',
+                                position: "absolute",
+                                inset: 0,
+                                borderRadius: "inherit",
+                                pointerEvents: "none",
+                                boxShadow: `inset 0 0 0 1px ${alpha(
+                                  theme.palette.primary.main,
+                                  isDark ? 0.28 : 0.18
+                                )}`,
+                                opacity: 0.8,
+                              },
                             };
                           }}
                         >
@@ -507,331 +596,351 @@ export default function FindDoctorPage() {
                             sx={(theme) => {
                               const isDark = theme.palette.mode === "dark";
                               return {
-                                width: { xs: 170, md: 200 },
-                                aspectRatio: "1 / 1",
-                                borderRadius: "50%",
                                 position: "relative",
-                                overflow: "hidden",
-                                display: "grid",
-                                placeItems: "center",
-                                border: `1px solid ${alpha(
-                                  theme.palette.primary.main,
-                                  isDark ? 0.45 : 0.22
-                                )}`,
-                                backgroundColor: isDark
-                                  ? "rgba(0, 0, 0, 0.5)"
-                                  : "rgba(255, 255, 255, 0.92)",
-                                boxShadow: isDark
-                                  ? "0 12px 28px rgba(0, 0, 0, 0.45)"
-                                  : "0 12px 28px rgba(0, 105, 92, 0.16)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                pt: { xs: 3, md: 3.5 },
+                                pb: { xs: 1.5, md: 2 },
+                                background: isDark
+                                  ? "linear-gradient(180deg, rgba(0, 191, 165, 0.08), rgba(0, 0, 0, 0))"
+                                  : "linear-gradient(180deg, rgba(0, 150, 136, 0.08), rgba(255, 255, 255, 0))",
                               };
                             }}
                           >
-                            {profile.image ? (
-                              <Image
-                                src={profile.image}
-                                alt={getText(profile.name, lang)}
-                                fill
-                                quality={80}
-                                sizes="(max-width: 600px) 60vw, (max-width: 1200px) 40vw, 220px"
-                                style={{
-                                  objectFit: "cover",
-                                  transition: "transform 0.6s ease",
-                                  transformOrigin: "center",
-                                }}
-                              />
-                            ) : (
-                              <Image
-                                src="/assets/icons/components/ic_avatar.svg"
-                                alt="Doctor avatar placeholder"
-                                width={128}
-                                height={128}
-                                quality={80}
-                                style={{
-                                  opacity: 0.7,
-                                  width: "55%",
-                                  height: "auto",
-                                }}
-                              />
-                            )}
+                            <Box
+                              sx={(theme) => {
+                                const isDark = theme.palette.mode === "dark";
+                                return {
+                                  width: { xs: 170, md: 200 },
+                                  aspectRatio: "1 / 1",
+                                  borderRadius: "50%",
+                                  position: "relative",
+                                  overflow: "hidden",
+                                  display: "grid",
+                                  placeItems: "center",
+                                  border: `1px solid ${alpha(
+                                    theme.palette.primary.main,
+                                    isDark ? 0.45 : 0.22
+                                  )}`,
+                                  backgroundColor: isDark
+                                    ? "rgba(0, 0, 0, 0.5)"
+                                    : "rgba(255, 255, 255, 0.92)",
+                                  boxShadow: isDark
+                                    ? "0 12px 28px rgba(0, 0, 0, 0.45)"
+                                    : "0 12px 28px rgba(0, 105, 92, 0.16)",
+                                };
+                              }}
+                            >
+                              {profile.image ? (
+                                <Image
+                                  src={profile.image}
+                                  alt={getText(profile.name, lang)}
+                                  fill
+                                  quality={80}
+                                  sizes="(max-width: 600px) 60vw, (max-width: 1200px) 40vw, 220px"
+                                  style={{
+                                    objectFit: "cover",
+                                    transition: "transform 0.6s ease",
+                                    transformOrigin: "center",
+                                  }}
+                                />
+                              ) : (
+                                <Image
+                                  src="/assets/icons/components/ic_avatar.svg"
+                                  alt="Doctor avatar placeholder"
+                                  width={128}
+                                  height={128}
+                                  quality={80}
+                                  style={{
+                                    opacity: 0.7,
+                                    width: "55%",
+                                    height: "auto",
+                                  }}
+                                />
+                              )}
+                            </Box>
                           </Box>
-                        </Box>
-                        <CardContent
-                          sx={{
-                            flexGrow: 1,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 1.2,
-                            textAlign: "center",
-                            alignItems: "center",
-                            px: { xs: 2.5, md: 3 },
-                            pb: { xs: 2.5, md: 3 },
-                          }}
-                        >
-                          <Box
+                          <CardContent
                             sx={{
                               flexGrow: 1,
                               display: "flex",
                               flexDirection: "column",
                               gap: 1.2,
+                              textAlign: "center",
                               alignItems: "center",
+                              px: { xs: 2.5, md: 3 },
+                              pb: { xs: 2.5, md: 3 },
                             }}
                           >
-                            <Box sx={{ textAlign: "center" }}>
-                              <Typography
-                                variant="h6"
-                                sx={{ lineHeight: 1.3, fontWeight: 700 }}
-                              >
-                                {getText(profile.name, lang)}
-                              </Typography>
-                              <Typography
-                                variant="subtitle2"
-                                color="primary"
-                                sx={{ fontWeight: 600 }}
-                              >
-                                {getText(profile.specialization, lang)}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {getText(profile.department, lang)}
-                              </Typography>
-                            </Box>
+                            <Box
+                              sx={{
+                                flexGrow: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1.2,
+                                alignItems: "center",
+                              }}
+                            >
+                              <Box sx={{ textAlign: "center" }}>
+                                <Typography
+                                  variant="h6"
+                                  sx={{ lineHeight: 1.3, fontWeight: 700 }}
+                                >
+                                  {getText(profile.name, lang)}
+                                </Typography>
+                                <Typography
+                                  variant="subtitle2"
+                                  color="primary"
+                                  sx={{ fontWeight: 600 }}
+                                >
+                                  {getText(profile.specialization, lang)}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                >
+                                  {getText(profile.department, lang)}
+                                </Typography>
+                              </Box>
 
-                            {summaryWorkplaces.length > 0 && (
-                              <Stack spacing={0.5} alignItems="center">
-                                {summaryWorkplaces.map((place) => (
+                              {summaryWorkplaces.length > 0 && (
+                                <Stack spacing={0.5} alignItems="center">
+                                  {summaryWorkplaces.map((place) => (
+                                    <Typography
+                                      key={`${profile.id}-${place.en}-summary`}
+                                      variant="body2"
+                                      sx={{ textAlign: "center" }}
+                                    >
+                                      {getText(place, lang)}
+                                    </Typography>
+                                  ))}
+                                  {extraWorkplaces.length > 0 &&
+                                    !isExpanded && (
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                      >
+                                        {lang === "bn"
+                                          ? `${extraWorkplaces.length}টি অতিরিক্ত চেম্বার সম্পর্কে জানতে প্রসারিত করুন`
+                                          : `+${extraWorkplaces.length} more locations`}
+                                      </Typography>
+                                    )}
+                                </Stack>
+                              )}
+
+                              <Stack spacing={0.25} alignItems="center">
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{ fontWeight: 500, textAlign: "center" }}
+                                >
+                                  {getText(profile.visitingHours, lang)}
+                                </Typography>
+                                {profile.availableFrom && (
                                   <Typography
-                                    key={`${profile.id}-${place.en}-summary`}
                                     variant="body2"
+                                    color="text.secondary"
                                     sx={{ textAlign: "center" }}
                                   >
-                                    {getText(place, lang)}
+                                    {lang === "bn"
+                                      ? `সময়: ${profile.availableFrom}`
+                                      : `Time: ${profile.availableFrom}`}
                                   </Typography>
-                                ))}
-                                {extraWorkplaces.length > 0 && !isExpanded && (
+                                )}
+                                {profile.weekdays && (
                                   <Typography
-                                    variant="caption"
+                                    variant="body2"
                                     color="text.secondary"
+                                    sx={{ textAlign: "center" }}
                                   >
                                     {lang === "bn"
-                                      ? `${extraWorkplaces.length}টি অতিরিক্ত চেম্বার সম্পর্কে জানতে প্রসারিত করুন`
-                                      : `+${extraWorkplaces.length} more locations`}
+                                      ? `সপ্তাহের দিন: ${profile.weekdays}`
+                                      : `Weekdays: ${profile.weekdays}`}
+                                  </Typography>
+                                )}
+                                {branchLabel && (
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ textAlign: "center" }}
+                                  >
+                                    {lang === "bn"
+                                      ? `শাখা: ${branchLabel}`
+                                      : `Branch: ${branchLabel}`}
                                   </Typography>
                                 )}
                               </Stack>
-                            )}
 
-                            <Stack spacing={0.25} alignItems="center">
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ fontWeight: 500, textAlign: "center" }}
-                              >
-                                {getText(profile.visitingHours, lang)}
-                              </Typography>
-                              {profile.availableFrom && (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ textAlign: "center" }}
+                              {hasExpandableContent && (
+                                <Collapse
+                                  in={isExpanded}
+                                  timeout="auto"
+                                  unmountOnExit
                                 >
-                                  {lang === "bn"
-                                    ? `সময়: ${profile.availableFrom}`
-                                    : `Time: ${profile.availableFrom}`}
-                                </Typography>
+                                  <Stack
+                                    spacing={1.2}
+                                    sx={{ mt: 1, alignItems: "center" }}
+                                  >
+                                    {extraWorkplaces.length > 0 && (
+                                      <Stack spacing={0.5} alignItems="center">
+                                        <Typography
+                                          variant="subtitle2"
+                                          sx={{ fontWeight: 600 }}
+                                        >
+                                          {lang === "bn"
+                                            ? "অতিরিক্ত চেম্বার"
+                                            : "Additional Chambers"}
+                                        </Typography>
+                                        {extraWorkplaces.map((place) => (
+                                          <Typography
+                                            key={`${profile.id}-${place.en}-extra`}
+                                            variant="body2"
+                                            sx={{ textAlign: "center" }}
+                                          >
+                                            {getText(place, lang)}
+                                          </Typography>
+                                        ))}
+                                      </Stack>
+                                    )}
+
+                                    {descriptionText && (
+                                      <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ textAlign: "center" }}
+                                      >
+                                        {descriptionText}
+                                      </Typography>
+                                    )}
+
+                                    {profile.focusAreas.length > 0 && (
+                                      <Stack spacing={0.75} alignItems="center">
+                                        <Typography
+                                          variant="subtitle2"
+                                          sx={{ fontWeight: 600 }}
+                                        >
+                                          {lang === "bn"
+                                            ? "বিশেষ আগ্রহের ক্ষেত্র"
+                                            : "Focus Areas"}
+                                        </Typography>
+                                        <Stack
+                                          direction="row"
+                                          spacing={1}
+                                          flexWrap="wrap"
+                                          useFlexGap
+                                          justifyContent="center"
+                                        >
+                                          {profile.focusAreas.map((area) => (
+                                            <Chip
+                                              key={`${profile.id}-${area.en}`}
+                                              size="small"
+                                              color="secondary"
+                                              variant="outlined"
+                                              label={getText(area, lang)}
+                                            />
+                                          ))}
+                                        </Stack>
+                                      </Stack>
+                                    )}
+
+                                    {profile.qualifications.length > 0 && (
+                                      <Stack spacing={0.75} alignItems="center">
+                                        <Typography
+                                          variant="subtitle2"
+                                          sx={{ fontWeight: 600 }}
+                                        >
+                                          {lang === "bn"
+                                            ? "শিক্ষা ও যোগ্যতা"
+                                            : "Education & Qualifications"}
+                                        </Typography>
+                                        <Stack
+                                          direction="row"
+                                          spacing={1}
+                                          flexWrap="wrap"
+                                          useFlexGap
+                                          justifyContent="center"
+                                        >
+                                          {profile.qualifications.map(
+                                            (qual) => (
+                                              <Chip
+                                                key={`${profile.id}-${qual.en}`}
+                                                size="small"
+                                                label={getText(qual, lang)}
+                                                sx={{ mt: 0.5 }}
+                                              />
+                                            )
+                                          )}
+                                        </Stack>
+                                      </Stack>
+                                    )}
+                                  </Stack>
+                                </Collapse>
                               )}
-                              {profile.weekdays && (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ textAlign: "center" }}
-                                >
-                                  {lang === "bn"
-                                    ? `সপ্তাহের দিন: ${profile.weekdays}`
-                                    : `Weekdays: ${profile.weekdays}`}
-                                </Typography>
-                              )}
-                              {branchLabel && (
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ textAlign: "center" }}
-                                >
-                                  {lang === "bn"
-                                    ? `শাখা: ${branchLabel}`
-                                    : `Branch: ${branchLabel}`}
-                                </Typography>
-                              )}
-                            </Stack>
+                            </Box>
 
                             {hasExpandableContent && (
-                              <Collapse
-                                in={isExpanded}
-                                timeout="auto"
-                                unmountOnExit
+                              <Button
+                                size="small"
+                                variant="text"
+                                onClick={() => toggleCardExpansion(profile.id)}
+                                endIcon={
+                                  <KeyboardArrowDownIcon
+                                    sx={{
+                                      transition: "transform 0.2s ease",
+                                      transform: isExpanded
+                                        ? "rotate(180deg)"
+                                        : "rotate(0deg)",
+                                    }}
+                                  />
+                                }
+                                sx={{ alignSelf: "center", mt: 0.5 }}
                               >
-                                <Stack
-                                  spacing={1.2}
-                                  sx={{ mt: 1, alignItems: "center" }}
-                                >
-                                  {extraWorkplaces.length > 0 && (
-                                    <Stack spacing={0.5} alignItems="center">
-                                      <Typography
-                                        variant="subtitle2"
-                                        sx={{ fontWeight: 600 }}
-                                      >
-                                        {lang === "bn"
-                                          ? "অতিরিক্ত চেম্বার"
-                                          : "Additional Chambers"}
-                                      </Typography>
-                                      {extraWorkplaces.map((place) => (
-                                        <Typography
-                                          key={`${profile.id}-${place.en}-extra`}
-                                          variant="body2"
-                                          sx={{ textAlign: "center" }}
-                                        >
-                                          {getText(place, lang)}
-                                        </Typography>
-                                      ))}
-                                    </Stack>
-                                  )}
-
-                                  {descriptionText && (
-                                    <Typography
-                                      variant="body2"
-                                      color="text.secondary"
-                                      sx={{ textAlign: "center" }}
-                                    >
-                                      {descriptionText}
-                                    </Typography>
-                                  )}
-
-                                  {profile.focusAreas.length > 0 && (
-                                    <Stack spacing={0.75} alignItems="center">
-                                      <Typography
-                                        variant="subtitle2"
-                                        sx={{ fontWeight: 600 }}
-                                      >
-                                        {lang === "bn"
-                                          ? "বিশেষ আগ্রহের ক্ষেত্র"
-                                          : "Focus Areas"}
-                                      </Typography>
-                                      <Stack
-                                        direction="row"
-                                        spacing={1}
-                                        flexWrap="wrap"
-                                        useFlexGap
-                                        justifyContent="center"
-                                      >
-                                        {profile.focusAreas.map((area) => (
-                                          <Chip
-                                            key={`${profile.id}-${area.en}`}
-                                            size="small"
-                                            color="secondary"
-                                            variant="outlined"
-                                            label={getText(area, lang)}
-                                          />
-                                        ))}
-                                      </Stack>
-                                    </Stack>
-                                  )}
-
-                                  {profile.qualifications.length > 0 && (
-                                    <Stack spacing={0.75} alignItems="center">
-                                      <Typography
-                                        variant="subtitle2"
-                                        sx={{ fontWeight: 600 }}
-                                      >
-                                        {lang === "bn"
-                                          ? "শিক্ষা ও যোগ্যতা"
-                                          : "Education & Qualifications"}
-                                      </Typography>
-                                      <Stack
-                                        direction="row"
-                                        spacing={1}
-                                        flexWrap="wrap"
-                                        useFlexGap
-                                        justifyContent="center"
-                                      >
-                                        {profile.qualifications.map((qual) => (
-                                          <Chip
-                                            key={`${profile.id}-${qual.en}`}
-                                            size="small"
-                                            label={getText(qual, lang)}
-                                            sx={{ mt: 0.5 }}
-                                          />
-                                        ))}
-                                      </Stack>
-                                    </Stack>
-                                  )}
-                                </Stack>
-                              </Collapse>
+                                {isExpanded
+                                  ? lang === "bn"
+                                    ? "সংক্ষিপ্ত করুন"
+                                    : "Show less"
+                                  : lang === "bn"
+                                  ? "সম্পূর্ণ প্রোফাইল"
+                                  : "View full profile"}
+                              </Button>
                             )}
-                          </Box>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    </Grid>
+                  );
+                })}
+              </AnimatePresence>
 
-                          {hasExpandableContent && (
-                            <Button
-                              size="small"
-                              variant="text"
-                              onClick={() => toggleCardExpansion(profile.id)}
-                              endIcon={
-                                <KeyboardArrowDownIcon
-                                  sx={{
-                                    transition: "transform 0.2s ease",
-                                    transform: isExpanded
-                                      ? "rotate(180deg)"
-                                      : "rotate(0deg)",
-                                  }}
-                                />
-                              }
-                              sx={{ alignSelf: "center", mt: 0.5 }}
-                            >
-                              {isExpanded
-                                ? lang === "bn"
-                                  ? "সংক্ষিপ্ত করুন"
-                                  : "Show less"
-                                : lang === "bn"
-                                ? "সম্পূর্ণ প্রোফাইল"
-                                : "View full profile"}
-                            </Button>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  </Grid>
-                );
-              })}
-            </AnimatePresence>
-
-            {!error && filteredProfiles.length === 0 && (
-              <Grid size={12}>
-                <Box
-                  sx={{
-                    border: "1px dashed",
-                    borderColor: "divider",
-                    borderRadius: 1,
-                    p: 4,
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    {lang === "bn"
-                      ? "কোনো চিকিৎসক পাওয়া যায়নি"
-                      : "No doctors found"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {lang === "bn"
-                      ? "অন্যান্য কী-ওয়ার্ড বা ফিল্টার ব্যবহার করে পুনরায় চেষ্টা করুন।"
-                      : "Try adjusting your filters or search terms and try again."}
-                  </Typography>
-                </Box>
-              </Grid>
-            )}
-          </>
-        )}
-      </Grid>
+              {!error && filteredProfiles.length === 0 && (
+                <Grid size={12}>
+                  <Box
+                    sx={{
+                      border: "1px dashed",
+                      borderColor: "divider",
+                      borderRadius: 1,
+                      p: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      {lang === "bn"
+                        ? "কোনো চিকিৎসক পাওয়া যায়নি"
+                        : "No doctors found"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {lang === "bn"
+                        ? "অন্যান্য কী-ওয়ার্ড বা ফিল্টার ব্যবহার করে পুনরায় চেষ্টা করুন।"
+                        : "Try adjusting your filters or search terms and try again."}
+                    </Typography>
+                  </Box>
+                </Grid>
+              )}
+            </>
+          )}
+        </Grid>
+      </Box>
     </Box>
   );
 }
