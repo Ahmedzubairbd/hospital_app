@@ -143,7 +143,7 @@ export default function AdminDashboardPage() {
   }
 
   const theme = useTheme();
-
+  // gridStroke declaration removed to avoid duplicate
   const summaryData: SummaryCard[] = [
     {
       title: "Total Patients",
@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
   ];
   const gridStroke = alpha(
     theme.palette.text.primary,
-    theme.palette.mode === "dark" ? 0.08 : 0.12,
+    theme.palette.mode === "dark" ? 0.08 : 0.12
   );
 
   return (
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
                       sx={{
                         bgcolor: alpha(
                           item.accent,
-                          theme.palette.mode === "dark" ? 0.2 : 0.12,
+                          theme.palette.mode === "dark" ? 0.2 : 0.12
                         ),
                         color: item.accent,
                         width: 48,
@@ -253,19 +253,19 @@ export default function AdminDashboardPage() {
                 </Typography>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={patientRegData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="patients"
-                    stroke={theme.palette.primary.main}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="patients"
+                      stroke={theme.palette.primary.main}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
           </Grid>

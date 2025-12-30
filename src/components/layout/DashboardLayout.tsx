@@ -13,8 +13,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  MenuItem,
   Menu,
+  MenuItem,
   SwipeableDrawer,
   Toolbar,
   Tooltip,
@@ -27,8 +27,8 @@ import {
   styled,
   ThemeProvider,
   useTheme,
-  type Theme,
   type CSSObject,
+  type Theme,
 } from "@mui/material/styles";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
@@ -49,10 +49,10 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import { signOut } from "next-auth/react";
 import Logo from "../common/Logo";
 import type { AppRole } from "@/lib/auth";
 import { useColorMode } from "@/lib/theme/ThemeRegistry";
-import { signOut } from "next-auth/react";
 
 // Align drawer dimensions with the reference dashboard layout.
 const DRAWER_WIDTH = 260; // expanded width
@@ -439,61 +439,61 @@ function DashboardScaffold({
                   arrow
                   disableHoverListener={open}
                 >
-                <ListItemButton
-                  selected={pathname === item.path}
-                  onClick={() => {
-                    if (pathname !== item.path) router.push(item.path);
-                    if (!isMdUp) closeMobileDrawer();
-                  }}
-                  sx={{
-                    position: "relative",
-                    minHeight: 48,
-                    mx: open ? 1 : 0.5,
-                    my: 0.4,
-                    px: 1.5,
-                    borderRadius: 2,
-                    color: sidebarText,
-                    justifyContent: open ? "flex-start" : "center",
-                    transition:
-                      "background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
-                    "&::before": {
-                      content: '""',
-                      position: "absolute",
-                      left: 0,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      width: 4,
-                      height: 22,
-                      borderRadius: 999,
-                      backgroundColor: "transparent",
-                      transition: "all 0.2s ease",
-                    },
-                    "& .MuiListItemIcon-root": {
-                      transition: "transform 0.2s ease, color 0.2s ease",
-                    },
-                    "& .MuiListItemText-root": {
-                      transition: "opacity 0.2s ease, transform 0.2s ease",
-                      transform: open ? "translateX(0)" : "translateX(-6px)",
-                    },
-                    "&:hover": {
-                      backgroundColor: alpha(sidebarAccent, 0.12),
-                      transform: open ? "translateX(6px)" : "scale(1.03)",
-                    },
-                    "&.Mui-selected": {
-                      backgroundColor: alpha(sidebarAccent, 0.2),
-                      color: "#ecfff8",
-                      boxShadow: `0 12px 24px ${alpha(sidebarAccent, 0.12)}`,
+                  <ListItemButton
+                    selected={pathname === item.path}
+                    onClick={() => {
+                      if (pathname !== item.path) router.push(item.path);
+                      if (!isMdUp) closeMobileDrawer();
+                    }}
+                    sx={{
+                      position: "relative",
+                      minHeight: 48,
+                      mx: open ? 1 : 0.5,
+                      my: 0.4,
+                      px: 1.5,
+                      borderRadius: 2,
+                      color: sidebarText,
+                      justifyContent: open ? "flex-start" : "center",
+                      transition:
+                        "background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
                       "&::before": {
-                        backgroundColor: sidebarAccent,
-                        height: 28,
+                        content: '""',
+                        position: "absolute",
+                        left: 0,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: 4,
+                        height: 22,
+                        borderRadius: 999,
+                        backgroundColor: "transparent",
+                        transition: "all 0.2s ease",
                       },
                       "& .MuiListItemIcon-root": {
-                        color: "#ecfff8",
-                        transform: "scale(1.08)",
+                        transition: "transform 0.2s ease, color 0.2s ease",
                       },
-                    },
-                  }}
-                >
+                      "& .MuiListItemText-root": {
+                        transition: "opacity 0.2s ease, transform 0.2s ease",
+                        transform: open ? "translateX(0)" : "translateX(-6px)",
+                      },
+                      "&:hover": {
+                        backgroundColor: alpha(sidebarAccent, 0.12),
+                        transform: open ? "translateX(6px)" : "scale(1.03)",
+                      },
+                      "&.Mui-selected": {
+                        backgroundColor: alpha(sidebarAccent, 0.2),
+                        color: "#ecfff8",
+                        boxShadow: `0 12px 24px ${alpha(sidebarAccent, 0.12)}`,
+                        "&::before": {
+                          backgroundColor: sidebarAccent,
+                          height: 28,
+                        },
+                        "& .MuiListItemIcon-root": {
+                          color: "#ecfff8",
+                          transform: "scale(1.08)",
+                        },
+                      },
+                    }}
+                  >
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
@@ -558,12 +558,7 @@ function DashboardScaffold({
           >
             <MenuRoundedIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Dashboard
           </Typography>
           <Tooltip
@@ -691,6 +686,15 @@ export default function DashboardLayout({
           secondary: {
             main: isDarkMode ? "#f59e0b" : "#f97316",
           },
+          background: {
+            default: isDarkMode ? "#0b0f14" : "#f5f7fb",
+            paper: isDarkMode ? "#121922" : "#ffffff",
+          },
+          text: {
+            primary: isDarkMode ? "#e6edf7" : "#1c2430",
+            secondary: isDarkMode ? "#9aa6b2" : "#5b6b7f",
+          },
+          divider: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(12,24,38,0.12)",
         },
         components: {
           MuiPaper: {
@@ -738,7 +742,7 @@ export default function DashboardLayout({
           },
         },
       }),
-    [baseTheme, isPatient],
+    [baseTheme, isPatient, isDarkMode],
   );
 
   return (
