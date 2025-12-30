@@ -194,7 +194,7 @@ export default function AdminDashboardPage() {
           {summaryData.map((item) => {
             const Icon = item.icon;
             return (
-              <Grid item xs={12} sm={6} lg={3} key={item.title}>
+              <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={item.title}>
                 <Card
                   sx={{
                     position: "relative",
@@ -245,7 +245,7 @@ export default function AdminDashboardPage() {
 
         {/* Charts and Lists */}
         <Grid container spacing={3}>
-          <Grid item xs={12} lg={6}>
+          <Grid size={{ xs: 12, lg: 6 }}>
             <Card sx={{ height: "100%" }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
             </Card>
           </Grid>
 
-          <Grid item xs={12} lg={6}>
+          <Grid size={{ xs: 12, lg: 6 }}>
             <Card sx={{ height: "100%" }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
@@ -296,7 +296,7 @@ export default function AdminDashboardPage() {
         </Grid>
       </Stack>
       <Grid container spacing={3} sx={{ mt: 1 }}>
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
@@ -328,7 +328,7 @@ export default function AdminDashboardPage() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
@@ -351,7 +351,7 @@ export default function AdminDashboardPage() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
