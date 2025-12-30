@@ -23,7 +23,8 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { alpha, useTheme } from "@mui/material/styles";
+import { useEffect, useState, type ElementType } from "react";
 import {
   Bar,
   BarChart,
@@ -90,6 +91,14 @@ type DashboardData = {
   topDoctors: TopDoctor[];
 };
 
+type SummaryCard = {
+  title: string;
+  value: number | string;
+  icon: ElementType;
+  accent: string;
+  gradient: string;
+};
+
 export default function AdminDashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,67 +142,118 @@ export default function AdminDashboardPage() {
     return <Alert severity="warning">No dashboard data available.</Alert>;
   }
 
-  const summaryData = [
+  const theme = useTheme();
+
+  const summaryData: SummaryCard[] = [
     {
       title: "Total Patients",
       value: data.totalPatients,
-      icon: <PeopleIcon fontSize="large" color="primary" />,
+      icon: PeopleIcon,
+      accent: "#22c55e",
+      gradient:
+        "linear-gradient(135deg, rgba(34, 197, 94, 0.22), rgba(16, 185, 129, 0.15))",
     },
     {
       title: "Total Doctors",
       value: data.totalDoctors,
-      icon: <MedicalServicesIcon fontSize="large" color="info" />,
+      icon: MedicalServicesIcon,
+      accent: "#38bdf8",
+      gradient:
+        "linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(59, 130, 246, 0.16))",
     },
     {
       title: "Appointments Today",
       value: data.appointmentsToday,
-      icon: <EventAvailableIcon fontSize="large" color="secondary" />,
+      icon: EventAvailableIcon,
+      accent: "#f59e0b",
+      gradient:
+        "linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.18))",
     },
     {
       title: "Bed Occupancy",
       value: "78%", // Static for now
-      icon: <AirlineSeatIndividualSuiteIcon fontSize="large" color="error" />,
+      icon: AirlineSeatIndividualSuiteIcon,
+      accent: "#f97316",
+      gradient:
+        "linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(244, 63, 94, 0.18))",
     },
   ];
+  const gridStroke = alpha(
+    theme.palette.text.primary,
+    theme.palette.mode === "dark" ? 0.08 : 0.12,
+  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: "bold" }}>
+      <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 800 }}>
         Admin Dashboard
       </Typography>
       <Stack spacing={3}>
         {/* Summary Cards */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {summaryData.map((item) => (
-            <Stack spacing={2} key={item.title}>
-              <Grid
-                spacing={2}
-                sx={{ height: "100%", display: "flex", alignItems: "center" }}
-              >
-                <Card sx={{ display: "flex", alignItems: "center", p: 2 }}>
-                  <Box sx={{ mr: 2 }}>{item.icon}</Box>
-                  <Box>
-                    <Typography variant="h6">{item.value}</Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      {item.title}
-                    </Typography>
-                  </Box>
+        <Grid container spacing={3}>
+          {summaryData.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Grid item xs={12} sm={6} lg={3} key={item.title}>
+                <Card
+                  sx={{
+                    position: "relative",
+                    overflow: "hidden",
+                    p: 2.5,
+                    backgroundImage: item.gradient,
+                    borderColor: alpha(item.accent, 0.2),
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundImage:
+                        "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 55%)",
+                      opacity: theme.palette.mode === "dark" ? 0.5 : 0.7,
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <Stack spacing={2} sx={{ position: "relative" }}>
+                    <Avatar
+                      sx={{
+                        bgcolor: alpha(
+                          item.accent,
+                          theme.palette.mode === "dark" ? 0.2 : 0.12,
+                        ),
+                        color: item.accent,
+                        width: 48,
+                        height: 48,
+                      }}
+                    >
+                      <Icon fontSize="small" />
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        {item.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.title}
+                      </Typography>
+                    </Box>
+                  </Stack>
                 </Card>
               </Grid>
-            </Stack>
-          ))}
+            );
+          })}
         </Grid>
 
         {/* Charts and Lists */}
-        <Grid sx={{ height: "100%", xs: 12, md: 6 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Patient Registrations (Last 6 Months)
-              </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={patientRegData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={6}>
+            <Card sx={{ height: "100%" }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Patient Registrations (Last 6 Months)
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={patientRegData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
@@ -201,37 +261,44 @@ export default function AdminDashboardPage() {
                   <Line
                     type="monotone"
                     dataKey="patients"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
+                    stroke={theme.palette.primary.main}
+                    activeDot={{ r: 6 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Grid>
 
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Appointments by Department
-              </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={data.appointmentsByDept}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="appointments" fill="#82ca9d" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+          <Grid item xs={12} lg={6}>
+            <Card sx={{ height: "100%" }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Appointments by Department
+                </Typography>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={data.appointmentsByDept}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="appointments"
+                      fill={theme.palette.secondary.main}
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Stack>
-      <Stack spacing={2}>
-        <Grid sx={{ height: "100%", xs: 12, md: 6 }}>
-          <Card>
-            <CardContent>
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Appointments by Status
               </Typography>
@@ -242,7 +309,7 @@ export default function AdminDashboardPage() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    outerRadius={80}
+                    outerRadius={90}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -261,9 +328,9 @@ export default function AdminDashboardPage() {
           </Card>
         </Grid>
 
-        <Grid sx={{ height: "100%", xs: 12, md: 6 }}>
-          <Card>
-            <CardContent>
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Top Performing Doctors
               </Typography>
@@ -284,13 +351,13 @@ export default function AdminDashboardPage() {
           </Card>
         </Grid>
 
-        <Grid sx={{ height: "100%", xs: 12, md: 6 }}>
-          <Card>
-            <CardContent>
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Upcoming Appointments
               </Typography>
-              <Table>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell>Patient</TableCell>
@@ -317,7 +384,7 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
         </Grid>
-      </Stack>
+      </Grid>
     </Box>
   );
 }

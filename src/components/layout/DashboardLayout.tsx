@@ -22,33 +22,43 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import {
+  alpha,
+  createTheme,
   styled,
+  ThemeProvider,
   useTheme,
   type Theme,
   type CSSObject,
 } from "@mui/material/styles";
-import ViewQuiltSharpIcon from "@mui/icons-material/ViewQuiltSharp";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import UserIcon from "@mui/icons-material/Person";
-import SupportAgentSharpIcon from "@mui/icons-material/SupportAgentSharp";
-import DifferenceSharpIcon from "@mui/icons-material/DifferenceSharp";
-import StyleSharpIcon from "@mui/icons-material/StyleSharp";
-import SettingsApplicationsSharpIcon from "@mui/icons-material/SettingsApplicationsSharp";
-import PriceChangeIcon from "@mui/icons-material/PriceChange";
-import WheelchairPickupSharpIcon from "@mui/icons-material/WheelchairPickupSharp";
-import PermMediaSharpIcon from "@mui/icons-material/PermMediaSharp";
-import GroupsIcon from "@mui/icons-material/Groups";
-import SettingsIcon from "@mui/icons-material/Settings";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import SpaceDashboardRoundedIcon from "@mui/icons-material/SpaceDashboardRounded";
+import ForumRoundedIcon from "@mui/icons-material/ForumRounded";
+import DescriptionRoundedIcon from "@mui/icons-material/DescriptionRounded";
+import ViewCarouselRoundedIcon from "@mui/icons-material/ViewCarouselRounded";
+import MedicalServicesRoundedIcon from "@mui/icons-material/MedicalServicesRounded";
+import QueryStatsRoundedIcon from "@mui/icons-material/QueryStatsRounded";
+import PersonalInjuryRoundedIcon from "@mui/icons-material/PersonalInjuryRounded";
+import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
+import PermMediaRoundedIcon from "@mui/icons-material/PermMediaRounded";
+import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
+import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
 import Logo from "../common/Logo";
 import type { AppRole } from "@/lib/auth";
+import { useColorMode } from "@/lib/theme/ThemeRegistry";
+import { signOut } from "next-auth/react";
 
-// Align drawer dimensions with MUI CRUD Dashboard template
-const DRAWER_WIDTH = 240; // expanded width
-const MINI_DRAWER_WIDTH = 90; // collapsed width
+// Align drawer dimensions with the reference dashboard layout.
+const DRAWER_WIDTH = 260; // expanded width
+const MINI_DRAWER_WIDTH = 76; // collapsed width
+const SIDEBAR_BG = "#0f151d";
+const SIDEBAR_BORDER = "rgba(255,255,255,0.08)";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
@@ -85,11 +95,21 @@ const DesktopDrawer = styled(MuiDrawer, {
   boxSizing: "border-box",
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...openedMixin(theme),
+      backgroundColor: SIDEBAR_BG,
+      borderRight: `1px solid ${SIDEBAR_BORDER}`,
+      color: "#e7eef7",
+    },
   }),
   ...(!open && {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...closedMixin(theme),
+      backgroundColor: SIDEBAR_BG,
+      borderRight: `1px solid ${SIDEBAR_BORDER}`,
+      color: "#e7eef7",
+    },
   }),
 }));
 
@@ -102,6 +122,11 @@ const HeaderAppBar = styled(MuiAppBar, {
   borderStyle: "solid",
   borderColor: (theme.vars ?? theme).palette.divider,
   boxShadow: "none",
+  backgroundColor: alpha(
+    theme.palette.background.default,
+    theme.palette.mode === "dark" ? 0.9 : 0.8,
+  ),
+  backdropFilter: "blur(18px)",
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
@@ -119,148 +144,178 @@ const HeaderAppBar = styled(MuiAppBar, {
   },
 }));
 
-const navItems = [
+type NavItem = {
+  title: string;
+  path: string;
+  icon: React.ReactNode;
+  roles: AppRole[];
+  label?: string;
+  section: "Overview" | "Management" | "Account";
+};
+
+const navItems: NavItem[] = [
   {
     title: "Dashboard",
     path: "/dashboard/admin",
-    icon: <ViewQuiltSharpIcon />,
+    icon: <SpaceDashboardRoundedIcon />,
     roles: ["admin"],
     label: "Admin Dashboard",
+    section: "Overview",
   },
   {
     title: "Dashboard",
     path: "/dashboard/moderator",
-    icon: <ViewQuiltSharpIcon />,
+    icon: <SpaceDashboardRoundedIcon />,
     roles: ["moderator"],
     label: "Moderator Dashboard",
+    section: "Overview",
   },
   {
     title: "Dashboard",
     path: "/dashboard/patient",
-    icon: <WheelchairPickupSharpIcon />,
+    icon: <PersonalInjuryRoundedIcon />,
     roles: ["patient"],
     label: "Manage Patients",
+    section: "Overview",
   },
   {
     title: "Dashboard",
     path: "/dashboard/doctor",
-    icon: <UserIcon />,
+    icon: <LocalHospitalRoundedIcon />,
     roles: ["doctor"],
     label: "Manage Doctors",
+    section: "Overview",
   },
   {
     title: "Support Chat",
     path: "/dashboard/admin/support-chat",
-    icon: <SupportAgentSharpIcon />,
+    icon: <ForumRoundedIcon />,
     roles: ["admin"],
     label: "Manage Support Chat",
+    section: "Management",
   },
   {
     title: "Support Chat",
     path: "/dashboard/moderator/support-chat",
-    icon: <SupportAgentSharpIcon />,
+    icon: <ForumRoundedIcon />,
     roles: ["moderator"],
     label: "Manage Support Chat",
+    section: "Management",
   },
   {
     title: "CMS Pages",
     path: "/dashboard/admin/cms/pages",
-    icon: <DifferenceSharpIcon />,
+    icon: <DescriptionRoundedIcon />,
     roles: ["admin"],
     label: "Manage CMS Pages",
+    section: "Management",
   },
   {
     title: "CMS Pages",
     path: "/dashboard/moderator/cms/pages",
-    icon: <DifferenceSharpIcon />,
+    icon: <DescriptionRoundedIcon />,
     roles: ["moderator"],
     label: "Manage CMS Pages",
+    section: "Management",
   },
   {
     title: "CMS Sliders",
     path: "/dashboard/admin/cms/sliders",
-    icon: <StyleSharpIcon />,
+    icon: <ViewCarouselRoundedIcon />,
     roles: ["admin"],
     label: "Manage CMS Sliders",
+    section: "Management",
   },
   {
     title: "CMS Sliders",
     path: "/dashboard/moderator/cms/sliders",
-    icon: <StyleSharpIcon />,
+    icon: <ViewCarouselRoundedIcon />,
     roles: ["moderator"],
     label: "Manage CMS Sliders",
+    section: "Management",
   },
   {
     title: "Manage Doctors",
     path: "/dashboard/admin/doctors",
-    icon: <SettingsApplicationsSharpIcon />,
+    icon: <MedicalServicesRoundedIcon />,
     roles: ["admin"],
+    section: "Management",
   },
   {
     title: "Medical Test Prices",
     path: "/dashboard/admin/test-prices",
-    icon: <PriceChangeIcon />,
+    icon: <QueryStatsRoundedIcon />,
     roles: ["admin"],
+    section: "Management",
   },
   {
     title: "Manage Patients",
     path: "/dashboard/admin/patients",
-    icon: <WheelchairPickupSharpIcon />,
+    icon: <GroupsRoundedIcon />,
     roles: ["admin"],
+    section: "Management",
   },
   {
     title: "Media",
     path: "/dashboard/admin/media",
-    icon: <PermMediaSharpIcon />,
+    icon: <PermMediaRoundedIcon />,
     roles: ["admin"],
+    section: "Management",
   },
   // Moderator mirrors to moderator namespace (re-exported pages)
   {
     title: "Doctors",
     path: "/dashboard/moderator/doctors",
-    icon: <GroupsIcon />,
+    icon: <MedicalServicesRoundedIcon />,
     roles: ["moderator"],
+    section: "Management",
   },
   {
     title: "Test Prices",
     path: "/dashboard/moderator/test-prices",
-    icon: <PriceChangeIcon />,
+    icon: <QueryStatsRoundedIcon />,
     roles: ["moderator"],
+    section: "Management",
   },
   {
     title: "Patients",
     path: "/dashboard/moderator/patients",
-    icon: <GroupsIcon />,
+    icon: <GroupsRoundedIcon />,
     roles: ["moderator"],
+    section: "Management",
   },
   {
     title: "Media",
     path: "/dashboard/moderator/media",
-    icon: <GroupsIcon />,
+    icon: <PermMediaRoundedIcon />,
     roles: ["moderator"],
+    section: "Management",
   },
   // Patient files
   {
     title: "My Files",
     path: "/dashboard/patient/files",
-    icon: <GroupsIcon />,
+    icon: <FolderRoundedIcon />,
     roles: ["patient"],
+    section: "Management",
   },
   {
     title: "Profile",
     path: "/dashboard/profile",
-    icon: <AccountCircleIcon />,
+    icon: <AccountCircleRoundedIcon />,
     roles: ["admin", "moderator", "patient"],
+    section: "Account",
   },
   {
     title: "Settings",
     path: "/dashboard/settings",
-    icon: <SettingsIcon />,
+    icon: <SettingsRoundedIcon />,
     roles: ["admin", "moderator", "patient"],
+    section: "Account",
   },
 ];
 
-export default function DashboardLayout({
+function DashboardScaffold({
   children,
   role,
   userName = "User",
@@ -270,9 +325,12 @@ export default function DashboardLayout({
   userName?: string;
 }) {
   const theme = useTheme();
+  const { mode, toggle } = useColorMode();
   const router = useRouter();
   const pathname = usePathname();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
+  const isPatient = role === "patient";
+  const isDarkMode = theme.palette.mode === "dark";
 
   const [open, setOpen] = React.useState(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -297,65 +355,170 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     handleProfileMenuClose();
-    // document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    const res = await fetch("/api/auth/logout", { method: "POST" });
-    if (res.ok) router.push("/");
+    const isNextAuthRole =
+      role === "admin" || role === "moderator" || role === "doctor";
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Best-effort cookie cleanup; fall through to redirect.
+    }
+    if (isNextAuthRole) {
+      await signOut({ callbackUrl: "/auth/admin/login" });
+      return;
+    }
+    router.push("/auth/portal/login");
   };
+
   const filteredNavItems = React.useMemo(
     () => navItems.filter((item) => item.roles.includes(role)),
     [role],
   );
+
+  const groupedNavItems = React.useMemo(() => {
+    const groups: { section: NavItem["section"]; items: NavItem[] }[] = [];
+    filteredNavItems.forEach((item) => {
+      const existing = groups.find((group) => group.section === item.section);
+      if (existing) {
+        existing.items.push(item);
+      } else {
+        groups.push({ section: item.section, items: [item] });
+      }
+    });
+    return groups;
+  }, [filteredNavItems]);
+
+  const sidebarText = "#c8d2de";
+  const sidebarMuted = "#7f8a98";
+  const sidebarAccent = isPatient ? "#37c5a7" : "#2dd4bf";
+  const primaryGlow = alpha(
+    isPatient ? "#38bdf8" : "#2dd4bf",
+    isDarkMode ? 0.18 : 0.1,
+  );
+  const secondaryGlow = alpha(
+    isPatient ? "#0ea5e9" : "#3b82f6",
+    isDarkMode ? 0.16 : 0.08,
+  );
+
   const DrawerContent = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <DrawerHeader sx={{ justifyContent: "space-between" }}>
-        <Logo size={32} sx={{ ml: 1 }} />
+      <DrawerHeader sx={{ justifyContent: "space-between", px: 2 }}>
+        <Logo size={32} />
         <IconButton
           onClick={isMdUp ? handleDrawerToggle : closeMobileDrawer}
           aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+          sx={{ color: sidebarMuted }}
         >
-          <ChevronLeftIcon />
+          <ChevronLeftRoundedIcon
+            sx={{
+              transform: open ? "rotate(0deg)" : "rotate(180deg)",
+              transition: "transform 0.2s ease",
+            }}
+          />
         </IconButton>
       </DrawerHeader>
-      <Divider />
-      <List sx={{ flexGrow: 1, overflowY: "auto" }}>
-        {filteredNavItems.map((item) => (
-          <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
-            <Tooltip
-              title={item.title}
-              placement="right"
-              arrow
-              disableHoverListener={open}
+      <Divider sx={{ borderColor: SIDEBAR_BORDER }} />
+      <List sx={{ flexGrow: 1, overflowY: "auto", py: 2 }}>
+        {groupedNavItems.map((group, groupIndex) => (
+          <Box key={group.section} sx={{ mt: groupIndex ? 2 : 0 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                px: open ? 2 : 1.5,
+                color: sidebarMuted,
+                letterSpacing: "0.18em",
+                display: open ? "block" : "none",
+              }}
             >
-              <ListItemButton
-                selected={pathname === item.path}
-                onClick={() => {
-                  if (pathname !== item.path) router.push(item.path);
-                  if (!isMdUp) closeMobileDrawer();
-                }}
-                sx={{
-                  minHeight: 48,
-                  px: 2,
-                  ...(open
-                    ? { pl: 2.5 }
-                    : { pl: 1.5, justifyContent: "center" }),
-                }}
-              >
-                <ListItemIcon
+              {group.section}
+            </Typography>
+            {group.items.map((item) => (
+              <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
+                <Tooltip
+                  title={item.label ?? item.title}
+                  placement="right"
+                  arrow
+                  disableHoverListener={open}
+                >
+                <ListItemButton
+                  selected={pathname === item.path}
+                  onClick={() => {
+                    if (pathname !== item.path) router.push(item.path);
+                    if (!isMdUp) closeMobileDrawer();
+                  }}
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 2 : 0,
-                    justifyContent: "center",
+                    position: "relative",
+                    minHeight: 48,
+                    mx: open ? 1 : 0.5,
+                    my: 0.4,
+                    px: 1.5,
+                    borderRadius: 2,
+                    color: sidebarText,
+                    justifyContent: open ? "flex-start" : "center",
+                    transition:
+                      "background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
+                    "&::before": {
+                      content: '""',
+                      position: "absolute",
+                      left: 0,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: 4,
+                      height: 22,
+                      borderRadius: 999,
+                      backgroundColor: "transparent",
+                      transition: "all 0.2s ease",
+                    },
+                    "& .MuiListItemIcon-root": {
+                      transition: "transform 0.2s ease, color 0.2s ease",
+                    },
+                    "& .MuiListItemText-root": {
+                      transition: "opacity 0.2s ease, transform 0.2s ease",
+                      transform: open ? "translateX(0)" : "translateX(-6px)",
+                    },
+                    "&:hover": {
+                      backgroundColor: alpha(sidebarAccent, 0.12),
+                      transform: open ? "translateX(6px)" : "scale(1.03)",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: alpha(sidebarAccent, 0.2),
+                      color: "#ecfff8",
+                      boxShadow: `0 12px 24px ${alpha(sidebarAccent, 0.12)}`,
+                      "&::before": {
+                        backgroundColor: sidebarAccent,
+                        height: 28,
+                      },
+                      "& .MuiListItemIcon-root": {
+                        color: "#ecfff8",
+                        transform: "scale(1.08)",
+                      },
+                    },
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.title}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </Tooltip>
-          </ListItem>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 2 : 0,
+                        justifyContent: "center",
+                        color: sidebarText,
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.title}
+                      sx={{
+                        opacity: open ? 1 : 0,
+                        "& .MuiListItemText-primary": {
+                          fontSize: "0.95rem",
+                          fontWeight: pathname === item.path ? 700 : 500,
+                        },
+                      }}
+                    />
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            ))}
+          </Box>
         ))}
       </List>
     </Box>
@@ -371,6 +534,11 @@ export default function DashboardLayout({
         overflow: "hidden",
         minHeight: "100dvh",
         width: "100%",
+        backgroundColor: theme.palette.background.default,
+        backgroundImage: isPatient
+          ? `radial-gradient(circle at 20% 10%, ${primaryGlow}, transparent 55%), radial-gradient(circle at 90% 0%, ${secondaryGlow}, transparent 45%)`
+          : `radial-gradient(circle at 20% 0%, ${primaryGlow}, transparent 50%), radial-gradient(circle at 80% 10%, ${secondaryGlow}, transparent 45%)`,
+        color: theme.palette.text.primary,
       }}
     >
       <CssBaseline />
@@ -388,14 +556,41 @@ export default function DashboardLayout({
             edge="start"
             sx={{ mr: 1 }}
           >
-            <MenuIcon />
+            <MenuRoundedIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1 }}
+          >
             Dashboard
           </Typography>
+          <Tooltip
+            title={
+              mode === "dark" ? "Switch to light mode" : "Switch to dark mode"
+            }
+          >
+            <IconButton
+              onClick={toggle}
+              size="small"
+              sx={{
+                mr: 1,
+                border: `1px solid ${alpha(theme.palette.text.primary, 0.2)}`,
+                backgroundColor: alpha(theme.palette.text.primary, 0.08),
+              }}
+              aria-label="Toggle color mode"
+            >
+              {mode === "dark" ? (
+                <LightModeRoundedIcon fontSize="small" />
+              ) : (
+                <DarkModeRoundedIcon fontSize="small" />
+              )}
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Account settings">
             <IconButton onClick={handleProfileMenuOpen} size="small">
-              <Avatar sx={{ width: 32, height: 32 }}>
+              <Avatar sx={{ width: 34, height: 34 }}>
                 {userName.charAt(0).toUpperCase()}
               </Avatar>
             </IconButton>
@@ -413,12 +608,14 @@ export default function DashboardLayout({
           open={mobileOpen}
           onOpen={openMobileDrawer}
           onClose={closeMobileDrawer}
-          // Unmount when closed to remove focusable content from DOM for a11y
           ModalProps={{ keepMounted: false }}
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: DRAWER_WIDTH,
+              backgroundColor: SIDEBAR_BG,
+              borderRight: `1px solid ${SIDEBAR_BORDER}`,
+              color: "#e7eef7",
             },
           }}
         >
@@ -433,7 +630,7 @@ export default function DashboardLayout({
           flexDirection: "column",
           flex: 1,
           minWidth: 0,
-          p: 3,
+          p: { xs: 2.5, md: 3 },
         }}
       >
         <Toolbar sx={{ displayPrint: "none" }} />
@@ -461,5 +658,94 @@ export default function DashboardLayout({
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
     </Box>
+  );
+}
+
+export default function DashboardLayout({
+  children,
+  role,
+  userName = "User",
+}: {
+  children: React.ReactNode;
+  role: AppRole;
+  userName?: string;
+}) {
+  const baseTheme = useTheme();
+  const isPatient = role === "patient";
+  const isDarkMode = baseTheme.palette.mode === "dark";
+
+  const dashboardTheme = React.useMemo(
+    () =>
+      createTheme(baseTheme, {
+        shape: { borderRadius: isPatient ? 18 : 16 },
+        palette: {
+          primary: {
+            main: isPatient
+              ? isDarkMode
+                ? "#2dd4bf"
+                : "#0f766e"
+              : isDarkMode
+                ? "#38bdf8"
+                : "#2563eb",
+          },
+          secondary: {
+            main: isDarkMode ? "#f59e0b" : "#f97316",
+          },
+        },
+        components: {
+          MuiPaper: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                backgroundImage: "none",
+                border: `1px solid ${alpha(
+                  theme.palette.mode === "dark"
+                    ? theme.palette.common.white
+                    : theme.palette.common.black,
+                  theme.palette.mode === "dark" ? 0.06 : 0.08,
+                )}`,
+                boxShadow:
+                  theme.palette.mode === "dark"
+                    ? "0 18px 40px rgba(2, 10, 20, 0.45)"
+                    : "0 12px 28px rgba(15, 23, 42, 0.08)",
+              }),
+            },
+          },
+          MuiCard: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                borderRadius: theme.shape.borderRadius + 4,
+              }),
+            },
+          },
+          MuiDivider: {
+            styleOverrides: {
+              root: ({ theme }) => ({
+                borderColor: theme.palette.divider,
+              }),
+            },
+          },
+          MuiTableCell: {
+            styleOverrides: {
+              head: ({ theme }) => ({
+                fontWeight: 700,
+                color: theme.palette.text.secondary,
+                borderColor: theme.palette.divider,
+              }),
+              body: ({ theme }) => ({
+                borderColor: theme.palette.divider,
+              }),
+            },
+          },
+        },
+      }),
+    [baseTheme, isPatient],
+  );
+
+  return (
+    <ThemeProvider theme={dashboardTheme}>
+      <DashboardScaffold role={role} userName={userName}>
+        {children}
+      </DashboardScaffold>
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-// src/app/api/debug/email/route.ts
+// src/app/(backend)/api/debug/email/route.ts
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/email";
 
