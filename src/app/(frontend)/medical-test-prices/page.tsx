@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
   Autocomplete,
+  TableContainer,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import Image from "next/image";
@@ -96,7 +97,7 @@ export default function MedicalTestPricesPage() {
           borderRadius: 3,
           position: "relative",
           overflow: "hidden",
-          borderColor: alpha(theme.palette.primary.main, 0.2),
+          borderColor: alpha(theme.palette.primary.main, 0.8),
           backgroundColor: alpha(theme.palette.background.paper, 0.7),
           backgroundImage: `linear-gradient(135deg, ${alpha(
             theme.palette.primary.main,
@@ -202,46 +203,60 @@ export default function MedicalTestPricesPage() {
           </Stack>
         </Box>
       </Paper>
-      <Paper style={{ width: "100%" }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell align="right">Price (৳)</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {items
-              .filter((t) => handleSearchHaystack(t).includes(query))
-              .map((t) => (
-                <TableRow
-                  key={`${t.name}-${t.department}-${t.priceCents}`}
-                  hover
-                >
-                  <TableCell>{t.name ?? ""}</TableCell>
-                  <TableCell>{t.department ?? ""}</TableCell>
-                  <TableCell align="right">
-                    {(t.priceCents / 100).toLocaleString()}
+      <Paper sx={{ width: "100%", overflow: "hidden" }}>
+        <TableContainer sx={{ width: "100%" }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 700 }}>NAME</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>DEPARTMENT</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700 }}>
+                  PRICE (৳)
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {items
+                .filter((t) => handleSearchHaystack(t).includes(query))
+                .map((t) => (
+                  <TableRow
+                    key={`${t.name}-${t.department}-${t.priceCents}`}
+                    hover
+                  >
+                    <TableCell>{t.name ?? ""}</TableCell>
+                    <TableCell>{t.department ?? ""}</TableCell>
+                    <TableCell align="right">
+                      {(t.priceCents / 100).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              {loading && (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    align="center"
+                    aria-label="loading"
+                    sx={{ fontWeight: 700, textTransform: "uppercase" }}
+                  >
+                    Loading…
                   </TableCell>
                 </TableRow>
-              ))}
-            {loading && (
-              <TableRow>
-                <TableCell colSpan={3} align="center">
-                  Loading…
-                </TableCell>
-              </TableRow>
-            )}
-            {!loading && items.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={3} align="center">
-                  No results
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+              {!loading && items.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    align="center"
+                    aria-label="no results"
+                    sx={{ fontWeight: 700, textTransform: "uppercase" }}
+                  >
+                    No results
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
     </Box>
   );

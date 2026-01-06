@@ -316,8 +316,8 @@ export default function FindDoctorPage() {
           borderRadius: 3,
           position: "relative",
           overflow: "hidden",
-          borderColor: alpha(theme.palette.primary.main, 0.2),
-          backgroundColor: alpha(theme.palette.background.paper, 0.7),
+          borderColor: alpha(theme.palette.primary.main, 0.8),
+          backgroundColor: alpha(theme.palette.background.paper, 0.5),
           backgroundImage: `linear-gradient(135deg, ${alpha(
             theme.palette.primary.main,
             0.18
@@ -344,17 +344,17 @@ export default function FindDoctorPage() {
         })}
       >
         <Box sx={{ position: "relative", zIndex: 1 }}>
-          <Stack spacing={2.5}>
+          <Stack spacing={2.5} justifyContent="center">
             <Stack
-              direction={{ xs: "column", sm: "row" }}
+              direction={{ xs: "column", sm: "row", lg: "row" }}
               spacing={2}
-              alignItems={{ xs: "flex-start", sm: "center" }}
+              alignItems={{ xs: "flex-start", sm: "center", lg: "center" }}
             >
               <Box
                 sx={(theme) => ({
                   p: 1.5,
-                  borderRadius: 2,
-                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  borderRadius: 1.5,
+                  bgcolor: alpha(theme.palette.primary.main, 0.15),
                   boxShadow: `0 12px 24px ${alpha(
                     theme.palette.primary.main,
                     0.28
@@ -379,122 +379,114 @@ export default function FindDoctorPage() {
                   {heading}
                 </Typography>
                 <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mb: 4, justifySelf: "center" }}
+                  variant="h6"
+                  color="primary"
+                  sx={{ mb: 2, justifySelf: "center", fontSize: "1.2rem" }}
                 >
                   {subheading}
                 </Typography>
               </Box>
             </Stack>
-            <Box sx={{ position: "relative", zIndex: 1 }}>
-              <Stack spacing={2.5}>
-                <Stack
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={2}
-                  alignItems={{ xs: "center", sm: "center" }}
-                >
-                  <Box
-                    sx={(theme) => ({
-                      p: 1.5,
-                      borderRadius: 2,
-                      bgcolor: alpha(theme.palette.primary.main, 0.12),
-                      boxShadow: `0 12px 24px ${alpha(
-                        theme.palette.primary.main,
-                        0.28
-                      )}`,
-                      display: "justify-flex",
-                    })}
-                  >
-                    <TextField
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      size="small"
-                      fullWidth
-                      placeholder={searchPlaceholder}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon fontSize="small" />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{ flex: 1, minWidth: 0 }}
-                    />
-                    <br />
-                    <Autocomplete
-                      options={departmentOptions}
-                      value={selectedDepartment}
-                      onChange={(_, value) => setSelectedDepartment(value)}
-                      getOptionLabel={(option) => getText(option.label, lang)}
-                      isOptionEqualToValue={(option, value) =>
-                        option.id === value.id
-                      }
-                      clearOnEscape
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          size="small"
-                          label={departmentLabel}
-                        />
-                      )}
-                    />
-                    <Typography variant="h5">
-                      <Autocomplete
-                        multiple
-                        disableCloseOnSelect
-                        options={specializationOptions}
-                        value={selectedSpecializations}
-                        onChange={(_, value) =>
-                          setSelectedSpecializations(value)
-                        }
-                        getOptionLabel={(option) => getText(option.label, lang)}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id
-                        }
-                        sx={{ minWidth: { xs: "100%", md: "100%" } }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            size="small"
-                            label={specializationLabel}
-                          />
-                        )}
-                      />
-                    </Typography>
-                    <Typography variant="h5">
-                      <Autocomplete
-                        multiple
-                        disableCloseOnSelect
-                        options={focusAreaOptions}
-                        value={selectedFocusAreas}
-                        onChange={(_, value) => setSelectedFocusAreas(value)}
-                        getOptionLabel={(option) => getText(option.label, lang)}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id
-                        }
-                        sx={{ minWidth: { xs: "100%", md: 240 } }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            size="small"
-                            label={focusAreaLabel}
-                          />
-                        )}
-                      />
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Stack>
-
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={1.5}
-                sx={{ width: "100%" }}
+            <Stack
+              justifyContent={{ xs: "center", sm: "center", lg: "center" }}
+              spacing={2.5}
+              sx={{
+                justifyContent: "center",
+              }}
+            >
+              <Box
+                sx={(theme) => ({
+                  p: 1.5,
+                  borderRadius: 1.5,
+                  bgcolor: alpha(theme.palette.primary.main, 0.15),
+                  boxShadow: `0 12px 24px ${alpha(
+                    theme.palette.primary.main,
+                    0.28
+                  )}`,
+                  display: "inline-flex",
+                  width: "100%",
+                  // alignItems: "center",
+                  justifyContent: "center",
+                })}
               >
-                {error && <Alert severity="error">{error}</Alert>}
-              </Stack>
-            </Box>
+                <TextField
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  size="small"
+                  placeholder={searchPlaceholder}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{ flex: 1, minWidth: 0 }}
+                />
+                <br />
+                <Autocomplete
+                  options={departmentOptions}
+                  value={selectedDepartment}
+                  onChange={(_, value) => setSelectedDepartment(value)}
+                  clearOnEscape={true}
+                  getOptionLabel={(option) => getText(option.label, lang)}
+                  isOptionEqualToValue={(option, value) =>
+                    option.id === value.id
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      size="small"
+                      label={departmentLabel}
+                    />
+                  )}
+                />
+                <Typography variant="h5">
+                  <Autocomplete
+                    multiple
+                    disableCloseOnSelect
+                    options={specializationOptions}
+                    value={selectedSpecializations}
+                    onChange={(_, value) => setSelectedSpecializations(value)}
+                    clearOnEscape={true}
+                    getOptionLabel={(option) => getText(option.label, lang)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    sx={{ minWidth: { xs: "100%", md: "100%" } }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label={specializationLabel}
+                      />
+                    )}
+                  />
+                </Typography>
+                <Typography variant="h5">
+                  <Autocomplete
+                    multiple
+                    disableCloseOnSelect
+                    options={focusAreaOptions}
+                    value={selectedFocusAreas}
+                    onChange={(_, value) => setSelectedFocusAreas(value)}
+                    clearOnEscape={true}
+                    getOptionLabel={(option) => getText(option.label, lang)}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    sx={{ display: "flex", flexWrap: "wrap" }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        size="small"
+                        label={focusAreaLabel}
+                      />
+                    )}
+                  />
+                </Typography>
+              </Box>
+            </Stack>
           </Stack>
         </Box>
       </Paper>
@@ -512,7 +504,11 @@ export default function FindDoctorPage() {
       <Box sx={{ py: { xs: 2, md: 4 } }}>
         <Alert sx={{ mb: 2, justifySelf: "center" }}>{resultLabel}</Alert>
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          <Alert
+            severity="error"
+            sx={{ mb: 2, justifySelf: "center" }}
+            onClose={() => setError(null)}
+          >
             {error}
           </Alert>
         )}
