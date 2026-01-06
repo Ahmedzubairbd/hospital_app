@@ -124,7 +124,7 @@ const HeaderAppBar = styled(MuiAppBar, {
   boxShadow: "none",
   backgroundColor: alpha(
     theme.palette.background.default,
-    theme.palette.mode === "dark" ? 0.9 : 0.8,
+    theme.palette.mode === "dark" ? 0.9 : 0.8
   ),
   backdropFilter: "blur(18px)",
   zIndex: theme.zIndex.drawer + 1,
@@ -159,7 +159,7 @@ const navItems: NavItem[] = [
     path: "/dashboard/admin",
     icon: <SpaceDashboardRoundedIcon />,
     roles: ["admin"],
-    label: "Admin Dashboard",
+    label: "Welcome to",
     section: "Overview",
   },
   {
@@ -371,7 +371,7 @@ function DashboardScaffold({
 
   const filteredNavItems = React.useMemo(
     () => navItems.filter((item) => item.roles.includes(role)),
-    [role],
+    [role]
   );
 
   const groupedNavItems = React.useMemo(() => {
@@ -392,11 +392,11 @@ function DashboardScaffold({
   const sidebarAccent = isPatient ? "#37c5a7" : "#2dd4bf";
   const primaryGlow = alpha(
     isPatient ? "#38bdf8" : "#2dd4bf",
-    isDarkMode ? 0.18 : 0.1,
+    isDarkMode ? 0.18 : 0.1
   );
   const secondaryGlow = alpha(
     isPatient ? "#0ea5e9" : "#3b82f6",
-    isDarkMode ? 0.16 : 0.08,
+    isDarkMode ? 0.16 : 0.08
   );
 
   const DrawerContent = (
@@ -426,13 +426,17 @@ function DashboardScaffold({
                 px: open ? 2 : 1.5,
                 color: sidebarMuted,
                 letterSpacing: "0.18em",
-                display: open ? "block" : "none",
+                display: open ? "block" : "open",
               }}
             >
               {group.section}
             </Typography>
             {group.items.map((item) => (
-              <ListItem key={item.path} disablePadding sx={{ display: "block" }}>
+              <ListItem
+                key={item.path}
+                disablePadding
+                sx={{ display: "block" }}
+              >
                 <Tooltip
                   title={item.label ?? item.title}
                   placement="right"
@@ -680,8 +684,8 @@ export default function DashboardLayout({
                 ? "#2dd4bf"
                 : "#0f766e"
               : isDarkMode
-                ? "#38bdf8"
-                : "#2563eb",
+              ? "#38bdf8"
+              : "#2563eb",
           },
           secondary: {
             main: isDarkMode ? "#f59e0b" : "#f97316",
@@ -694,7 +698,9 @@ export default function DashboardLayout({
             primary: isDarkMode ? "#e6edf7" : "#1c2430",
             secondary: isDarkMode ? "#9aa6b2" : "#5b6b7f",
           },
-          divider: isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(12,24,38,0.12)",
+          divider: isDarkMode
+            ? "rgba(255,255,255,0.08)"
+            : "rgba(12,24,38,0.12)",
         },
         components: {
           MuiPaper: {
@@ -705,7 +711,7 @@ export default function DashboardLayout({
                   theme.palette.mode === "dark"
                     ? theme.palette.common.white
                     : theme.palette.common.black,
-                  theme.palette.mode === "dark" ? 0.06 : 0.08,
+                  theme.palette.mode === "dark" ? 0.06 : 0.08
                 )}`,
                 boxShadow:
                   theme.palette.mode === "dark"
@@ -742,7 +748,7 @@ export default function DashboardLayout({
           },
         },
       }),
-    [baseTheme, isPatient, isDarkMode],
+    [baseTheme, isPatient, isDarkMode]
   );
 
   return (

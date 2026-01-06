@@ -13,6 +13,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -26,8 +27,26 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import { compressImageFile } from "@/lib/images";
+import { TableVirtuoso, TableComponents } from "react-virtuoso";
+// import Chance from 'chance';
 
 type LocaleText = { en: string; bn: string };
+
+interface Data {
+  id: number;
+  firstName: string;
+  lastName: string;
+  age: number;
+  phone: string;
+  state: string;
+}
+
+interface ColumnData {
+  dataKey: keyof Data;
+  label: string;
+  numeric?: boolean;
+  width?: number;
+}
 
 type DirectoryProfile = {
   name?: LocaleText;
@@ -129,7 +148,7 @@ const localeValue = (value: LocaleText | undefined | null, key: "en" | "bn") =>
 
 const localeArrayToMultiline = (
   values: LocaleText[] | undefined,
-  key: "en" | "bn",
+  key: "en" | "bn"
 ) => {
   if (!values) return "";
   return values
@@ -146,7 +165,7 @@ const parseLines = (value: string) =>
 
 const buildLocaleText = (
   enRaw: string,
-  bnRaw: string,
+  bnRaw: string
 ): LocaleText | undefined => {
   const en = enRaw.trim();
   const bn = bnRaw.trim();
@@ -240,27 +259,27 @@ export default function AdminDoctorsPage() {
       descriptionBn: localeValue(profile?.description ?? undefined, "bn"),
       qualificationsEn: localeArrayToMultiline(
         profile?.qualifications ?? undefined,
-        "en",
+        "en"
       ),
       qualificationsBn: localeArrayToMultiline(
         profile?.qualifications ?? undefined,
-        "bn",
+        "bn"
       ),
       workplacesEn: localeArrayToMultiline(
         profile?.workplaces ?? undefined,
-        "en",
+        "en"
       ),
       workplacesBn: localeArrayToMultiline(
         profile?.workplaces ?? undefined,
-        "bn",
+        "bn"
       ),
       focusAreasEn: localeArrayToMultiline(
         profile?.focusAreas ?? undefined,
-        "en",
+        "en"
       ),
       focusAreasBn: localeArrayToMultiline(
         profile?.focusAreas ?? undefined,
-        "bn",
+        "bn"
       ),
       keywords: d.keywords.join("\n"),
       availableFrom: d.availableFrom ?? "",
@@ -279,29 +298,29 @@ export default function AdminDoctorsPage() {
     };
     const departmentLocale = buildLocaleText(
       form.department,
-      form.departmentBn,
+      form.departmentBn
     ) ?? {
       en: form.department.trim(),
       bn: form.departmentBn.trim() || form.department.trim(),
     };
     const specializationLocale = buildLocaleText(
       form.specialization,
-      form.specializationBn,
+      form.specializationBn
     ) ?? {
       en: form.specialization.trim(),
       bn: form.specializationBn.trim() || form.specialization.trim(),
     };
     const visitingHoursLocale = buildLocaleText(
       form.visitingHours,
-      form.visitingHoursBn,
+      form.visitingHoursBn
     );
     const descriptionLocale = buildLocaleText(
       form.description,
-      form.descriptionBn,
+      form.descriptionBn
     );
     const qualifications = buildLocaleArray(
       form.qualificationsEn,
-      form.qualificationsBn,
+      form.qualificationsBn
     );
     const workplaces = buildLocaleArray(form.workplacesEn, form.workplacesBn);
     const focusAreas = buildLocaleArray(form.focusAreasEn, form.focusAreasBn);
@@ -325,7 +344,7 @@ export default function AdminDoctorsPage() {
     }
 
     const directoryProfile = Object.fromEntries(
-      Object.entries(profilePayload).filter(([, value]) => value !== undefined),
+      Object.entries(profilePayload).filter(([, value]) => value !== undefined)
     );
 
     const branchIdValue = form.branchId.trim();
@@ -428,53 +447,55 @@ export default function AdminDoctorsPage() {
       )}
 
       <Paper variant="outlined">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Specialization</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell>Branch</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((r) => (
-              <TableRow key={r.id} hover>
-                <TableCell>{r.user.name}</TableCell>
-                <TableCell>
-                  {r.directoryProfile?.specialization?.en ?? r.specialization}
-                </TableCell>
-                <TableCell>
-                  {r.directoryProfile?.department?.en ?? r.department ?? "-"}
-                </TableCell>
-                <TableCell>{r.branch?.name ?? "-"}</TableCell>
-                <TableCell>{r.user.email ?? "-"}</TableCell>
-                <TableCell>{r.user.phone ?? "-"}</TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => startEdit(r)} aria-label="Edit">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(r.id)}
-                    aria-label="Delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-            {rows.length === 0 && (
+        <TableContainer>
+          <Table>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={7} align="center">
-                  No doctors found.
-                </TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Specialization</TableCell>
+                <TableCell>Department</TableCell>
+                <TableCell>Branch</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Phone</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {rows.map((r) => (
+                <TableRow key={r.id} hover>
+                  <TableCell>{r.user.name}</TableCell>
+                  <TableCell>
+                    {r.directoryProfile?.specialization?.en ?? r.specialization}
+                  </TableCell>
+                  <TableCell>
+                    {r.directoryProfile?.department?.en ?? r.department ?? "-"}
+                  </TableCell>
+                  <TableCell>{r.branch?.name ?? "-"}</TableCell>
+                  <TableCell>{r.user.email ?? "-"}</TableCell>
+                  <TableCell>{r.user.phone ?? "-"}</TableCell>
+                  <TableCell align="right">
+                    <IconButton onClick={() => startEdit(r)} aria-label="Edit">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(r.id)}
+                      aria-label="Delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    No doctors found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
 
       <Dialog

@@ -23,10 +23,12 @@ type SliderItem = { imageUrl: string; title?: string; link?: string };
 export default function CmsSlidersAdmin() {
   const [items, setItems] = React.useState<SliderItem[]>([]);
   const [open, setOpen] = React.useState(false);
+  const [editingIndex, setEditingIndex] = React.useState<number | null>(null);
   const [imageUrl, setImageUrl] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [link, setLink] = React.useState("");
   const [err, setErr] = React.useState<string | null>(null);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   async function load() {
     const r = await fetch(
@@ -85,7 +87,13 @@ export default function CmsSlidersAdmin() {
       const r = await fetch(`/api/cms/pages/${page.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: JSON.stringify(items) }),
+        body: JSON.stringify({
+          slug: "home-sliders",
+          title: "Home Sliders",
+          excerpt: "Slider items",
+          published: true,
+          body: JSON.stringify(items),
+        }),
       });
       if (!r.ok) {
         const j = await r.json();
@@ -95,19 +103,46 @@ export default function CmsSlidersAdmin() {
   }
 
   function addItem() {
-    setOpen(true);
-  }
-  function confirmAdd() {
-    const newItem: SliderItem = {
-      imageUrl,
-      title: title || undefined,
-      link: link || undefined,
-    };
-    setItems((prev) => [...prev, newItem]);
-    setOpen(false);
+    setEditingIndex(null);
+    setFormError(null);
     setImageUrl("");
     setTitle("");
     setLink("");
+    setOpen(true);
+  }
+  function startEdit(idx: number) {
+    const item = items[idx];
+    setEditingIndex(idx);
+    setFormError(null);
+    setImageUrl(item?.imageUrl || "");
+    setTitle(item?.title || "");
+    setLink(item?.link || "");
+    setOpen(true);
+  }
+  function closeDialog() {
+    setOpen(false);
+    setEditingIndex(null);
+    setImageUrl("");
+    setTitle("");
+    setLink("");
+    setFormError(null);
+  }
+  function confirmAdd() {
+    const nextImageUrl = imageUrl.trim();
+    if (!nextImageUrl) {
+      setFormError("Image URL is required.");
+      return;
+    }
+    const newItem: SliderItem = {
+      imageUrl: nextImageUrl,
+      title: title.trim() || undefined,
+      link: link.trim() || undefined,
+    };
+    setItems((prev) => {
+      if (editingIndex === null) return [...prev, newItem];
+      return prev.map((item, idx) => (idx === editingIndex ? newItem : item));
+    });
+    closeDialog();
   }
   function remove(idx: number) {
     setItems((prev) => prev.filter((_, i) => i !== idx));
@@ -168,6 +203,7 @@ export default function CmsSlidersAdmin() {
                 </Typography>
               </CardContent>
               <CardActions>
+                <Button onClick={() => startEdit(idx)}>Edit</Button>
                 <Button color="error" onClick={() => remove(idx)}>
                   Remove
                 </Button>
@@ -177,14 +213,21 @@ export default function CmsSlidersAdmin() {
         ))}
       </Grid>
 
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>New Slide</DialogTitle>
+      <Dialog open={open} onClose={closeDialog}>
+        <DialogTitle>
+          {editingIndex === null ? "New Slide" : "Edit Slide"}
+        </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1, minWidth: 420 }}>
             <TextField
               label="Image URL"
               value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
+              onChange={(e) => {
+                setImageUrl(e.target.value);
+                if (formError) setFormError(null);
+              }}
+              error={Boolean(formError)}
+              helperText={formError || " "}
             />
             <TextField
               label="Title (optional)"
@@ -199,9 +242,9 @@ export default function CmsSlidersAdmin() {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={closeDialog}>Cancel</Button>
           <Button variant="contained" onClick={confirmAdd}>
-            Add
+            {editingIndex === null ? "Add" : "Save"}
           </Button>
         </DialogActions>
       </Dialog>

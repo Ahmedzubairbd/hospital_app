@@ -12,32 +12,33 @@ import {
   TableRow,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import Image from "next/image";
 import * as React from "react";
 
 type TestPrice = {
-  id: string;
-  // code: string;
+  // id: string;
   name: string;
-  description: string | null;
-  priceCents: number;
-  // active: boolean;
+  // description: string | null;
   department?: string | null;
-  // examType?: string | null;
-  // shortName?: string | null;
-  serialNo?: string | null;
-  // deliveryType?: string | null;
-  // deliveryHour?: number | null;
+  priceCents: number;
+  // serialNo?: string | null;
 };
 
 export default function MedicalTestPricesPage() {
   const [items, setItems] = React.useState<TestPrice[]>([]);
-  const [q, setQ] = React.useState("");
+  const [query, setQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
+
+  const handleSearchHaystack = (item: TestPrice) => {
+    return [item.name, item.department ?? "", item.priceCents.toString()].join(
+      " "
+    );
+  };
 
   const load = React.useCallback(async (query = "") => {
     abortRef.current?.abort();
@@ -81,7 +82,7 @@ export default function MedicalTestPricesPage() {
   }, [load]);
 
   function handleSearch() {
-    void load(q.trim());
+    void load(query);
   }
 
   return (
@@ -174,8 +175,8 @@ export default function MedicalTestPricesPage() {
               <TextField
                 label="Search"
                 size="small"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -187,7 +188,7 @@ export default function MedicalTestPricesPage() {
               <Button
                 variant="contained"
                 size="medium"
-                onClick={handleSearch}
+                onClick={() => handleSearch()}
                 disabled={loading}
                 sx={{
                   alignSelf: { xs: "stretch", sm: "center" },
@@ -205,48 +206,36 @@ export default function MedicalTestPricesPage() {
         <Table>
           <TableHead>
             <TableRow>
-              {/* <TableCell>Code</TableCell> */}
               <TableCell>Name</TableCell>
-              {/* <TableCell>Short Name</TableCell> */}
               <TableCell>Department</TableCell>
-              {/* <TableCell>Exam Type</TableCell> */}
               <TableCell align="right">Price (৳)</TableCell>
-              {/* <TableCell>Delivery</TableCell> */}
-              {/* <TableCell align="center">Active</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
-            {items.map((t) => (
-              <TableRow key={t.id} hover>
-                {/* <TableCell>{t.code}</TableCell> */}
-                <TableCell>{t.name}</TableCell>
-                {/* <TableCell>{t.shortName ?? "-"}</TableCell> */}
-                <TableCell>{t.department ?? "-"}</TableCell>
-                {/* <TableCell>{t.examType ?? "-"}</TableCell> */}
-                <TableCell align="right">
-                  {(t.priceCents / 100).toLocaleString()}
-                </TableCell>
-                {/* <TableCell>
-                  {[
-                    t.deliveryType,
-                    t.deliveryHour ? `${t.deliveryHour}h` : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" / ") || "-"}
-                </TableCell> */}
-                {/* <TableCell align="center">{t.active ? "Yes" : "No"}</TableCell> */}
-              </TableRow>
-            ))}
+            {items
+              .filter((t) => handleSearchHaystack(t).includes(query))
+              .map((t) => (
+                <TableRow
+                  key={`${t.name}-${t.department}-${t.priceCents}`}
+                  hover
+                >
+                  <TableCell>{t.name ?? ""}</TableCell>
+                  <TableCell>{t.department ?? ""}</TableCell>
+                  <TableCell align="right">
+                    {(t.priceCents / 100).toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              ))}
             {loading && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={3} align="center">
                   Loading…
                 </TableCell>
               </TableRow>
             )}
             {!loading && items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={3} align="center">
                   No results
                 </TableCell>
               </TableRow>

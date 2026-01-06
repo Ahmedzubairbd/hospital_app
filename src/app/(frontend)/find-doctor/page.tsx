@@ -392,7 +392,7 @@ export default function FindDoctorPage() {
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={2}
-                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  alignItems={{ xs: "center", sm: "center" }}
                 >
                   <Box
                     sx={(theme) => ({
@@ -403,13 +403,14 @@ export default function FindDoctorPage() {
                         theme.palette.primary.main,
                         0.28
                       )}`,
-                      display: "inline-flex",
+                      display: "justify-flex",
                     })}
                   >
                     <TextField
                       value={query}
                       onChange={(event) => setQuery(event.target.value)}
                       size="small"
+                      fullWidth
                       placeholder={searchPlaceholder}
                       InputProps={{
                         startAdornment: (
@@ -418,7 +419,9 @@ export default function FindDoctorPage() {
                           </InputAdornment>
                         ),
                       }}
+                      sx={{ flex: 1, minWidth: 0 }}
                     />
+                    <br />
                     <Autocomplete
                       options={departmentOptions}
                       value={selectedDepartment}
@@ -427,7 +430,6 @@ export default function FindDoctorPage() {
                       isOptionEqualToValue={(option, value) =>
                         option.id === value.id
                       }
-                      sx={{ minWidth: { xs: "100%", md: "25%" } }}
                       clearOnEscape
                       renderInput={(params) => (
                         <TextField
@@ -484,14 +486,15 @@ export default function FindDoctorPage() {
                   </Box>
                 </Stack>
               </Stack>
+
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={1.5}
+                sx={{ width: "100%" }}
+              >
+                {error && <Alert severity="error">{error}</Alert>}
+              </Stack>
             </Box>
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={1.5}
-              sx={{ width: "100%" }}
-            >
-              {error && <Alert severity="error">{error}</Alert>}
-            </Stack>
           </Stack>
         </Box>
       </Paper>

@@ -126,6 +126,8 @@ export default function AdminDashboardPage() {
     fetchData();
   }, []);
 
+  const theme = useTheme();
+
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -142,7 +144,6 @@ export default function AdminDashboardPage() {
     return <Alert severity="warning">No dashboard data available.</Alert>;
   }
 
-  const theme = useTheme();
   // gridStroke declaration removed to avoid duplicate
   const summaryData: SummaryCard[] = [
     {

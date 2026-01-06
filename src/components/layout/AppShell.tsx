@@ -42,6 +42,7 @@ import BackgroundFX from "./BackgroundFX";
 import { useColorMode } from "@/lib/theme/ThemeRegistry";
 import { signOut } from "next-auth/react";
 import SupportChatWidget from "@/components/chat/SupportChatWidget";
+
 // import MapComponent from "@/components/MapComponent";
 
 const FOOTER_PRIORITY_TITLES = [
@@ -84,7 +85,7 @@ const toCmsHref = (slug: string) => {
 const footerWeight = (title: string) => {
   const lower = title.trim().toLowerCase();
   const idx = FOOTER_PRIORITY_TITLES.findIndex((priority) =>
-    lower.includes(priority.toLowerCase()),
+    lower.includes(priority.toLowerCase())
   );
   return idx === -1 ? FOOTER_PRIORITY_TITLES.length : idx;
 };
@@ -146,11 +147,6 @@ export default function AppShell({
 
   const logout = async () => {
     handleMenuClose();
-    // Clear manual JWT cookie
-    // document.cookie =
-    //   "token=; expires=Thu, 04 Jan 2025 00:05:00 UTC+06:00; path=/;";
-
-    // Sign out from NextAuth
     await signOut({ callbackUrl: "/" });
     setCurrentUser(null);
   };
@@ -168,8 +164,8 @@ export default function AppShell({
           (page) =>
             !FOOTER_EXCLUDED_TITLES.some(
               (excluded) =>
-                normalizeTitle(page.title) === normalizeTitle(excluded),
-            ),
+                normalizeTitle(page.title) === normalizeTitle(excluded)
+            )
         )
         .sort((a, b) => {
           const weightDiff = footerWeight(a.title) - footerWeight(b.title);
@@ -178,7 +174,7 @@ export default function AppShell({
             sensitivity: "accent",
           });
         }) ?? [],
-    [cmsPages],
+    [cmsPages]
   );
 
   const footerColumns = React.useMemo(() => {
@@ -195,7 +191,7 @@ export default function AppShell({
   }
 
   return (
-    <Box sx={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <BackgroundFX />
       <AppBar
         position="sticky"
