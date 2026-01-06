@@ -64,7 +64,7 @@ function normalizeId(value?: string | null): string | null {
 
 function normalizeLocaleText(
   value?: z.infer<typeof localeTextSchema> | null,
-  fallback?: string | null,
+  fallback?: string | null
 ): LocaleText | undefined {
   const fallbackTrimmed = fallback?.trim() ?? "";
   let en = (value?.en ?? "").trim();
@@ -93,7 +93,7 @@ function normalizeLocaleText(
 }
 
 function normalizeLocaleArray(
-  values?: z.infer<typeof localeTextSchema>[],
+  values?: z.infer<typeof localeTextSchema>[]
 ): LocaleText[] {
   if (!values) return [];
   const normalized: LocaleText[] = [];
@@ -138,26 +138,26 @@ function normalizeDirectoryProfile(
     specialization: string | null | undefined;
     visitingHours: string | null | undefined;
     image: string | null | undefined;
-  },
+  }
 ): DirectoryProfile | undefined {
   const profileInput = input ?? ({} as DirectoryProfileInput);
   const profile: DirectoryProfile = {};
 
   const name = normalizeLocaleText(
     profileInput.name,
-    fallback.name ?? undefined,
+    fallback.name ?? undefined
   );
   if (name) profile.name = name;
 
   const department = normalizeLocaleText(
     profileInput.department,
-    fallback.department ?? undefined,
+    fallback.department ?? undefined
   );
   if (department) profile.department = department;
 
   const specialization = normalizeLocaleText(
     profileInput.specialization,
-    fallback.specialization ?? undefined,
+    fallback.specialization ?? undefined
   );
   if (specialization) profile.specialization = specialization;
 
@@ -167,7 +167,7 @@ function normalizeDirectoryProfile(
     } else {
       const visitingHours = normalizeLocaleText(
         profileInput.visitingHours,
-        fallback.visitingHours ?? undefined,
+        fallback.visitingHours ?? undefined
       );
       if (visitingHours) profile.visitingHours = visitingHours;
     }
@@ -245,7 +245,7 @@ export async function POST(req: Request) {
       if (existing) {
         return NextResponse.json(
           { error: "Email already in use" },
-          { status: 409 },
+          { status: 409 }
         );
       }
     }
@@ -262,6 +262,12 @@ export async function POST(req: Request) {
     const availableFrom = trimOrNull(input.availableFrom);
     const availableTo = trimOrNull(input.availableTo);
     const weekdays = trimOrNull(input.weekdays);
+    if (!phone) {
+      return NextResponse.json(
+        { error: "Phone number is required" },
+        { status: 400 }
+      );
+    }
 
     const passwordHash = await hashPassword(input.password);
 

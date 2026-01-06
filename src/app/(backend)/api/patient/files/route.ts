@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json(
         { error: "blob token missing on server" },
-        { status: 500 },
+        { status: 500 }
       );
     }
     return handleUpload({
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
         contentType: (file as any).type || "application/octet-stream",
         addRandomSuffix: true,
         cacheControlMaxAge: 60 * 60 * 24 * 365,
-      },
+      }
     );
     let size: number | null = null;
     let contentType: string | null = (file as any).type || null;
@@ -120,7 +120,9 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const arrayBuffer = await (file as File).arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUrl = `data:${(file as any).type || "application/octet-stream"};base64,${base64}`;
+    const dataUrl = `data:${
+      (file as any).type || "application/octet-stream"
+    };base64,${base64}`;
     const uploaded = await prisma.fileAsset.create({
       data: {
         bucketKey: `inline:${Date.now()}`,

@@ -54,7 +54,7 @@ export async function PATCH(req: Request) {
               ? { passwordHash: await hashPassword(input.password) }
               : {}),
           },
-        }),
+        })
       );
     }
     if (input.dateOfBirth || input.gender || input.insuranceNo) {
@@ -68,7 +68,7 @@ export async function PATCH(req: Request) {
             ...(input.gender ? { gender: input.gender as any } : {}),
             ...(input.insuranceNo ? { insuranceNo: input.insuranceNo } : {}),
           },
-        }),
+        })
       );
     }
 

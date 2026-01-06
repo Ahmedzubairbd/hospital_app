@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     if (!(file instanceof File)) {
       return NextResponse.json(
         { error: "file field required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     csv = await file.text();
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         "public",
         "assets",
         "medical_test_prices",
-        "Medical_Test_Price.csv",
+        "Medical_Test_Price.csv"
       );
       csv = await fs.readFile(csvPath, "utf8");
     }

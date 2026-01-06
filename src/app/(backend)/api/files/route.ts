@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   // Staff-only uploads for now
   const session = await getServerSession(authOptions).catch(() => null);
   const role = String(
-    ((session?.user as any)?.role as string | undefined) || "",
+    ((session?.user as any)?.role as string | undefined) || ""
   ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (!hasToken) {
       return NextResponse.json(
         { error: "blob token missing on server" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
         contentType: (file as any).type || "application/octet-stream",
         addRandomSuffix: true,
         cacheControlMaxAge: 60 * 60 * 24 * 365,
-      },
+      }
     );
     // Enrich with HEAD to get size/contentType
     let size: number | null = null;
@@ -140,7 +140,9 @@ export async function POST(req: NextRequest) {
     // Fallback to inline data URL if Blob not available
     const arrayBuffer = await (file as File).arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUrl = `data:${(file as any).type || "application/octet-stream"};base64,${base64}`;
+    const dataUrl = `data:${
+      (file as any).type || "application/octet-stream"
+    };base64,${base64}`;
     const uploaded = await prisma.fileAsset.create({
       data: {
         bucketKey: `inline:${Date.now()}`,
@@ -158,7 +160,7 @@ export async function GET() {
   // Staff-only list
   const session = await getServerSession(authOptions).catch(() => null);
   const role = String(
-    ((session?.user as any)?.role as string | undefined) || "",
+    ((session?.user as any)?.role as string | undefined) || ""
   ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });

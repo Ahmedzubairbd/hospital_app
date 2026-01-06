@@ -8,14 +8,14 @@ import { hashPassword } from "@/lib/password";
 const schema = z.object({
   name: z.string().min(1),
   email: z.string().email().optional(),
-  phone: z.string().optional(),
+  phone: z.string().min(10).max(10),
   password: z.string().min(8).optional(),
 });
 
 export async function GET() {
   const session = await getServerSession(authOptions);
   const role = String(
-    ((session?.user as any)?.role as string | undefined) || "",
+    ((session?.user as any)?.role as string | undefined) || ""
   ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -30,7 +30,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   const role = String(
-    ((session?.user as any)?.role as string | undefined) || "",
+    ((session?.user as any)?.role as string | undefined) || ""
   ).toLowerCase();
   if (role !== "admin" && role !== "moderator")
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
         ...patient,
         user: { name: user.name, email: user.email, phone: user.phone },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "failed";
