@@ -59,6 +59,11 @@ const DRAWER_WIDTH = 260; // expanded width
 const MINI_DRAWER_WIDTH = 76; // collapsed width
 const SIDEBAR_BG = "#0f151d";
 const SIDEBAR_BORDER = "rgba(255,255,255,0.08)";
+type ThemeCallbackProps = { theme: Theme };
+const getCardRadius = (theme: Theme) =>
+  typeof theme.shape.borderRadius === "number"
+    ? theme.shape.borderRadius + 4
+    : `calc(${theme.shape.borderRadius} + 4px)`;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: DRAWER_WIDTH,
@@ -705,7 +710,7 @@ export default function DashboardLayout({
         components: {
           MuiPaper: {
             styleOverrides: {
-              root: ({ theme }) => ({
+              root: ({ theme }: ThemeCallbackProps) => ({
                 backgroundImage: "none",
                 border: `1px solid ${alpha(
                   theme.palette.mode === "dark"
@@ -722,26 +727,26 @@ export default function DashboardLayout({
           },
           MuiCard: {
             styleOverrides: {
-              root: ({ theme }) => ({
-                borderRadius: theme.shape.borderRadius + 4,
+              root: ({ theme }: ThemeCallbackProps) => ({
+                borderRadius: getCardRadius(theme),
               }),
             },
           },
           MuiDivider: {
             styleOverrides: {
-              root: ({ theme }) => ({
+              root: ({ theme }: ThemeCallbackProps) => ({
                 borderColor: theme.palette.divider,
               }),
             },
           },
           MuiTableCell: {
             styleOverrides: {
-              head: ({ theme }) => ({
+              head: ({ theme }: ThemeCallbackProps) => ({
                 fontWeight: 700,
                 color: theme.palette.text.secondary,
                 borderColor: theme.palette.divider,
               }),
-              body: ({ theme }) => ({
+              body: ({ theme }: ThemeCallbackProps) => ({
                 borderColor: theme.palette.divider,
               }),
             },
