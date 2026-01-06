@@ -1,5 +1,5 @@
 "use client";
-import AirlineSeatIndividualSuiteIcon from "@mui/icons-material/AirlineSeatIndividualSuite";
+import BookOnlineIcon from "@mui/icons-material/BookOnline";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import PeopleIcon from "@mui/icons-material/People";
@@ -171,9 +171,12 @@ export default function AdminDashboardPage() {
         "linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.18))",
     },
     {
-      title: "Bed Occupancy",
-      value: "78%", // Static for now
-      icon: AirlineSeatIndividualSuiteIcon,
+      title: "Appointments by Department",
+      value: data.appointmentsByDept.reduce(
+        (acc, cur) => acc + cur.appointments,
+        0
+      ), // Static for now
+      icon: BookOnlineIcon,
       accent: "#f97316",
       gradient:
         "linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(244, 63, 94, 0.18))",
@@ -187,7 +190,7 @@ export default function AdminDashboardPage() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3, fontWeight: 800 }}>
-        Admin Dashboard
+        Welcome To Amin Diagnostic Admin Dashboard
       </Typography>
       <Stack spacing={3}>
         {/* Summary Cards */}

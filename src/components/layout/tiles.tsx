@@ -1,65 +1,3 @@
-// "use client";
-
-// import React from "react";
-// import { motion } from "framer-motion";
-
-// interface TilesProps {
-//   className?: string;
-//   rows?: number;
-//   cols?: number;
-//   tileClassName?: string;
-//   tileSize?: "sm" | "md" | "lg";
-// }
-
-// const tileSizes = {
-//   sm: "w-8 h-8",
-//   md: "w-9 h-9 md:w-12 md:h-12",
-//   lg: "w-12 h-12 md:w-16 md:h-16",
-// };
-
-// export function Tiles({
-//   rows = 100,
-//   cols = 10,
-//   tileClassName,
-//   tileSize = "md",
-// }: TilesProps) {
-//   const rowsArray = new Array(rows).fill(1);
-//   const colsArray = new Array(cols).fill(1);
-
-//   return (
-//     <div className="relative z-0 flex w-full h-full justify-center">
-//       {rowsArray.map((_, i) => (
-//         <motion.div
-//           key={`row-${i}`}
-//           className={
-//             tileSizes[tileSize] +
-//             " border-l dark:border-neutral-900 border-neutral-200 relative" +
-//             tileClassName
-//           }
-//         >
-//           {colsArray.map((_, j) => (
-//             <motion.div
-//               whileHover={{
-//                 backgroundColor: `var(--tile)`,
-//                 transition: { duration: 0 },
-//               }}
-//               animate={{
-//                 transition: { duration: 2 },
-//               }}
-//               key={`col-${j}`}
-//               className={
-//                 tileSizes[tileSize] +
-//                 " border-t dark:border-neutral-900 border-neutral-200 relative" +
-//                 tileClassName
-//               }
-//             />
-//           ))}
-//         </motion.div>
-//       ))}
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
@@ -115,7 +53,7 @@ export function Tiles() {
 
   const handleDragEnd = (
     _: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo,
+    info: PanInfo
   ) => {
     const threshold = 50;
     if (info.offset.y < -threshold) {
@@ -135,7 +73,7 @@ export function Tiles() {
         }
       }
     },
-    [navigate],
+    [navigate]
   );
 
   useEffect(() => {
@@ -177,14 +115,12 @@ export function Tiles() {
     if (diff < -total / 2) diff += total;
     return Math.abs(diff) <= 2;
   };
-
   return (
     <div className="relative flex h-screen w-full items-center justify-center overflow-hidden bg-background">
       {/* Subtle ambient glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/[0.02] blur-3xl" />
       </div>
-
       {/* Card Stack */}
       <div
         className="relative flex h-[500px] w-[320px] items-center justify-center"
@@ -194,7 +130,6 @@ export function Tiles() {
           if (!isVisible(index)) return null;
           const style = getCardStyle(index);
           const isCurrent = index === currentIndex;
-
           return (
             <motion.div
               key={image.id}
@@ -231,7 +166,6 @@ export function Tiles() {
               >
                 {/* Card inner glow - uses foreground with low opacity */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-foreground/10 via-transparent to-transparent" />
-
                 <Image
                   src={image.src || "/placeholder.svg"}
                   alt={image.alt}
@@ -240,7 +174,6 @@ export function Tiles() {
                   draggable={false}
                   priority={isCurrent}
                 />
-
                 {/* Bottom gradient overlay - uses background color */}
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background/60 to-transparent" />
               </div>
@@ -248,7 +181,6 @@ export function Tiles() {
           );
         })}
       </div>
-
       {/* Navigation dots */}
       <div className="absolute right-8 top-1/2 flex -translate-y-1/2 flex-col gap-2">
         {images.map((_, index) => (
@@ -268,7 +200,6 @@ export function Tiles() {
           />
         ))}
       </div>
-
       {/* Instruction hint */}
       <motion.div
         className="absolute bottom-12 left-1/2 -translate-x-1/2"
