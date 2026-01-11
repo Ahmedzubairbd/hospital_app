@@ -47,7 +47,7 @@ import PersonalInjuryRoundedIcon from "@mui/icons-material/PersonalInjuryRounded
 import LocalHospitalRoundedIcon from "@mui/icons-material/LocalHospitalRounded";
 import PermMediaRoundedIcon from "@mui/icons-material/PermMediaRounded";
 import GroupsRoundedIcon from "@mui/icons-material/GroupsRounded";
-import FolderRoundedIcon from "@mui/icons-material/FolderRounded";
+import FileCopyRoundedIcon from "@mui/icons-material/FileCopyRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
@@ -336,9 +336,9 @@ const navItems: NavItem[] = [
   },
   // Patient files
   {
-    title: "My Files",
+    title: "Tests & Reports",
     path: "/dashboard/patient/files",
-    icon: <FolderRoundedIcon />,
+    icon: <FileCopyRoundedIcon />,
     roles: ["patient"],
     section: "Management",
   },

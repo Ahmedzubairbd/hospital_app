@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
         setErr(
           res.error === "CredentialsSignin"
             ? "Invalid email or password"
-            : res.error,
+            : res.error
         );
         return;
       }
@@ -49,8 +49,13 @@ export default function AdminLoginPage() {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #1e293b 0%, #0f172a 10%)",
-        color: "white",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+        borderRadius: 2,
+        border: "1px solid #334155",
+        outerShadow: "0 0 10px rgba(232, 227, 227, 0.1)",
+        innerShadow: "0 0 10px rgba(232, 227, 227, 0.1)",
+        // background: "linear-gradient(135deg, #1e293b 0%, #0f172a 10%)",
+        // color: "white",
       }}
     >
       <Box

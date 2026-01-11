@@ -110,6 +110,11 @@ export default function PortalRegisterPage() {
       sx={{
         display: "flex",
         minHeight: "100vh",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+        borderRadius: 2,
+        border: "1px solid #979ba0ff",
+        outerShadow: "0 0 10px rgba(232, 227, 227, 0.36)",
+        innerShadow: "0 0 10px rgba(232, 227, 227, 0.1)",
       }}
     >
       {/* Left visual / welcome */}
@@ -146,10 +151,25 @@ export default function PortalRegisterPage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          boxShadow: { md: 3 },
+          boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+          borderRadius: 2,
+          border: "1px solid #979ba0ff",
+          outerShadow: "0 0 10px rgba(232, 227, 227, 0.36)",
+          innerShadow: "0 0 10px rgba(232, 227, 227, 0.1)",
+          // boxShadow: { md: 3 },
         }}
       >
-        <Stack spacing={2}>
+        <Stack
+          spacing={2}
+          sx={{
+            p: 3,
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+            borderRadius: 2,
+            border: "1px solid #979ba0ff",
+            outerShadow: "0 0 10px rgba(232, 227, 227, 0.36)",
+            innerShadow: "0 0 10px rgba(232, 227, 227, 0.1)",
+          }}
+        >
           <Typography variant="h6">Patient Registration (SMS OTP)</Typography>
 
           <TextField
@@ -160,7 +180,8 @@ export default function PortalRegisterPage() {
           />
 
           <TextField
-            label="Phone"
+            label="Phone 171..."
+            placeholder="Do Not Include +880"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             helperText={
@@ -194,10 +215,11 @@ export default function PortalRegisterPage() {
               {sending
                 ? "Sending…"
                 : cooldown > 0
-                  ? `Resend in ${cooldown}s`
-                  : "Send OTP"}
+                ? `Resend in ${cooldown}s`
+                : "Send OTP"}
             </Button>
-
+          </Stack>
+          <Stack direction="row" spacing={1.5}>
             <TextField
               label="OTP"
               value={code}

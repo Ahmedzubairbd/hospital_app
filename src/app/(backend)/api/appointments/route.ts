@@ -5,7 +5,7 @@ import { verifyJwt } from "@/lib/auth";
 
 const createSchema = z.object({
   doctorId: z.string().min(1),
-  scheduledAt: z.string().datetime(), // ISO
+  scheduledAt: z.string().datetime(), // ISO string
   reason: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
 });
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
     if (!patient)
       return NextResponse.json(
         { error: "patient record not found" },
-        { status: 400 },
+        { status: 400 }
       );
 
     const doctor = await prisma.doctor.findUnique({

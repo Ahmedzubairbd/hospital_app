@@ -8,6 +8,7 @@ import {
   CardActionArea,
   CardContent,
   IconButton,
+  Input,
   MenuItem,
   Select,
   Stack,
@@ -97,7 +98,7 @@ export default function PatientFilesPage() {
         alignItems="center"
         sx={{ mb: 2 }}
       >
-        <Typography variant="h4">My Files</Typography>
+        <Typography variant="h4">Tests & Reports</Typography>
         <Stack
           direction="row"
           spacing={1}
@@ -108,6 +109,7 @@ export default function PatientFilesPage() {
             type="file"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             accept="image/*"
+            sx={{ display: "none" }}
           />
           <Button
             disabled={!file || uploading}

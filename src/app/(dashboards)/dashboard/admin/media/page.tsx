@@ -33,11 +33,11 @@ export default function MediaLibraryPage() {
   const [uploading, setUploading] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [typePolicy, setTypePolicy] = React.useState<"images" | "images-pdf">(
-    "images-pdf",
+    "images-pdf"
   );
   const [maxMB, setMaxMB] = React.useState<number>(20);
   const [kindFilter, setKindFilter] = React.useState<"all" | "images" | "pdfs">(
-    "all",
+    "all"
   );
   const [minKB, setMinKB] = React.useState<number | "">("");
   const [maxKB, setMaxKB] = React.useState<number | "">("");
@@ -114,13 +114,19 @@ export default function MediaLibraryPage() {
           alignItems="center"
           sx={{ flexWrap: "wrap", rowGap: 1 }}
         >
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
-            accept={
-              typePolicy === "images" ? "image/*" : "image/*,application/pdf"
-            }
-          />
+          <label htmlFor="file-input">
+            <input
+              id="file-input"
+              type="file"
+              onChange={(e) => setFile(e.target.files?.[0] || null)}
+              accept={
+                typePolicy === "images" ? "image/*" : "image/*,application/pdf"
+              }
+            />
+            <Button variant="outlined" component="span">
+              Choose File
+            </Button>
+          </label>
           <Select
             size="small"
             value={typePolicy}

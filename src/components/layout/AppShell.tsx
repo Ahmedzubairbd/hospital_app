@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
+import { NavBar } from "@/components/layout/tubelight-navbar";
 import LoginIcon from "@mui/icons-material/Login";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -414,7 +415,7 @@ export default function AppShell({
               <ListItemButton
                 onClick={handleMobileNavigate("/auth/admin/login")}
               >
-                <ListItemText primary="Admin Login" />
+                <ListItemText primary="" />
               </ListItemButton>
             </List>
           )}
