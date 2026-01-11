@@ -109,7 +109,7 @@ export default function PatientFilesPage() {
             type="file"
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             accept="image/*"
-            sx={{ display: "none" }}
+            style={{ display: "none" }}
           />
           <Button
             disabled={!file || uploading}

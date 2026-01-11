@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Box from "@mui/material/Box";
 import Link from "next/link";
 
 interface NavItem {
@@ -53,7 +54,7 @@ export function NavBar({ items, className }: NavBarProps) {
             >
               <span className="hidden md:inline">{item.name}</span>
               <span className="md:hidden">
-                <Icon sx={{ fontSize: 18, strokeWidth: 2.5 }} />
+                <Box sx={{ fontSize: 18, strokeWidth: 2.5 }}>{Icon}</Box>
               </span>
               {isActive && (
                 <motion.div

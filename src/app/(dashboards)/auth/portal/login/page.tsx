@@ -23,7 +23,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-type Method = "otp" | "password";
+type Method = "otp" | "register";
 
 const RESEND_SECONDS = 30;
 
@@ -84,7 +84,6 @@ function PulseMark() {
         },
       }}
     >
-      {/* A little “heartbeat-ish” line */}
       <path d="M2 13h22l8-10 14 20 14-28 14 34 12-16h38" />
     </Box>
   );
@@ -106,7 +105,6 @@ function AnimatedBackdrop() {
         zIndex: 0,
         pointerEvents: "none",
         overflow: "hidden",
-
         "& .orb": {
           transformOrigin: "center",
           filter: "blur(18px)",
@@ -117,7 +115,6 @@ function AnimatedBackdrop() {
         "& .orb3": {
           animation: `${floatSlow} 18s ease-in-out infinite reverse`,
         },
-
         "@media (prefers-reduced-motion: reduce)": {
           "& .orb1, & .orb2, & .orb3": { animation: "none" },
         },
@@ -170,30 +167,44 @@ function AnimatedBackdrop() {
   );
 }
 
+/** Small helper: strong but friendly password rules */
+function passwordIssues(pw: string) {
+  const issues: string[] = [];
+  if (pw.length < 8) issues.push("At least 8 characters");
+  if (!/[A-Z]/.test(pw)) issues.push("One uppercase letter");
+  if (!/[a-z]/.test(pw)) issues.push("One lowercase letter");
+  if (!/[0-9]/.test(pw)) issues.push("One number");
+  return issues;
+}
+
 export default function PortalLoginPage() {
   const theme = useTheme();
   const router = useRouter();
-
   const role = "patient";
 
   const [method, setMethod] = React.useState<Method>("otp");
 
+  // OTP login state
   const [phone, setPhone] = React.useState("");
   const [code, setCode] = React.useState("");
   const [normalized, setNormalized] = React.useState<string | undefined>();
+  const [otpSent, setOtpSent] = React.useState(false);
+  const [cooldown, setCooldown] = React.useState(0);
+  const [sending, setSending] = React.useState(false);
+  const [verifying, setVerifying] = React.useState(false);
 
-  const [password, setPassword] = React.useState("");
+  // Register state
+  const [fullName, setFullName] = React.useState("");
+  const [regPhone, setRegPhone] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [regPassword, setRegPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [registering, setRegistering] = React.useState(false);
 
+  // Shared feedback
   const [msg, setMsg] = React.useState<string | null>(null);
   const [err, setErr] = React.useState<string | null>(null);
   const [devOtp, setDevOtp] = React.useState<string | undefined>();
-
-  const [otpSent, setOtpSent] = React.useState(false);
-  const [cooldown, setCooldown] = React.useState(0);
-
-  const [sending, setSending] = React.useState(false);
-  const [verifying, setVerifying] = React.useState(false);
-  const [pwLoading, setPwLoading] = React.useState(false);
 
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
@@ -209,6 +220,23 @@ export default function PortalLoginPage() {
     setMsg(null);
   };
 
+  const resetOtpState = () => {
+    setCode("");
+    setOtpSent(false);
+    setCooldown(0);
+    setDevOtp(undefined);
+    setNormalized(undefined);
+  };
+
+  const resetRegisterState = () => {
+    setFullName("");
+    setRegPhone("");
+    setEmail("");
+    setRegPassword("");
+    setConfirmPassword("");
+  };
+
+  // OTP send
   const send = async () => {
     resetFeedback();
 
@@ -226,7 +254,7 @@ export default function PortalLoginPage() {
         body: JSON.stringify({ phone }),
       });
 
-      const j = await r.json().catch(() => ({} as any));
+      const j = await r.json().catch(() => ({}) as any);
       if (!r.ok) {
         setErr(j.error || "Failed to send OTP.");
         return;
@@ -244,6 +272,7 @@ export default function PortalLoginPage() {
     }
   };
 
+  // OTP verify
   const verify = async () => {
     resetFeedback();
 
@@ -266,7 +295,7 @@ export default function PortalLoginPage() {
         body: JSON.stringify({ phone: effectivePhone, code, role }),
       });
 
-      const j = await r.json().catch(() => ({} as any));
+      const j = await r.json().catch(() => ({}) as any);
       if (!r.ok) {
         setErr(j.error || "OTP verification failed.");
         return;
@@ -281,50 +310,65 @@ export default function PortalLoginPage() {
     }
   };
 
-  const loginWithPassword = async () => {
+  // Register submit
+  const register = async () => {
     resetFeedback();
 
-    if (!phone.trim()) {
-      setErr("Please enter your phone number.");
-      return;
-    }
-    if (!password.trim()) {
-      setErr("Please enter your password.");
-      return;
-    }
-    if (pwLoading) return;
+    if (!fullName.trim()) return setErr("Full name is required.");
+    if (!regPhone.trim()) return setErr("Phone number is required.");
 
-    setPwLoading(true);
+    // email optional, but if filled, validate format lightly
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      return setErr("Please enter a valid email address.");
+    }
+
+    const issues = passwordIssues(regPassword);
+    if (issues.length) {
+      return setErr(`Password requirements: ${issues.join(", ")}.`);
+    }
+    if (regPassword !== confirmPassword) {
+      return setErr("Passwords do not match.");
+    }
+
+    if (registering) return;
+    setRegistering(true);
+
     try {
-      const r = await fetch("/api/auth/portal/password-login", {
+      // ✅ Change this endpoint if your backend uses a different one
+      const r = await fetch("/api/auth/portal/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({
+          role,
+          full_name: fullName.trim(),
+          phone: regPhone.trim(),
+          email: email.trim() || undefined,
+          password: regPassword,
+        }),
       });
 
-      const j = await r.json().catch(() => ({} as any));
+      const j = await r.json().catch(() => ({}) as any);
       if (!r.ok) {
-        setErr(j.error || "Password login failed.");
+        setErr(j.error || "Registration failed.");
         return;
       }
 
-      setMsg("Logged in. Redirecting…");
-      router.replace("/dashboard/patient");
+      // Option A (common): after registering, take them to OTP login automatically
+      setMsg("Registration successful. Please log in with SMS OTP.");
+      setMethod("otp");
+
+      // pre-fill login phone for convenience
+      setPhone(regPhone.trim());
+      resetRegisterState();
+
+      // Optional: if backend wants “verify phone” after registration, you can auto-send OTP here:
+      // await send();
     } catch {
       setErr("Network error. Please try again.");
     } finally {
-      setPwLoading(false);
+      setRegistering(false);
     }
   };
-  function normalizeBDPhone(input: string) {
-    const digits = input.replace(/\D/g, "");
-
-    if (digits.startsWith("880")) return `+${digits}`;
-    if (digits.startsWith("0")) return `+880${digits.slice(1)}`;
-    if (digits.length === 10 && digits.startsWith("1")) return `+880${digits}`;
-
-    return `+880${digits}`;
-  }
 
   const primaryButtonSx = {
     borderRadius: 2,
@@ -371,22 +415,10 @@ export default function PortalLoginPage() {
         placeItems: "center",
         position: "relative",
         overflow: "hidden",
-        // bgcolor: "background.default",
-
-        // Gentle base gradient + texture-like shine
         backgroundImage: `
-          radial-gradient(1200px 700px at 10% 10%, ${alpha(
-            theme.palette.primary.main,
-            0.08
-          )} 0%, transparent 60%),
-          radial-gradient(900px 600px at 90% 15%, ${alpha(
-            theme.palette.primary.light,
-            0.08
-          )} 0%, transparent 55%),
-          radial-gradient(1000px 700px at 50% 95%, ${alpha(
-            theme.palette.primary.dark,
-            0.06
-          )} 0%, transparent 60%)
+          radial-gradient(1200px 700px at 10% 10%, ${alpha(theme.palette.primary.main, 0.08)} 0%, transparent 60%),
+          radial-gradient(900px 600px at 90% 15%, ${alpha(theme.palette.primary.light, 0.08)} 0%, transparent 55%),
+          radial-gradient(1000px 700px at 50% 95%, ${alpha(theme.palette.primary.dark, 0.06)} 0%, transparent 60%)
         `,
       }}
     >
@@ -408,16 +440,11 @@ export default function PortalLoginPage() {
             display: "grid",
             gridTemplateColumns: { xs: "1fr", md: "1.1fr 0.9fr" },
             transform: "translateZ(0)",
-
-            // quick “error shake” (plays whenever err becomes truthy)
             animation: showShake ? `${shake} 360ms ease` : "none",
-
-            "@media (prefers-reduced-motion: reduce)": {
-              animation: "none",
-            },
+            "@media (prefers-reduced-motion: reduce)": { animation: "none" },
           }}
         >
-          {/* LEFT: Hero / Illustration */}
+          {/* LEFT */}
           <Box
             sx={{
               p: { xs: 3, md: 5 },
@@ -506,24 +533,10 @@ export default function PortalLoginPage() {
                   />
                 </Box>
               </Box>
-
-              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                <Chip size="small" label="Fast OTP" sx={{ fontWeight: 700 }} />
-                <Chip
-                  size="small"
-                  label="Password option"
-                  sx={{ fontWeight: 700 }}
-                />
-                <Chip
-                  size="small"
-                  label="Animated UI"
-                  sx={{ fontWeight: 700 }}
-                />
-              </Stack>
             </Stack>
           </Box>
 
-          {/* RIGHT: Form */}
+          {/* RIGHT */}
           <Box
             sx={{
               p: { xs: 3, md: 5 },
@@ -538,14 +551,15 @@ export default function PortalLoginPage() {
                   variant="h6"
                   sx={{ fontWeight: 900, letterSpacing: -0.2 }}
                 >
-                  Patient Portal Login
+                  Patient Portal
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Choose a sign-in method, then continue.
+                <Typography variant="body2" color="text.primary">
+                  {method === "otp"
+                    ? "Sign in with SMS OTP."
+                    : "Create your account."}
                 </Typography>
               </Stack>
 
-              {/* Method switch with built-in MUI animations */}
               <Tabs
                 value={method}
                 onChange={(_, v) => {
@@ -555,25 +569,13 @@ export default function PortalLoginPage() {
                   setMethod(next);
                   resetFeedback();
 
-                  // Reset method-specific state for clean transitions
-                  setCode("");
-                  setPassword("");
-                  setOtpSent(false);
-                  setCooldown(0);
-                  setDevOtp(undefined);
-                  setNormalized(undefined);
+                  // reset both flows for clean transitions
+                  resetOtpState();
                 }}
                 variant="fullWidth"
                 sx={{
                   minHeight: 44,
                   borderRadius: 2,
-                  bgcolor: alpha(theme.palette.action.hover, 0.6),
-                  border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
-                  "& .MuiTabs-indicator": {
-                    height: "100%",
-                    borderRadius: 2,
-                    backgroundColor: alpha(theme.palette.primary.main, 0.14),
-                  },
                   "& .MuiTab-root": {
                     zIndex: 1,
                     minHeight: 44,
@@ -583,168 +585,215 @@ export default function PortalLoginPage() {
                 }}
               >
                 <Tab value="otp" label="SMS OTP" />
-                <Tab value="password" label="Password" />
+                <Tab value="register" label="Register" />
               </Tabs>
 
               <Divider sx={{ opacity: 0.7 }} />
 
               <Fade in key={method} timeout={220}>
                 <Box>
-                  <Stack spacing={1.6}>
-                    <TextField
-                      label="Phone number"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      fullWidth
-                      inputMode="tel"
-                      autoComplete="tel"
-                      sx={fieldSx}
-                      onKeyDown={(e) => {
-                        if (e.key !== "Enter") return;
-                        if (method === "otp") {
+                  {method === "otp" ? (
+                    <Stack spacing={1.6}>
+                      <TextField
+                        label="Phone number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        fullWidth
+                        inputMode="tel"
+                        autoComplete="tel"
+                        sx={fieldSx}
+                        onKeyDown={(e) => {
+                          if (e.key !== "Enter") return;
                           if (!otpSent) send();
                           else verify();
-                        } else {
-                          loginWithPassword();
+                        }}
+                        helperText={
+                          normalized && otpSent
+                            ? `Using: ${normalized}`
+                            : "Include country code if applicable (e.g. +1…)."
                         }
-                      }}
-                      helperText={
-                        normalized && otpSent
-                          ? `Using: ${normalized}`
-                          : "Include country code if applicable (e.g. +1…)."
-                      }
-                    />
+                      />
 
-                    {method === "password" ? (
-                      <>
-                        <TextField
-                          label="Password"
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          fullWidth
-                          autoComplete="current-password"
-                          sx={fieldSx}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") loginWithPassword();
-                          }}
-                        />
-
-                        <Button
-                          variant="contained"
-                          onClick={loginWithPassword}
-                          disabled={
-                            pwLoading || !phone.trim() || !password.trim()
-                          }
-                          sx={primaryButtonSx}
-                        >
-                          {pwLoading ? "Logging in…" : "Login"}
-                        </Button>
-
-                        <Typography variant="caption" color="text.secondary">
-                          Tip: Add rate-limiting + lockout on the backend for
-                          password attempts.
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="contained"
-                          onClick={send}
-                          disabled={sending || !phone.trim() || cooldown > 0}
-                          sx={primaryButtonSx}
-                        >
-                          {sending
-                            ? "Sending…"
-                            : otpSent
+                      <Button
+                        variant="contained"
+                        onClick={send}
+                        disabled={sending || !phone.trim() || cooldown > 0}
+                        sx={primaryButtonSx}
+                      >
+                        {sending
+                          ? "Sending…"
+                          : otpSent
                             ? cooldown > 0
                               ? `Resend in ${cooldown}s`
                               : "Resend OTP"
                             : "Send OTP"}
-                        </Button>
+                      </Button>
 
-                        <Collapse in={otpSent} timeout={250} unmountOnExit>
-                          <Stack spacing={1.4}>
-                            <TextField
-                              label="OTP code"
-                              value={code}
-                              onChange={(e) => setCode(e.target.value)}
-                              fullWidth
-                              inputMode="numeric"
-                              autoComplete="one-time-code"
-                              sx={fieldSx}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") verify();
-                              }}
-                              helperText="Enter the code you received via SMS."
-                            />
+                      <Collapse in={otpSent} timeout={250} unmountOnExit>
+                        <Stack spacing={1.4}>
+                          <TextField
+                            label="OTP code"
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            fullWidth
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            sx={fieldSx}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") verify();
+                            }}
+                            helperText="Enter the code you received via SMS."
+                          />
 
-                            <Button
-                              variant="contained"
-                              onClick={verify}
-                              disabled={verifying || !code.trim()}
-                              sx={primaryButtonSx}
-                            >
-                              {verifying ? "Verifying…" : "Verify & Login"}
-                            </Button>
+                          <Button
+                            variant="contained"
+                            onClick={verify}
+                            disabled={verifying || !code.trim()}
+                            sx={primaryButtonSx}
+                          >
+                            {verifying ? "Verifying…" : "Verify & Login"}
+                          </Button>
 
-                            <Button
-                              variant="text"
-                              onClick={() => {
-                                resetFeedback();
-                                setOtpSent(false);
-                                setCode("");
-                                setDevOtp(undefined);
-                                setNormalized(undefined);
-                                setCooldown(0);
-                              }}
-                              sx={{
-                                textTransform: "none",
-                                fontWeight: 800,
-                                alignSelf: "flex-start",
-                              }}
-                            >
-                              Change number / start over
-                            </Button>
-                          </Stack>
-                        </Collapse>
-                      </>
-                    )}
+                          <Button
+                            variant="text"
+                            onClick={() => {
+                              resetFeedback();
+                              resetOtpState();
+                            }}
+                            sx={{
+                              textTransform: "none",
+                              fontWeight: 800,
+                              alignSelf: "flex-start",
+                            }}
+                          >
+                            Change number / start over
+                          </Button>
+                        </Stack>
+                      </Collapse>
+                    </Stack>
+                  ) : (
+                    <Stack spacing={1.6}>
+                      <TextField
+                        label="Full name"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        fullWidth
+                        sx={fieldSx}
+                      />
 
-                    {/* Animated alerts */}
-                    <Collapse
-                      in={
-                        Boolean(devOtp) && process.env.NODE_ENV !== "production"
-                      }
-                      timeout={220}
-                    >
-                      <Alert severity="info" sx={{ mt: 0.5 }}>
-                        Dev OTP: <b>{devOtp}</b>
-                      </Alert>
-                    </Collapse>
+                      <TextField
+                        label="Phone number"
+                        value={regPhone}
+                        onChange={(e) => setRegPhone(e.target.value)}
+                        fullWidth
+                        inputMode="tel"
+                        autoComplete="tel"
+                        sx={fieldSx}
+                        helperText="Use the same number you will log in with."
+                      />
 
-                    <Collapse in={Boolean(err)} timeout={220}>
-                      <Alert severity="error" sx={{ mt: 0.5 }}>
-                        {err}
-                      </Alert>
-                    </Collapse>
+                      <TextField
+                        label="Email (optional)"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        fullWidth
+                        autoComplete="email"
+                        sx={fieldSx}
+                      />
 
-                    <Collapse in={Boolean(msg)} timeout={220}>
-                      <Alert severity="success" sx={{ mt: 0.5 }}>
-                        {msg}
-                      </Alert>
-                    </Collapse>
-                  </Stack>
+                      <TextField
+                        label="Create password"
+                        type="password"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        fullWidth
+                        autoComplete="new-password"
+                        sx={fieldSx}
+                        helperText={
+                          regPassword
+                            ? `Requirements: ${passwordIssues(regPassword).length ? passwordIssues(regPassword).join(", ") : "Looks good ✅"}`
+                            : "At least 8 chars, with upper/lowercase + number."
+                        }
+                      />
+
+                      <TextField
+                        label="Confirm password"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        fullWidth
+                        autoComplete="new-password"
+                        sx={fieldSx}
+                        error={
+                          Boolean(confirmPassword) &&
+                          confirmPassword !== regPassword
+                        }
+                        helperText={
+                          Boolean(confirmPassword)
+                            ? confirmPassword === regPassword
+                              ? "Matched ✅"
+                              : "Passwords do not match."
+                            : "Re-type your password."
+                        }
+                      />
+
+                      <Button
+                        variant="contained"
+                        onClick={register}
+                        disabled={registering}
+                        sx={primaryButtonSx}
+                      >
+                        {registering ? "Creating account…" : "Create account"}
+                      </Button>
+
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ lineHeight: 1.45 }}
+                      >
+                        By creating an account, you agree to the portal terms.
+                        After registration, you can log in with SMS OTP.
+                      </Typography>
+                    </Stack>
+                  )}
+
+                  {/* Alerts shared for both tabs */}
+                  <Collapse
+                    in={
+                      Boolean(devOtp) && process.env.NODE_ENV !== "production"
+                    }
+                    timeout={220}
+                  >
+                    <Alert severity="info" sx={{ mt: 1 }}>
+                      Dev OTP: <b>{devOtp}</b>
+                    </Alert>
+                  </Collapse>
+
+                  <Collapse in={Boolean(err)} timeout={220}>
+                    <Alert severity="error" sx={{ mt: 1 }}>
+                      {err}
+                    </Alert>
+                  </Collapse>
+
+                  <Collapse in={Boolean(msg)} timeout={220}>
+                    <Alert severity="success" sx={{ mt: 1 }}>
+                      {msg}
+                    </Alert>
+                  </Collapse>
                 </Box>
               </Fade>
 
               <Divider sx={{ opacity: 0.7 }} />
 
               <Typography variant="body2" color="text.secondary">
-                Don&apos;t have an account?{" "}
-                <Link href="/auth/portal/register" style={{ fontWeight: 800 }}>
-                  Register
-                </Link>
+                Already have an account?{" "}
+                <Button
+                  variant="text"
+                  onClick={() => setMethod("otp")}
+                  sx={{ px: 0.5, textTransform: "none", fontWeight: 900 }}
+                >
+                  Login with OTP
+                </Button>
               </Typography>
 
               <Typography
@@ -752,9 +801,8 @@ export default function PortalLoginPage() {
                 color="text.secondary"
                 sx={{ lineHeight: 1.4 }}
               >
-                Security note: On the backend, enforce OTP expiry, attempt
-                limits, and per-phone rate limits to stop brute-force and SMS
-                abuse.
+                Security note: Enforce OTP expiry, attempt limits, and per-phone
+                rate limits to reduce abuse.
               </Typography>
             </Stack>
           </Box>
